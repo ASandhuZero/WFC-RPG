@@ -13,17 +13,16 @@ System.config({
   },
 
   map: {
+    "Editor":"src/Editor/Editor",
     "WFC": "src/WaveFunctionCollapse/WFC",
     "babel": "npm:babel-core@5.8.38",
     "babel-runtime": "npm:babel-runtime@5.8.38",
-    "cif": "src/cif",
     "core-js": "npm:core-js@1.2.7",
     "css": "github:systemjs/plugin-css@0.1.33",
     "electron": "npm:electron@3.0.4",
     "image": "github:systemjs/plugin-image@0.1.0",
     "jquery": "github:components/jquery@2.1.1",
     "json": "github:systemjs/plugin-json@0.3.0",
-    "log": "src/log",
     "phaser": "github:photonstorm/phaser@2.6.2",
     "systemjs/plugin-image": "github:systemjs/plugin-image@0.1.0",
     "github:jspm/nodelibs-assert@0.1.0": {

@@ -1,14 +1,11 @@
 import * as Phaser from 'phaser'
 import * as spriteAssetKey from 'assets/spriteAssetKey.json!json';
-import {SpriteRenderer} from 'SpriteRenderer';
+import {Editor} from "Editor";
 import {WFC} from 'WFC';
 
-SpriteRenderer.init();
 var game = new Phaser.Game(512, 512, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-var gm;
 var WFCTest;
-var shaderTest;
-var dialogue;
+var editor;
 var test_json = {
   tiles: [
       {name: 'tile_1', symmetry: '\\'},
@@ -28,7 +25,9 @@ var test_json = {
 WFCTest = new WFC(false, 16, 16, test_json);
 var pcg_tilemap = WFCTest.getTiled2dmap();
 
+editor = new Editor();
 function preload () {
+  editor.Preload(game);
   //Testing
     game.load.image('lil', 'assets/Lil_Prom.png')
     // game.load.image('maleSpriteSheet', 'assets/sprites/Male_SpriteSheet.png');
@@ -77,6 +76,7 @@ function preload () {
 }
 
 function create () {
+    editor.Create(game)
     let map = game.add.tilemap('testPCG')
     map.addTilesetImage('Town_A', 'Town_A')
     map.addTilesetImage('Town_B', 'Town_B')
@@ -94,5 +94,5 @@ function create () {
 }
 
 function update() {
-
+  // editor.Update(game);
 }
