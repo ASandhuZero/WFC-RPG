@@ -1,0 +1,657 @@
+{
+  "eyesiris": [
+    {
+      "name": "default",
+      "row": 8,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [0],
+        "standing-left": [1],
+        "standing-right": [-1]
+      }
+    }
+  ],
+  "eyesopen": [
+    {
+      "name": "default",
+      "row": 9,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [0],
+        "standing-left": [1],
+        "standing-right": [-1]
+      }
+    },
+    {
+      "name": "sad",
+      "row": 9,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [2],
+        "standing-left": [3],
+        "standing-right": [-3]
+      }
+    },
+    {
+      "name": "angry",
+      "row": 9,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [4],
+        "standing-left": [5],
+        "standing-right": [-5]
+      }
+    }
+  ],
+  "eyesclosed": [
+    {
+      "name": "default",
+      "row": 10,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [0],
+        "standing-left": [1],
+        "standing-right": [-1]
+      }
+    },
+    {
+      "name": "sad",
+      "row": 10,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [2],
+        "standing-left": [3],
+        "standing-right": [-3]
+      }
+    },
+    {
+      "name": "angry",
+      "row": 10,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [4],
+        "standing-left": [5],
+        "standing-right": [-5]
+      }
+    },
+    {
+      "name": "happy",
+      "row": 10,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [6],
+        "standing-left": [7],
+        "standing-right": [-7]
+      }
+    }
+  ],
+  "hair": [
+    {
+      "name": "high ponytail",
+      "row": 3,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [0],
+        "standing-back": [1],
+        "standing-left": [2],
+        "standing-right": [3]
+      }
+    },
+    {
+      "name": "low ponytail",
+      "row": 3,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [5],
+        "standing-back": [6],
+        "standing-left": [7],
+        "standing-right": [8]
+      }
+    },
+    {
+      "name": "long wavy",
+      "row": 4,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [0],
+        "standing-back": [1],
+        "standing-left": [2],
+        "standing-right": [-2]
+      }
+    },
+    {
+      "name": "medium bob",
+      "row": 4,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [3],
+        "standing-back": [4],
+        "standing-left": [5],
+        "standing-right": [-5]
+      }
+    },
+    {
+      "name": "standard long",
+      "row": 5,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [0],
+        "standing-back": [1],
+        "standing-left": [2],
+        "standing-right": [-2]
+      }
+    },
+    {
+      "name": "straight long",
+      "row": 5,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [3],
+        "standing-back": [4],
+        "standing-left": [5],
+        "standing-right": [-5]
+      }
+    },
+    {
+      "name": "straight medium",
+      "row": 5,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [6],
+        "standing-back": [7],
+        "standing-left": [8],
+        "standing-right": [-8]
+      }
+    },
+    {
+      "name": "undershave",
+      "row": 6,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [0],
+        "standing-back": [1],
+        "standing-left": [2],
+        "standing-right": [-2]
+      }
+    },
+    {
+      "name": "buzzcut",
+      "row": 6,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [3],
+        "standing-back": [4],
+        "standing-left": [5],
+        "standing-right": [-5]
+      }
+    },
+    {
+      "name": "edgy short",
+      "row": 6,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [6],
+        "standing-back": [7],
+        "standing-left": [8],
+        "standing-right": [-8]
+      }
+    }
+  ],
+  "facialhair": [
+    {
+      "name": "short beard",
+      "row": 7,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [0],
+        "standing-left": [1],
+        "standing-right": [-1]
+      }
+    },
+    {
+      "name": "goatee",
+      "row": 7,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [2],
+        "standing-left": [3],
+        "standing-right": [-3]
+      }
+    },
+    {
+      "name": "mustache",
+      "row": 7,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [4],
+        "standing-left": [5],
+        "standing-right": [-5]
+      }
+    },
+    {
+      "name": "full beard",
+      "row": 7,
+      "height": 32,
+      "align": "top",
+      "states": {
+        "standing-front": [6],
+        "standing-left": [7],
+        "standing-right": [-7]
+      }
+    }
+  ],
+  "body": [
+    {
+      "name": "default",
+      "row": 11,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    }
+  ],
+  "jacket": [
+    {
+      "name": "short sleeved",
+      "row": 15,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    },
+    {
+      "name": "long sleeved",
+      "row": 17,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    }
+  ],
+  "shirt": [
+    {
+      "name": "regular",
+      "row": 21,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    },
+    {
+      "name": "fitted",
+      "row": 23,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    },
+    {
+      "name": "v-neck",
+      "row": 25,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    },
+    {
+      "name": "high-cut",
+      "row": 27,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    },
+    {
+      "name": "low-cut",
+      "row": 29,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    },
+    {
+      "name": "long sleeved",
+      "row": 31,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    },
+    {
+      "name": "long sleeved - shoulderless",
+      "row": 33,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    },
+    {
+      "name": "tube top",
+      "row": 35,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    }
+  ],
+  "pants": [
+    {
+      "name": "jeans",
+      "row": 37,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    },
+    {
+      "name": "capris",
+      "row": 39,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    },
+    {
+      "name": "jeans: 70's flip",
+      "row": 41,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    },
+    {
+      "name": "shorts",
+      "row": 43,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    },
+    {
+      "name": "leggings",
+      "row": 45,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    },
+    {
+      "name": "skirt - pleated",
+      "row": 47,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    },
+    {
+      "name": "skirt - flip",
+      "row": 49,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    }
+  ],
+  "shoes": [
+    {
+      "name": "tennis shoes",
+      "row": 51,
+      "height": 32,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    },
+    {
+      "name": "boots",
+      "row": 53,
+      "height": 32,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    },
+    {
+      "name": "sandals",
+      "row": 55,
+      "height": 32,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [3],
+        "standing-left": [6],
+        "walking-front": [1, 2],
+        "walking-back": [4, 5],
+        "walking-left": [7, 8]
+      }
+    }
+  ],
+  "accessory-body": [
+    {
+      "name": "logo-1",
+      "row": 19,
+      "height": 64,
+      "states": {
+        "standing-front": [0],
+        "standing-left": [1],
+        "standing-right": [-1]
+      }
+    },
+    {
+      "name": "logo-2",
+      "row": 19,
+      "height": 64,
+      "states": {
+        "standing-front": [2],
+        "standing-left": [3],
+        "standing-right": [-3]
+      }
+    },
+    {
+      "name": "logo-3",
+      "row": 19,
+      "height": 64,
+      "states": {
+        "standing-front": [4],
+        "standing-left": [5],
+        "standing-right": [-5]
+      }
+    },
+    {
+      "name": "logo-4",
+      "row": 19,
+      "height": 64,
+      "states": {
+        "standing-front": [6],
+        "standing-left": [7],
+        "standing-right": [-7]
+      }
+    },
+    {
+      "name": "suspenders",
+      "row": 13,
+      "height": 64,
+      "states": {
+        "standing-front": [4],
+        "standing-back": [4],
+        "standing-left": [3],
+        "standing-right": [-3]
+      }
+    }
+  ],
+  "accessory-neck": [
+    {
+      "name": "scarf",
+      "row": 13,
+      "height": 32,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [1],
+        "standing-left": [2],
+        "standing-right": [-2]
+      }
+    },
+    {
+      "name": "collar",
+      "row": 13,
+      "height": 32,
+      "states": {
+        "standing-front": [5],
+        "standing-back": [6],
+        "standing-left": [7],
+        "standing-right": [-7]
+      }
+    },
+    {
+      "name": "necklace",
+      "row": 14,
+      "height": 32,
+      "states": {
+        "standing-front": [0],
+        "standing-back": [1],
+        "standing-left": [2],
+        "standing-right": [-2]
+      }
+    }
+  ],
+  "accessory-face": [
+    {
+      "name": "hairclip",
+      "row": 2,
+      "height": 32,
+      "states": {
+        "standing-front": [0],
+        "standing-left": [0],
+        "standing-right": [-0]
+      }
+    },
+    {
+      "name": "glasses",
+      "row": 2,
+      "height": 32,
+      "states": {
+        "standing-front": [1],
+        "standing-left": [2],
+        "standing-right": [-2]
+      }
+    }
+  ]
+}

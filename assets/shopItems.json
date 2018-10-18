@@ -1,0 +1,50 @@
+{
+  "Red shirt": {
+    "index": 1,
+    "primaryColor": {
+      "r": 1,
+      "g": 0,
+      "b": 0
+    }
+  },
+  "Blue shirt": {
+    "index": 2,
+    "primaryColor": {
+      "r": 0,
+      "g": 0,
+      "b": 1
+    }
+  },
+  "Fancy shirt": {
+    "index": 6,
+    "primaryColor": {
+      "r": 0.6,
+      "g": 0,
+      "b": 0.6
+    }
+  },
+  "Golden armor": {
+    "index": 5,
+    "primaryColor": {
+      "r": 0.95,
+      "g": 0.82,
+      "b": 0.56
+    }
+  },
+  "Green shirt": {
+    "index": 1,
+    "primaryColor": {
+      "r": 0.26926985253485225,
+      "g": 0.5680829723246992,
+      "b": 0.015200635571896104
+    }
+  },
+  "Yellow shirt": {
+    "index": 5,
+    "primaryColor": {
+      "r": 0.95,
+      "g": 0.82,
+      "b": 0.56
+    }
+  }
+}
