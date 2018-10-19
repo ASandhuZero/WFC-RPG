@@ -6,7 +6,7 @@ import {WFC} from 'WFC';
 var game = new Phaser.Game(512, 512, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 var WFCTest;
 var editor;
-var test_json = {
+var tile_json = {
   tiles: [
       {name: 'tile_1', symmetry: '\\'},
       {name: 'tile_2', symmetry: 'L'},
@@ -21,8 +21,13 @@ var test_json = {
       {left: 'tile_3 0', right: 'tile_1 1'}
   ]
 }
-
-WFCTest = new WFC(false, 16, 16, test_json);
+var constraint_json = {
+    Constraints: {
+        LayerManager : 2,
+        ItemManager : {}
+    }
+}
+WFCTest = new WFC(false, 16, 16, tile_json, constraint_json);
 var pcg_tilemap = WFCTest.getTiled2dmap();
 
 editor = new Editor();

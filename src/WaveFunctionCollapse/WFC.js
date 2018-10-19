@@ -1,12 +1,13 @@
-import * as LayerManager from './Managers/LayerManager';
+import * as Manager from "./Managers/Managers"
 
 export class WFC {
-    constructor(periodic, height, width, tile_json) {
+    constructor(periodic, height, width, tile_json, constraints_json = null) {
         
         this.periodic = periodic; 
         this.height = height;
         this.width = width;
         this.tile_json = tile_json;
+        this.constraints = constraints_json;
         
         this.stationary = [];
         this.subsets = this.tile_json.subsets;
@@ -356,12 +357,7 @@ export class WFC {
                     wave1 = this.wave[x][y];
                     wave2 = this.wave[dx][dy];
                     
-                    // let constraints = {
-                    //     'x':2,
-                    //     'y':2,
-                    //     'tile':'tile_2'
-                    // }
-                    // LayerManager.testFunc(wave2)
+                    Manager.Manager(wave2, this.constraints)
                     for (let t = 0; t < this.tile_amount; t++) {
                         if (wave2[t]) {
                             // Possible location of issue when it comes to I or T tiles.
