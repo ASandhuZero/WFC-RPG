@@ -1,5 +1,5 @@
 export function testFunc(wave=null, constraints=null) {
   console.log(wave);
-  // debugger;
+  debugger;
   console.log('line 2')
 }
