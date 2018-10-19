@@ -13,7 +13,7 @@ System.config({
   },
 
   map: {
-    "Editor":"src/Editor/Editor",
+    "Editor": "src/Editor/Editor",
     "WFC": "src/WaveFunctionCollapse/WFC",
     "babel": "npm:babel-core@5.8.38",
     "babel-runtime": "npm:babel-runtime@5.8.38",

@@ -27,7 +27,7 @@ var pcg_tilemap = WFCTest.getTiled2dmap();
 
 editor = new Editor();
 function preload () {
-  editor.Preload(game);
+//   editor.Preload(game);
   //Testing
     game.load.image('lil', 'assets/Lil_Prom.png')
     // game.load.image('maleSpriteSheet', 'assets/sprites/Male_SpriteSheet.png');
@@ -77,22 +77,26 @@ function preload () {
 
 function create () {
     editor.Create(game)
-    let map = game.add.tilemap('testPCG')
-    map.addTilesetImage('Town_A', 'Town_A')
-    map.addTilesetImage('Town_B', 'Town_B')
-    map.addTilesetImage('City_A', 'City_A')
-    map.addTilesetImage('City_B', 'City_B')
-    map.addTilesetImage('Interior_A', 'Interior_A')
-    map.addTilesetImage('Interior_B', 'Interior_B')
-    map.addTilesetImage('FF_Set_1', 'FF_Set_1')
-    map.addTilesetImage('Streets01b', 'Streets01b')
-    map.addTilesetImage('BlackForest_A', 'BlackForest_A')
-    map.addTilesetImage('Forests_B', 'Forests_B')
+    let map = game.add.tilemap('testPCG')    
+
+    map.addTilesetImage(map.tilesets[0].name, map.tilesets[0].name)
+    // map.addTilesetImage('Town_A', 'Town_A')
+    // map.addTilesetImage('Town_B', 'Town_B')
+    // map.addTilesetImage('City_A', 'City_A')
+    // map.addTilesetImage('City_B', 'City_B')
+    // map.addTilesetImage('Interior_A', 'Interior_A')
+    // map.addTilesetImage('Interior_B', 'Interior_B')
+    // map.addTilesetImage('FF_Set_1', 'FF_Set_1')
+    // map.addTilesetImage('Streets01b', 'Streets01b')
+    // map.addTilesetImage('BlackForest_A', 'BlackForest_A')
+    // map.addTilesetImage('Forests_B', 'Forests_B')
     let layer = map.createLayer(0);
     layer.resizeWorld();
     console.log(map, pcg_tilemap);
 }
 
 function update() {
-  // editor.Update(game);
+    // TODO: add player movement mechanics
+
+    // editor.Update(game);
 }

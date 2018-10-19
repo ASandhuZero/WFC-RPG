@@ -3,10 +3,10 @@ export class Editor {
     this.currentTileMarker = 0;
   }
 
-  Preload(game) {
-    game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+//   Preload(game) {
+//     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
 
-  }
+//   }
   Create(game) {
     
     game.stage.backgroundColor = '#2d2d2d';
@@ -16,7 +16,7 @@ export class Editor {
 
     //  This is our tileset - it's just a BitmapData filled with a selection of randomly colored tiles
     //  but you could generate anything here
-    bmd = game.make.bitmapData(32 * 25, 32 * 2);
+    bmd = game.make.bitmapData(32 * 16, 32 * 2);
 
     var colors = Phaser.Color.HSVColorWheel();
 
@@ -36,12 +36,12 @@ export class Editor {
 
     //  Creates a new blank layer and sets the map dimensions.
     //  In this case the map is 40x30 tiles in size and the tiles are 32x32 pixels in size.
-    layer = map.create('level1', 40, 30, 32, 32);
+    layer = map.create('level1', 16, 16, 32, 32);
 
-    //  Populate some tiles for our player to start on
-    map.putTile(30, 2, 10, layer);
-    map.putTile(30, 3, 10, layer);
-    map.putTile(30, 4, 10, layer);
+    // //  Populate some tiles for our player to start on
+    // map.putTile(30, 2, 10, layer);
+    // map.putTile(30, 3, 10, layer);
+    // map.putTile(30, 4, 10, layer);
 
     map.setCollisionByExclusion([0]);
 
