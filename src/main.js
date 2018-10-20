@@ -31,7 +31,7 @@ var pcg_tilemap = WFCTest.getTiled2dmap();
 
 editor = new Editor();
 function preload () {
-//   editor.Preload(game);
+  editor.Preload(game);
   //Testing
     game.load.image('lil', 'assets/Lil_Prom.png')
     // game.load.image('maleSpriteSheet', 'assets/sprites/Male_SpriteSheet.png');
@@ -64,12 +64,12 @@ function preload () {
     game.load.image('Forests_B', 'assets/tilesets/wolfsong/Forests_B.png');
 
     game.load.tilemap('testPCG', null, pcg_tilemap, Phaser.Tilemap.TILED_JSON)
-    game.load.tilemap('turnipFarm', 'assets/tilemaps/turnipFarm.json', null, Phaser.Tilemap.TILED_JSON)
-    game.load.tilemap('turniptown', 'assets/tilemaps/turniptown.json', null, Phaser.Tilemap.TILED_JSON)
-    game.load.tilemap('turniptown2', 'assets/tilemaps/turniptown2.json', null, Phaser.Tilemap.TILED_JSON)
-    game.load.tilemap('town', 'assets/tilemaps/town.json', null, Phaser.Tilemap.TILED_JSON)
-    game.load.tilemap('pubInterior', 'assets/tilemaps/pubInterior.json', null, Phaser.Tilemap.TILED_JSON)
-    game.load.tilemap('shopInterior', 'assets/tilemaps/shopInterior.json', null, Phaser.Tilemap.TILED_JSON)
+    // game.load.tilemap('turnipFarm', 'assets/tilemaps/turnipFarm.json', null, Phaser.Tilemap.TILED_JSON)
+    // game.load.tilemap('turniptown', 'assets/tilemaps/turniptown.json', null, Phaser.Tilemap.TILED_JSON)
+    // game.load.tilemap('turniptown2', 'assets/tilemaps/turniptown2.json', null, Phaser.Tilemap.TILED_JSON)
+    // game.load.tilemap('town', 'assets/tilemaps/town.json', null, Phaser.Tilemap.TILED_JSON)
+    // game.load.tilemap('pubInterior', 'assets/tilemaps/pubInterior.json', null, Phaser.Tilemap.TILED_JSON)
+    // game.load.tilemap('shopInterior', 'assets/tilemaps/shopInterior.json', null, Phaser.Tilemap.TILED_JSON)
 
     //UI
     game.load.image('testDialogueBox', 'assets/sprites/ui/testDialogueBox.png')
@@ -80,9 +80,8 @@ function preload () {
 }
 
 function create () {
-    editor.Create(game)
-    let map = game.add.tilemap('testPCG')    
-
+    editor.Create(game);
+    let map = game.add.tilemap('testPCG');
     map.addTilesetImage(map.tilesets[0].name, map.tilesets[0].name)
     // map.addTilesetImage('Town_A', 'Town_A')
     // map.addTilesetImage('Town_B', 'Town_B')
