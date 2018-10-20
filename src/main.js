@@ -22,10 +22,9 @@ var tile_json = {
   ]
 }
 var constraint_json = {
-    Constraints: {
-        LayerManager : 2,
-        ItemManager : {}
-    }
+    LayerManager : 2,
+    ItemManager : {}
+
 }
 WFCTest = new WFC(false, 16, 16, tile_json, constraint_json);
 var pcg_tilemap = WFCTest.getTiled2dmap();
