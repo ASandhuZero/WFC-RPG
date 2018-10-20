@@ -1,22 +1,26 @@
+var marker;
+var Game;
+var currentTile = 0;
 export class Editor {
   constructor() {
     this.currentTileMarker = 0;
   }
 
-//   Preload(game) {
-//     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
-
-//   }
-  Create(game) {
+  Preload(game) {
+    game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
     
-    game.stage.backgroundColor = '#2d2d2d';
-
+  }
+  Create(game) {
+    // game.stage.backgroundColor = '#2d2d2d';
+    console.log('game: ' + game);
+    this.Game = game;
     //  Creates a blank tilemap
-    map = game.add.tilemap();
+    map = this.Game.add.tilemap();
 
+    // TODO: find length of tileset and then display that as a separate tilemap
     //  This is our tileset - it's just a BitmapData filled with a selection of randomly colored tiles
     //  but you could generate anything here
-    bmd = game.make.bitmapData(32 * 16, 32 * 2);
+    bmd = game.make.bitmapData(32 * 25, 32 * 2);
 
     var colors = Phaser.Color.HSVColorWheel();
 
@@ -38,19 +42,19 @@ export class Editor {
     //  In this case the map is 40x30 tiles in size and the tiles are 32x32 pixels in size.
     layer = map.create('level1', 16, 16, 32, 32);
 
-    // //  Populate some tiles for our player to start on
-    // map.putTile(30, 2, 10, layer);
-    // map.putTile(30, 3, 10, layer);
-    // map.putTile(30, 4, 10, layer);
+    //  Populate some tiles for our player to start on
+    map.putTile(30, 2, 10, layer);
+    map.putTile(30, 3, 10, layer);
+    map.putTile(30, 4, 10, layer);
 
     map.setCollisionByExclusion([0]);
 
     //  Create our tile selector at the top of the screen
-    this.CreateTileSelector(game);
+    this.CreateTileSelector(this.Game);
 
-    player = game.add.sprite(64, 100, 'dude');
-    game.physics.arcade.enable(player);
-    game.physics.arcade.gravity.y = 350;
+    player = this.Game.add.sprite(64, 100, 'dude');
+    this.Game.physics.arcade.enable(player);
+    this.Game.physics.arcade.gravity.y = 350;
 
     player.body.bounce.y = 0.1;
     player.body.collideWorldBounds = true;
@@ -60,11 +64,15 @@ export class Editor {
     player.animations.add('turn', [4], 20, true);
     player.animations.add('right', [5, 6, 7, 8], 10, true);
 
-    cursors = game.input.keyboard.createCursorKeys();
-    jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    cursors = this.Game.input.keyboard.createCursorKeys();
+    jumpButton = this.Game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
-    game.input.addMoveCallback(this.UpdateMarker, this);
+    // console.log(typeof game.input.activePointer);
+    // console.log(game.input.activePointer);
+    // console.log('typeof:');
+    // console.log(typeof this.UpdateMarker);
 
+    this.Game.input.addMoveCallback(this.UpdateMarker, this);
   }
 
   Update(game, player) {
@@ -119,9 +127,9 @@ export class Editor {
 
   }
   PickTile(sprite, pointer, game) {
-
-    var x = game.math.snapToFloor(pointer.x, 32, 0);
-    var y = game.math.snapToFloor(pointer.y, 32, 0);
+    // console.log('pick tile');
+    var x = this.Game.math.snapToFloor(pointer.x, 32, 0);
+    var y = this.Game.math.snapToFloor(pointer.y, 32, 0);
 
     this.currentTileMarker.x = x;
     this.currentTileMarker.y = y;
@@ -131,6 +139,7 @@ export class Editor {
 
     currentTile = x + (y * 25);
   }
+
   CreateTileSelector(game) {
 
     //  Our tile selection window
@@ -148,27 +157,27 @@ export class Editor {
     tileStrip.events.onInputDown.add(this.PickTile, this);
 
     //  Our painting marker
-    marker = game.add.graphics();
-    marker.lineStyle(2, 0x000000, 1);
-    marker.drawRect(0, 0, 32, 32);
+    this.marker = game.add.graphics();
+    this.marker.lineStyle(2, 0x000000, 1);
+    this.marker.drawRect(0, 0, 32, 32);
 
     //  Our current tile marker
     this.currentTileMarker = game.add.graphics();
-    this.currentTileMarker.lineStyle(1, 0xffffff, 1);
+    this.currentTileMarker.lineStyle(1, 0xffffff, 2);
     this.currentTileMarker.drawRect(0, 0, 32, 32);
 
     tileSelector.add(this.currentTileMarker);
 
   }
 
-  updateMarker() {
+  UpdateMarker() {
 
-    marker.x = layer.getTileX(game.input.activePointer.worldX) * 32;
-    marker.y = layer.getTileY(game.input.activePointer.worldY) * 32;
-
-    if (game.input.mousePointer.isDown && marker.y > 32)
+    this.marker.x = layer.getTileX(this.Game.input.activePointer.worldX) * 32;
+    this.marker.y = layer.getTileY(this.Game.input.activePointer.worldY) * 32;
+    
+    if (this.Game.input.mousePointer.isDown && this.marker.y > 32)
     {
-        map.putTile(currentTile, layer.getTileX(marker.x), layer.getTileY(marker.y), layer);
+        map.putTile(currentTile, layer.getTileX(this.marker.x), layer.getTileY(this.marker.y), layer);
     }
 
   }
@@ -176,7 +185,6 @@ export class Editor {
 var bmd;
 var map;
 var layer;
-var marker;
 var cursors;
 var player;
 var facing = 'left';
