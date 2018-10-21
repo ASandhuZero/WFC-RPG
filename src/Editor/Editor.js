@@ -16,55 +16,40 @@ export class Editor {
     this.currentTileMarker = 0;
   }
 
-//   Preload(game) {
-//     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
-//     game.load.image('Town_B', 'assets/tilesets/wolfsong/Town_A.png');
-//   }
+  Preload(game) {
+    // game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+    // game.load.image('Town_B', 'assets/tilesets/wolfsong/Town_A.png');
+  }
   Create(game, wfcMap, layer) {
-    // console.log(game);
+    console.log(game);
+    
     this.Game = game;
     this.layer = layer;
     this.wfcMap = wfcMap;
+
     //  Creates a blank tilemap
     map = game.add.tilemap();
 
-    // console.log(game)
-
-    // TODO: get rid of hard coding TOWN_B 
-    // Adds tileset for selection
+    // Adds tileset for tile selection
+    map.addTilesetImage(wfcMap.tilesets[0].name, wfcMap.tilesets[0].name);
+    
     editorLayer = map.create('level1', 16, 18, 32, 32);
-    // editorLayer.fixedToCamera = false;
-    // editorLayer.position.setTo(0, 64);
-    map.addTilesetImage('Town_B', 'Town_B');
-    console.log(wfcMap.getTile(1,7, this.layer))
-
-    // TODO: create an array of tileset selection and save to bitmapdata
-    bmd = game.make.bitmapData(32 * 16, 32 * 8);
-
-    //  Add a Tileset image to the map
-
-    // console.log(map);
+ 
+    let area = new Phaser.Rectangle(0, 0, 32 * 16, 32 * 2);
+    bmd = game.make.bitmapData(32 * 16, 32 * 2);
+    bmd.addToWorld();
     
-
-    // console.log(map.tilesets[0].name)
-    // console.log(map.tiles[0]);
-    // map.addTilesetImage('tiles', bmd);
-
-    //  Creates a new blank layer and sets the map dimensions.
-    //  In this case the map is 40x30 tiles in size and the tiles are 32x32 pixels in size.
-    
-    // console.log(editorLayer)
-    // let layer = map2.create('level2', 16, 16, 32, 32);
-
-    //  Populate some tiles for our player to start on
-    map.putTile(8, 2, 17, editorLayer);
-    map.putTile(1, 3, 17, editorLayer);
-    map.putTile(2, 4, 17, editorLayer);
-    map.putTile(18, 5, 17, editorLayer);
+    var i = 0;
+    for (var n = 0; n < 2; n++) {
+        for (var m = 0; m < 16; m++) {
+            map.putTile(i, m, n, layer);
+            i++;
+        }
+    }
 
     map.setCollisionByExclusion([0]);
 
-    //  Create our tile selector at the top of the screen
+    //  Create tile selector at the top of the screen
     this.CreateTileSelector(this.Game);
 
     player = this.Game.add.sprite(64, 100, 'dude');
@@ -149,7 +134,7 @@ export class Editor {
 
     currentTile = x + (y * 15);
 
-    // console.log(currentTile);
+    console.log(currentTile);
   }
 
   CreateTileSelector(game) {
@@ -158,7 +143,7 @@ export class Editor {
     var tileSelector = game.add.group();
 
     var tileSelectorBackground = game.make.graphics();
-    tileSelectorBackground.beginFill(0x000000, 0.8);
+    tileSelectorBackground.beginFill(0x000000, 0.3);
     tileSelectorBackground.drawRect(0, 0, 800, 66);
     tileSelectorBackground.endFill();
 
@@ -177,6 +162,8 @@ export class Editor {
     this.currentTileMarker = game.add.graphics();
     this.currentTileMarker.lineStyle(1, 0xffffff, 2);
     this.currentTileMarker.drawRect(0, 0, 32, 32);
+
+    // console.log(this.currentTileMarker)
 
     tileSelector.add(this.currentTileMarker);
 
