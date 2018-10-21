@@ -3,7 +3,7 @@ import * as spriteAssetKey from 'assets/spriteAssetKey.json!json';
 import {Editor} from "Editor";
 import {WFC} from 'WFC';
 
-var game = new Phaser.Game(512, 512, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(512, 576, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 var WFCTest;
 var editor;
 var tile_json = {
@@ -31,7 +31,7 @@ var pcg_tilemap = WFCTest.getTiled2dmap();
 
 editor = new Editor();
 function preload () {
-  editor.Preload(game);
+//   editor.Preload(game);
   //Testing
     game.load.image('lil', 'assets/Lil_Prom.png')
     // game.load.image('maleSpriteSheet', 'assets/sprites/Male_SpriteSheet.png');
@@ -49,7 +49,8 @@ function preload () {
 
     //Assorted sprites
     game.load.image('door', 'assets/sprites/door.png')
-
+    game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+    
     //Tilemaps
     // game.load.image('RPGTown32x32', '/assets/tilesets/RPGTown32x32.png');
     game.load.image('Town_A', 'assets/tilesets/wolfsong/Town_A.png');
@@ -80,9 +81,11 @@ function preload () {
 }
 
 function create () {
-    editor.Create(game);
+    
     let map = game.add.tilemap('testPCG');
     map.addTilesetImage(map.tilesets[0].name, map.tilesets[0].name)
+    let layer = map.createLayer(0);
+    editor.Create(game, layer);
     // map.addTilesetImage('Town_A', 'Town_A')
     // map.addTilesetImage('Town_B', 'Town_B')
     // map.addTilesetImage('City_A', 'City_A')
@@ -93,9 +96,13 @@ function create () {
     // map.addTilesetImage('Streets01b', 'Streets01b')
     // map.addTilesetImage('BlackForest_A', 'BlackForest_A')
     // map.addTilesetImage('Forests_B', 'Forests_B')
-    let layer = map.createLayer(0);
-    layer.resizeWorld();
-    console.log(map, pcg_tilemap);
+    
+    // layer.alpha = 0.3;
+    // console.log('layer:');
+    // console.log(layer);
+    // layer.position.y = 64;
+    // layer.resizeWorld();
+    // console.log(map, pcg_tilemap);
 }
 
 function update() {

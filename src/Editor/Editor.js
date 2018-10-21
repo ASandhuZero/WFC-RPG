@@ -6,46 +6,61 @@ export class Editor {
     this.currentTileMarker = 0;
   }
 
-  Preload(game) {
-    game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
-    
-  }
-  Create(game) {
-    // game.stage.backgroundColor = '#2d2d2d';
-    console.log('game: ' + game);
+//   Preload(game) {
+//     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+//     game.load.image('Town_B', 'assets/tilesets/wolfsong/Town_A.png');
+//   }
+  Create(game, layer) {
+    // console.log(game);
     this.Game = game;
+    this.layer = layer;
     //  Creates a blank tilemap
-    map = this.Game.add.tilemap();
+    map = game.add.tilemap();
 
-    // TODO: find length of tileset and then display that as a separate tilemap
+    // TODO: get rid of hard coding TOWN_B 
+    // Adds tileset for selection
+    map.addTilesetImage('Town_B', 'Town_B');
+
+
+
     //  This is our tileset - it's just a BitmapData filled with a selection of randomly colored tiles
     //  but you could generate anything here
+
+    // TODO: create an array of tileset selection
+    
     bmd = game.make.bitmapData(32 * 25, 32 * 2);
+    
+    // var colors = Phaser.Color.HSVColorWheel();
 
-    var colors = Phaser.Color.HSVColorWheel();
+    // var i = 0;
 
-    var i = 0;
-
-    for (var y = 0; y < 2; y++)
-    {
-        for (var x = 0; x < 25; x++)
-        {
-            bmd.rect(x * 32, y * 32, 32, 32, colors[i].rgba);
-            i += 6;
-        }
-    }
+    // for (var y = 0; y < 2; y++)
+    // {
+    //     for (var x = 0; x < 25; x++)
+    //     {
+    //         bmd.rect(x * 32, y * 32, 32, 32, colors[i].rgba);
+    //         i += 6;
+    //     }
+    // }
 
     //  Add a Tileset image to the map
-    map.addTilesetImage('tiles', bmd);
+
+    console.log(map);
+    
+    map.addTilesetImage('Town_B', 'Town_B');
+    console.log(map.tiles[0]);
+    // map.addTilesetImage('tiles', bmd);
 
     //  Creates a new blank layer and sets the map dimensions.
     //  In this case the map is 40x30 tiles in size and the tiles are 32x32 pixels in size.
-    layer = map.create('level1', 16, 16, 32, 32);
+    let editorLayer = map.create('level1', 16, 18, 32, 32);
+    // let layer = map2.create('level2', 16, 16, 32, 32);
 
     //  Populate some tiles for our player to start on
-    map.putTile(30, 2, 10, layer);
-    map.putTile(30, 3, 10, layer);
-    map.putTile(30, 4, 10, layer);
+    map.putTile(8, 2, 17, editorLayer);
+    map.putTile(1, 3, 17, editorLayer);
+    map.putTile(2, 4, 17, editorLayer);
+    map.putTile(18, 5, 17, editorLayer);
 
     map.setCollisionByExclusion([0]);
 
@@ -138,6 +153,8 @@ export class Editor {
     y /= 32;
 
     currentTile = x + (y * 25);
+
+    console.log(currentTile);
   }
 
   CreateTileSelector(game) {
@@ -172,12 +189,15 @@ export class Editor {
 
   UpdateMarker() {
 
-    this.marker.x = layer.getTileX(this.Game.input.activePointer.worldX) * 32;
-    this.marker.y = layer.getTileY(this.Game.input.activePointer.worldY) * 32;
+    this.marker.x = this.layer.getTileX(this.Game.input.activePointer.worldX) * 32;
+    this.marker.y = this.layer.getTileY(this.Game.input.activePointer.worldY) * 32;
     
     if (this.Game.input.mousePointer.isDown && this.marker.y > 32)
     {
-        map.putTile(currentTile, layer.getTileX(this.marker.x), layer.getTileY(this.marker.y), layer);
+        // TODO: remove tile from wfc layer
+        // map.removeTile(this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y));
+        map.putTile(currentTile, this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y), this.layer);
+        // map.replace(20,currentTile);
     }
 
   }
