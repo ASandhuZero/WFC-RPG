@@ -28,46 +28,31 @@ export class Editor {
     //  Creates a blank tilemap
     map = game.add.tilemap();
 
-    console.log(game)
+    // console.log(game)
 
     // TODO: get rid of hard coding TOWN_B 
     // Adds tileset for selection
+    editorLayer = map.create('level1', 16, 18, 32, 32);
+    // editorLayer.fixedToCamera = false;
+    // editorLayer.position.setTo(0, 64);
     map.addTilesetImage('Town_B', 'Town_B');
+    console.log(wfcMap.getTile(1,7, this.layer))
 
-
-
-    //  This is our tileset - it's just a BitmapData filled with a selection of randomly colored tiles
-    //  but you could generate anything here
-
-    // TODO: create an array of tileset selection
-    
-    bmd = game.make.bitmapData(32 * 25, 32 * 2);
-    // bmd.copy(map.tiles[0]);
-    
-    // var colors = Phaser.Color.HSVColorWheel();
-
-    // var i = 0;
-
-    // for (var y = 0; y < 2; y++)
-    // {
-    //     for (var x = 0; x < 25; x++)
-    //     {
-    //         bmd.rect(x * 32, y * 32, 32, 32, colors[i].rgba);
-    //         i += 6;
-    //     }
-    // }
+    // TODO: create an array of tileset selection and save to bitmapdata
+    bmd = game.make.bitmapData(32 * 16, 32 * 8);
 
     //  Add a Tileset image to the map
 
-    console.log(map);
+    // console.log(map);
     
-    map.addTilesetImage('Town_B', 'Town_B');
+
+    // console.log(map.tilesets[0].name)
     // console.log(map.tiles[0]);
     // map.addTilesetImage('tiles', bmd);
 
     //  Creates a new blank layer and sets the map dimensions.
     //  In this case the map is 40x30 tiles in size and the tiles are 32x32 pixels in size.
-    editorLayer = map.create('level1', 16, 18, 32, 32);
+    
     // console.log(editorLayer)
     // let layer = map2.create('level2', 16, 16, 32, 32);
 
@@ -96,11 +81,6 @@ export class Editor {
 
     cursors = this.Game.input.keyboard.createCursorKeys();
     jumpButton = this.Game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-
-    // console.log(typeof game.input.activePointer);
-    // console.log(game.input.activePointer);
-    // console.log('typeof:');
-    // console.log(typeof this.UpdateMarker);
 
     this.Game.input.addMoveCallback(this.UpdateMarker, this);
   }
@@ -203,13 +183,12 @@ export class Editor {
   }
 
   UpdateMarker() {
-    // console.log(editorLayer)
     this.marker.x = this.layer.getTileX(this.Game.input.activePointer.worldX) * 32;
     this.marker.y = this.layer.getTileY(this.Game.input.activePointer.worldY) * 32;
     
     if (this.Game.input.mousePointer.isDown && this.marker.y > 32)
     {
-        this.wfcMap.removeTile(this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y), this.layer);
+        this.wfcMap.removeTile(this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y-64), this.layer);
         map.putTile(currentTile, this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y), editorLayer);
      }
 

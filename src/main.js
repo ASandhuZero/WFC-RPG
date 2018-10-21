@@ -3,7 +3,7 @@ import * as spriteAssetKey from 'assets/spriteAssetKey.json!json';
 import {Editor} from "Editor";
 import {WFC} from 'WFC';
 
-var game = new Phaser.Game(512, 576, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(512, 512+32*8, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 var WFCTest;
 var editor;
 var tile_json = {
@@ -85,6 +85,10 @@ function create () {
     let map = game.add.tilemap('testPCG');
     map.addTilesetImage(map.tilesets[0].name, map.tilesets[0].name)
     let layer = map.createLayer(0);
+    layer.fixedToCamera = false;
+    layer.position.setTo(0, 64);
+
+    // Creates editor selection
     editor.Create(game, map, layer);
     
     // map.addTilesetImage('Town_A', 'Town_A')
@@ -98,11 +102,7 @@ function create () {
     // map.addTilesetImage('BlackForest_A', 'BlackForest_A')
     // map.addTilesetImage('Forests_B', 'Forests_B')
     
-    // layer.alpha = 0.3;
-    // console.log('layer:');
-    // console.log(layer);
-    // layer.position.y = 64;
-    // layer.resizeWorld();
+    layer.resizeWorld();
     // console.log(map, pcg_tilemap);
 }
 
