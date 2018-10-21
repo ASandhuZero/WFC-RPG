@@ -3,7 +3,7 @@ import * as spriteAssetKey from 'assets/spriteAssetKey.json!json';
 import {Editor} from "Editor";
 import {WFC} from 'WFC';
 
-var game = new Phaser.Game(512, 512+32*8, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(512, 512+32*2, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 var WFCTest;
 var editor;
 var test_json = {
@@ -72,12 +72,10 @@ function preload () {
     game.load.image('testDialogueBox', 'assets/sprites/ui/testDialogueBox.png')
     game.load.spritesheet('button', 'assets/buttons/button_sprite_sheet.png', 193, 71)
 
-
-
 }
 
 function create () {
-    
+    game.stage.backgroundColor = '#ccc';
     let map = game.add.tilemap('testPCG');
     map.addTilesetImage(map.tilesets[0].name, map.tilesets[0].name)
     let layer = map.createLayer(0);
