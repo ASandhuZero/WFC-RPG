@@ -1,6 +1,16 @@
 var marker;
 var Game;
 var currentTile = 0;
+var bmd;
+var map;
+var wfcMap;
+var layer;
+var editorLayer;
+var cursors;
+var player;
+var facing = 'left';
+var jumpTimer = 0;
+var jumpButton;
 export class Editor {
   constructor() {
     this.currentTileMarker = 0;
@@ -10,12 +20,15 @@ export class Editor {
 //     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
 //     game.load.image('Town_B', 'assets/tilesets/wolfsong/Town_A.png');
 //   }
-  Create(game, layer) {
+  Create(game, wfcMap, layer) {
     // console.log(game);
     this.Game = game;
     this.layer = layer;
+    this.wfcMap = wfcMap;
     //  Creates a blank tilemap
     map = game.add.tilemap();
+
+    console.log(game)
 
     // TODO: get rid of hard coding TOWN_B 
     // Adds tileset for selection
@@ -29,6 +42,7 @@ export class Editor {
     // TODO: create an array of tileset selection
     
     bmd = game.make.bitmapData(32 * 25, 32 * 2);
+    // bmd.copy(map.tiles[0]);
     
     // var colors = Phaser.Color.HSVColorWheel();
 
@@ -48,12 +62,13 @@ export class Editor {
     console.log(map);
     
     map.addTilesetImage('Town_B', 'Town_B');
-    console.log(map.tiles[0]);
+    // console.log(map.tiles[0]);
     // map.addTilesetImage('tiles', bmd);
 
     //  Creates a new blank layer and sets the map dimensions.
     //  In this case the map is 40x30 tiles in size and the tiles are 32x32 pixels in size.
-    let editorLayer = map.create('level1', 16, 18, 32, 32);
+    editorLayer = map.create('level1', 16, 18, 32, 32);
+    // console.log(editorLayer)
     // let layer = map2.create('level2', 16, 16, 32, 32);
 
     //  Populate some tiles for our player to start on
@@ -152,9 +167,9 @@ export class Editor {
     x /= 32;
     y /= 32;
 
-    currentTile = x + (y * 25);
+    currentTile = x + (y * 15);
 
-    console.log(currentTile);
+    // console.log(currentTile);
   }
 
   CreateTileSelector(game) {
@@ -188,25 +203,15 @@ export class Editor {
   }
 
   UpdateMarker() {
-
+    // console.log(editorLayer)
     this.marker.x = this.layer.getTileX(this.Game.input.activePointer.worldX) * 32;
     this.marker.y = this.layer.getTileY(this.Game.input.activePointer.worldY) * 32;
     
     if (this.Game.input.mousePointer.isDown && this.marker.y > 32)
     {
-        // TODO: remove tile from wfc layer
-        // map.removeTile(this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y));
-        map.putTile(currentTile, this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y), this.layer);
-        // map.replace(20,currentTile);
-    }
+        this.wfcMap.removeTile(this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y), this.layer);
+        map.putTile(currentTile, this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y), editorLayer);
+     }
 
   }
 }
-var bmd;
-var map;
-var layer;
-var cursors;
-var player;
-var facing = 'left';
-var jumpTimer = 0;
-var jumpButton;

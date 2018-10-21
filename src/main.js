@@ -85,7 +85,8 @@ function create () {
     let map = game.add.tilemap('testPCG');
     map.addTilesetImage(map.tilesets[0].name, map.tilesets[0].name)
     let layer = map.createLayer(0);
-    editor.Create(game, layer);
+    editor.Create(game, map, layer);
+    
     // map.addTilesetImage('Town_A', 'Town_A')
     // map.addTilesetImage('Town_B', 'Town_B')
     // map.addTilesetImage('City_A', 'City_A')
