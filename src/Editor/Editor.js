@@ -132,7 +132,7 @@ export class Editor {
     x /= 32;
     y /= 32;
 
-    currentTile = x + (y * 15);
+    currentTile = x + (y * 16);
 
     console.log(currentTile);
   }
