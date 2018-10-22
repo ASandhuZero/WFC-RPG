@@ -26,12 +26,7 @@ var test_json = {
 // more spagetti code dump - yay
 // listens for tile number change
 var sizeButton = document.getElementById("sizeButton");
-var regButton = document.getElementById("regenerateButton");
 var tileNum = +document.getElementById("tileSizeInput").value;      // number of tiles in x
-
-regButton.addEventListener("click", function(){
-    handler();
-});
 
 sizeButton.addEventListener("click", function(){
     tileNum = +document.getElementById("tileSizeInput").value;
