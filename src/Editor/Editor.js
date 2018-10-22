@@ -43,6 +43,7 @@ export class Editor {
     
     editorLayer = map.create('level1', this.tileNum, this.tileNum + this.selectorHeight, this.tileSize, this.tileSize);
     let area = new Phaser.Rectangle(0, 0, this.tileSize * this.tileNum, this.tileSize * this.selectorHeight);
+    
     bmd = game.make.bitmapData(this.tileSize * this.tileNum, this.tileSize * this.selectorHeight);
     bmd.addToWorld();
     
@@ -151,7 +152,7 @@ export class Editor {
 
     var tileSelectorBackground = game.make.graphics();
     tileSelectorBackground.beginFill(0x000000, 0.3);
-    tileSelectorBackground.drawRect(0, 0, 800, 66);
+    tileSelectorBackground.drawRect(0, 0, this.tileSize*this.tileNum, this.tileSize*this.selectorHeight);
     tileSelectorBackground.endFill();
 
     tileSelector.add(tileSelectorBackground);
@@ -177,10 +178,10 @@ export class Editor {
   }
 
   UpdateMarker() {
-    this.marker.x = this.layer.getTileX(this.Game.input.activePointer.worldX) * 32;
-    this.marker.y = this.layer.getTileY(this.Game.input.activePointer.worldY) * 32;
-    
-    if (this.Game.input.mousePointer.isDown && this.marker.y > this.tileSize)
+    this.marker.x = this.layer.getTileX(this.Game.input.activePointer.worldX) * this.tileSize;
+    this.marker.y = this.layer.getTileY(this.Game.input.activePointer.worldY) * this.tileSize;
+
+    if (this.Game.input.mousePointer.isDown && this.marker.y > this.tileSize*this.selectorHeight)
     {
         this.wfcMap.removeTile(this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y-(this.tileSize*this.selectorHeight)), this.layer);
         map.putTile(currentTile, this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y), editorLayer);

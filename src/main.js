@@ -5,21 +5,11 @@ import {WFC} from 'WFC';
 
 /*************** Changeable values ************** */
 // set WFC dimensions
-// var m = document.getElementById("tileNum").value;
-// console.log(m)
-var tileNum = 16;      // number of tiles in x
-var tileSize = 32;     // x size of tiles (pixels)
-
-// set selector dimensions
-var selectorY = 2;    
-
-// calculate world dimensions
-var worldWidth = tileSize * tileNum;   // x size of world (pixels)
-var worldLength = tileSize * (tileNum+selectorY);     // y size of world (pixels)
+var tileNum = 10;      // number of tiles in x
   
 
-/*************** Start Phaser ************** */
-var game = new Phaser.Game(worldWidth, worldLength, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+// var game = new Phaser.Game(worldWidth, worldLength, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 var WFCTest;
 var editor;
 var test_json = {
@@ -39,7 +29,24 @@ var test_json = {
 }
 
 WFCTest = new WFC(false, tileNum, tileNum, test_json);
+
 var pcg_tilemap = WFCTest.getTiled2dmap();
+console.log(pcg_tilemap.height);
+console.log(pcg_tilemap.tilesets[0].tilecount);
+
+var tileSize = pcg_tilemap.tilesets[0].tileheight;     // x size of tiles (pixels)
+
+// set selector dimensions
+var selectorY = Math.ceil(pcg_tilemap.tilesets[0].tilecount/pcg_tilemap.height);    
+console.log(selectorY);
+
+// calculate world dimensions
+var worldWidth = tileSize * tileNum;   // x size of world (pixels)
+var worldLength = tileSize * (tileNum+selectorY);     // y size of world (pixels)
+/*************** Start Phaser ************** */
+var game = new Phaser.Game(worldWidth, worldLength, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+// TODO: figure out number of tiles in set and set as selectorY value
 
 editor = new Editor(tileNum, tileSize, selectorY);
 function preload () {
@@ -97,7 +104,7 @@ function create () {
     let layer = map.createLayer(0);
     layer.fixedToCamera = false;
     // move layer in y direction to make room for selector
-    layer.position.setTo(0, 64);
+    layer.position.setTo(0, selectorY*tileSize);
 
     // Creates editor selection
     editor.Create(game, map, layer);
