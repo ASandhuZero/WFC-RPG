@@ -101,6 +101,8 @@ function create () {
 
 function update() {
     // TODO: add player movement mechanics
+    console.log(game.keyboard.lastKey);
+    
 
     // editor.Update(game);
 }
