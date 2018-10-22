@@ -5,11 +5,6 @@ import {WFC} from 'WFC';
 
 /*************** Changeable values ************** */
 // set WFC dimensions
-var tileNum = 16;      // number of tiles in x
-  
-
-
-// var game = new Phaser.Game(worldWidth, worldLength, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 var WFCTest;
 var editor;
 var test_json = {
@@ -28,6 +23,16 @@ var test_json = {
   ]
 }
 
+// listens for tile number change
+var tileNum = +document.getElementById("tileSizeInput").value;      // number of tiles in x
+document.getElementById("sizeButton").addEventListener("click", function(){
+    tileNum = +document.getElementById("tileSizeInput").value;
+    console.log(tileNum);
+});
+
+// var game = new Phaser.Game(worldWidth, worldLength, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+
 WFCTest = new WFC(false, tileNum, tileNum, test_json);
 var pcg_tilemap = WFCTest.getTiled2dmap();
 var tileSize = pcg_tilemap.tilesets[0].tileheight;     // x size of tiles (pixels)
@@ -41,8 +46,6 @@ var worldLength = tileSize * (tileNum+selectorY);     // y size of world (pixels
 
 /*************** Start Phaser ************** */
 var game = new Phaser.Game(worldWidth, worldLength, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-
-// TODO: figure out number of tiles in set and set as selectorY value
 
 editor = new Editor(tileNum, tileSize, selectorY);
 function preload () {
