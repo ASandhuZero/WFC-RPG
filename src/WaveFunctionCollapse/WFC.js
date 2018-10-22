@@ -391,7 +391,7 @@ export class WFC {
 
     GenerateTilemap() {
         let wave;
-        let array = []
+        let array = [];
         for (let x = 0; x < this.width; x++) {
             for (let y = 0; y < this.height; y++) {
                 wave = this.wave[x][y];
