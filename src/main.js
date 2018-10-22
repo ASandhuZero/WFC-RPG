@@ -5,7 +5,7 @@ import {WFC} from 'WFC';
 
 /*************** Changeable values ************** */
 // set WFC dimensions
-var tileNum = 10;      // number of tiles in x
+var tileNum = 16;      // number of tiles in x
   
 
 
@@ -29,20 +29,16 @@ var test_json = {
 }
 
 WFCTest = new WFC(false, tileNum, tileNum, test_json);
-
 var pcg_tilemap = WFCTest.getTiled2dmap();
-console.log(pcg_tilemap.height);
-console.log(pcg_tilemap.tilesets[0].tilecount);
-
 var tileSize = pcg_tilemap.tilesets[0].tileheight;     // x size of tiles (pixels)
 
 // set selector dimensions
-var selectorY = Math.ceil(pcg_tilemap.tilesets[0].tilecount/pcg_tilemap.height);    
-console.log(selectorY);
+var selectorY = Math.ceil(pcg_tilemap.tilesets[0].tilecount/pcg_tilemap.height);    // number of rows of tiles
 
 // calculate world dimensions
 var worldWidth = tileSize * tileNum;   // x size of world (pixels)
 var worldLength = tileSize * (tileNum+selectorY);     // y size of world (pixels)
+
 /*************** Start Phaser ************** */
 var game = new Phaser.Game(worldWidth, worldLength, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
@@ -108,7 +104,10 @@ function create () {
 
     // Creates editor selection
     editor.Create(game, map, layer);
-    
+    game.scale.pageAlignHorizontally = true;
+    game.scale.pageAlignVertically = true;
+    game.scale.refresh();
+
     // map.addTilesetImage('Town_A', 'Town_A')
     // map.addTilesetImage('Town_B', 'Town_B')
     // map.addTilesetImage('City_A', 'City_A')

@@ -142,7 +142,7 @@ export class Editor {
 
     currentTile = x + (y * this.tileNum);
 
-    console.log(currentTile);
+    // console.log(currentTile);
   }
 
   CreateTileSelector(game) {
