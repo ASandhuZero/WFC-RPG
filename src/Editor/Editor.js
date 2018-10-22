@@ -24,13 +24,12 @@ export class Editor {
     this.selectorHeight = height;
   }
 
+
   Preload(game) {
     // game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
     // game.load.image('Town_B', 'assets/tilesets/wolfsong/Town_A.png');
   }
   Create(game, wfcMap, layer) {
-    console.log(game);
-    
     this.Game = game;
     this.layer = layer;
     this.wfcMap = wfcMap;
@@ -55,27 +54,30 @@ export class Editor {
         }
     }
 
+
+
     map.setCollisionByExclusion([0]);
 
     //  Create tile selector at the top of the screen
     this.CreateTileSelector(this.Game);
 
-    player = this.Game.add.sprite(64, 100, 'dude');
-    this.Game.physics.arcade.enable(player);
-    this.Game.physics.arcade.gravity.y = 350;
+    // player = this.Game.add.sprite(64, 100, 'dude');
+    // this.Game.physics.arcade.enable(player);
+    // this.Game.physics.arcade.gravity.y = 350;
 
-    player.body.bounce.y = 0.1;
-    player.body.collideWorldBounds = true;
-    player.body.setSize(20, 32, 5, 16);
+    // player.body.bounce.y = 0.1;
+    // player.body.collideWorldBounds = true;
+    // player.body.setSize(20, 32, 5, 16);
 
-    player.animations.add('left', [0, 1, 2, 3], 10, true);
-    player.animations.add('turn', [4], 20, true);
-    player.animations.add('right', [5, 6, 7, 8], 10, true);
+    // player.animations.add('left', [0, 1, 2, 3], 10, true);
+    // player.animations.add('turn', [4], 20, true);
+    // player.animations.add('right', [5, 6, 7, 8], 10, true);
 
-    cursors = this.Game.input.keyboard.createCursorKeys();
-    jumpButton = this.Game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    // cursors = this.Game.input.keyboard.createCursorKeys();
+    // jumpButton = this.Game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
     this.Game.input.addMoveCallback(this.UpdateMarker, this);
+
   }
 
   Update(game, player) {
@@ -129,6 +131,7 @@ export class Editor {
     }
 
   }
+
   PickTile(sprite, pointer, game) {
     // console.log('pick tile');
     var x = this.Game.math.snapToFloor(pointer.x, this.tileSize, 0);
@@ -174,6 +177,7 @@ export class Editor {
     // console.log(this.currentTileMarker)
 
     tileSelector.add(this.currentTileMarker);
+
 
   }
 

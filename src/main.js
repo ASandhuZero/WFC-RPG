@@ -3,7 +3,7 @@ import * as spriteAssetKey from 'assets/spriteAssetKey.json!json';
 import {Editor} from "Editor";
 import {WFC} from 'WFC';
 
-/*************** Changeable values ************** */
+/*************** TODO: refactor code ************** */
 // set WFC dimensions
 var WFCTest;
 var editor;
@@ -29,14 +29,20 @@ var constraint_json = {
 }
 =======
 
+// more spagetti code dump - yay
 // listens for tile number change
+var sizeButton = document.getElementById("sizeButton");
+var regButton = document.getElementById("regenerateButton");
 var tileNum = +document.getElementById("tileSizeInput").value;      // number of tiles in x
-document.getElementById("sizeButton").addEventListener("click", function(){
-    tileNum = +document.getElementById("tileSizeInput").value;
-    console.log(tileNum);
+
+regButton.addEventListener("click", function(){
+    handler();
 });
 
-// var game = new Phaser.Game(worldWidth, worldLength, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+sizeButton.addEventListener("click", function(){
+    tileNum = +document.getElementById("tileSizeInput").value;
+    handler();
+});
 
 
 >>>>>>> feat: add regenerate and user input for tile size to generate map - still need to make input button functional
@@ -106,7 +112,8 @@ function preload () {
 function create () {
     game.stage.backgroundColor = '#ccc';
     let map = game.add.tilemap('testPCG');
-    map.addTilesetImage(map.tilesets[0].name, map.tilesets[0].name)
+    map.addTilesetImage(map.tilesets[0].name, map.tilesets[0].name);
+
     let layer = map.createLayer(0);
     layer.fixedToCamera = false;
     // move layer in y direction to make room for selector
@@ -137,4 +144,39 @@ function update() {
     // TODO: add player movement mechanics
 
     // editor.Update(game);
+}
+
+
+// look at this lovely hack
+function handler() {
+    // recreate game when button clicked
+
+    if(game) {
+        game.destroy();
+        game = null;
+
+        WFCTest = new WFC(false, tileNum, tileNum, test_json);
+        pcg_tilemap = WFCTest.getTiled2dmap();
+        selectorY = Math.ceil(pcg_tilemap.tilesets[0].tilecount/pcg_tilemap.height);    // number of rows of tiles
+        worldWidth = tileSize * tileNum;   // x size of world (pixels)
+        worldLength = tileSize * (tileNum+selectorY);     // y size of world (pixels)
+
+        game = new Phaser.Game({
+            width:          worldWidth, 
+            height:         worldLength,
+            renderer:       Phaser.AUTO,
+            parent:         "",
+            enableDebug:    false,
+            state:          {
+                    preload:        preload,
+                    create:         create,
+                    update:         update
+            },
+        });
+        console.log(typeof map);
+        editor = new Editor(tileNum, tileSize, selectorY);
+        create();
+    } else {
+        console.log('no game')
+    }
 }
