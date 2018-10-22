@@ -33,15 +33,33 @@ var constraint_json = {
 // listens for tile number change
 var sizeButton = document.getElementById("sizeButton");
 var tileNum = +document.getElementById("tileSizeInput").value;      // number of tiles in x
+var exportButton = document.getElementById("exportButton");
 
 sizeButton.addEventListener("click", function(){
     tileNum = +document.getElementById("tileSizeInput").value;
     handler();
 });
 
+<<<<<<< e6a1b9ad0422cebc529166ccc791248eefe609c7
 
 >>>>>>> feat: add regenerate and user input for tile size to generate map - still need to make input button functional
+=======
+>>>>>>> feat: add export button with functionality
 WFCTest = new WFC(false, tileNum, tileNum, test_json);
+
+exportButton.addEventListener("click", function(){
+    // WFCTest.getTiled2dmap();
+    var json_to_file = WFCTest.getTiled2dmap();
+
+    let a = document.createElement("a");
+    let json_string = JSON.stringify(json_to_file, null, 4);
+    let file = new Blob([json_string], {type: 'text/plain'});
+    a.href = URL.createObjectURL(file);
+    a.download = 'testJson.json';
+    a.click(); // wow what a terrible hack.
+});
+
+
 var pcg_tilemap = WFCTest.getTiled2dmap();
 var tileSize = pcg_tilemap.tilesets[0].tileheight;     // x size of tiles (pixels)
 
