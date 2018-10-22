@@ -11,9 +11,17 @@ var player;
 var facing = 'left';
 var jumpTimer = 0;
 var jumpButton;
+
+var tileNum;
+var tileSize;
+var selectorHeight;
+
 export class Editor {
-  constructor() {
+  constructor(tileNum, tileSize, height) {
     this.currentTileMarker = 0;
+    this.tileNum = tileNum;
+    this.tileSize = tileSize;
+    this.selectorHeight = height;
   }
 
   Preload(game) {
@@ -33,15 +41,14 @@ export class Editor {
     // Adds tileset for tile selection
     map.addTilesetImage(wfcMap.tilesets[0].name, wfcMap.tilesets[0].name);
     
-    editorLayer = map.create('level1', 16, 18, 32, 32);
- 
-    let area = new Phaser.Rectangle(0, 0, 32 * 16, 32 * 2);
-    bmd = game.make.bitmapData(32 * 16, 32 * 2);
+    editorLayer = map.create('level1', this.tileNum, this.tileNum + this.selectorHeight, this.tileSize, this.tileSize);
+    let area = new Phaser.Rectangle(0, 0, this.tileSize * this.tileNum, this.tileSize * this.selectorHeight);
+    bmd = game.make.bitmapData(this.tileSize * this.tileNum, this.tileSize * this.selectorHeight);
     bmd.addToWorld();
     
     var i = 0;
-    for (var n = 0; n < 2; n++) {
-        for (var m = 0; m < 16; m++) {
+    for (var n = 0; n < this.selectorHeight; n++) {
+        for (var m = 0; m < this.tileNum; m++) {
             map.putTile(i, m, n, layer);
             i++;
         }
@@ -123,16 +130,16 @@ export class Editor {
   }
   PickTile(sprite, pointer, game) {
     // console.log('pick tile');
-    var x = this.Game.math.snapToFloor(pointer.x, 32, 0);
-    var y = this.Game.math.snapToFloor(pointer.y, 32, 0);
+    var x = this.Game.math.snapToFloor(pointer.x, this.tileSize, 0);
+    var y = this.Game.math.snapToFloor(pointer.y, this.tileSize, 0);
 
     this.currentTileMarker.x = x;
     this.currentTileMarker.y = y;
 
-    x /= 32;
-    y /= 32;
+    x /= this.tileSize;
+    y /= this.tileSize;
 
-    currentTile = x + (y * 16);
+    currentTile = x + (y * this.tileNum);
 
     console.log(currentTile);
   }
@@ -156,12 +163,12 @@ export class Editor {
     //  Our painting marker
     this.marker = game.add.graphics();
     this.marker.lineStyle(2, 0x000000, 1);
-    this.marker.drawRect(0, 0, 32, 32);
+    this.marker.drawRect(0, 0, this.tileSize, this.tileSize);
 
     //  Our current tile marker
     this.currentTileMarker = game.add.graphics();
     this.currentTileMarker.lineStyle(1, 0xffffff, 2);
-    this.currentTileMarker.drawRect(0, 0, 32, 32);
+    this.currentTileMarker.drawRect(0, 0, this.tileSize, this.tileSize);
 
     // console.log(this.currentTileMarker)
 
@@ -173,9 +180,9 @@ export class Editor {
     this.marker.x = this.layer.getTileX(this.Game.input.activePointer.worldX) * 32;
     this.marker.y = this.layer.getTileY(this.Game.input.activePointer.worldY) * 32;
     
-    if (this.Game.input.mousePointer.isDown && this.marker.y > 32)
+    if (this.Game.input.mousePointer.isDown && this.marker.y > this.tileSize)
     {
-        this.wfcMap.removeTile(this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y-64), this.layer);
+        this.wfcMap.removeTile(this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y-(this.tileSize*this.selectorHeight)), this.layer);
         map.putTile(currentTile, this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y), editorLayer);
      }
 

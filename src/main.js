@@ -3,7 +3,23 @@ import * as spriteAssetKey from 'assets/spriteAssetKey.json!json';
 import {Editor} from "Editor";
 import {WFC} from 'WFC';
 
-var game = new Phaser.Game(512, 512+32*2, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+/*************** Changeable values ************** */
+// set WFC dimensions
+// var m = document.getElementById("tileNum").value;
+// console.log(m)
+var tileNum = 16;      // number of tiles in x
+var tileSize = 32;     // x size of tiles (pixels)
+
+// set selector dimensions
+var selectorY = 2;    
+
+// calculate world dimensions
+var worldWidth = tileSize * tileNum;   // x size of world (pixels)
+var worldLength = tileSize * (tileNum+selectorY);     // y size of world (pixels)
+  
+
+/*************** Start Phaser ************** */
+var game = new Phaser.Game(worldWidth, worldLength, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 var WFCTest;
 var editor;
 var tile_json = {
@@ -24,12 +40,11 @@ var tile_json = {
 var constraint_json = {
     LayerManager : 2,
     ItemManager : {}
-
 }
-WFCTest = new WFC(false, 16, 16, tile_json, constraint_json);
+WFCTest = new WFC(false, tileNum, tileNum, test_json);
 var pcg_tilemap = WFCTest.getTiled2dmap();
 
-editor = new Editor();
+editor = new Editor(tileNum, tileSize, selectorY);
 function preload () {
 //   editor.Preload(game);
   //Testing
@@ -84,6 +99,7 @@ function create () {
     map.addTilesetImage(map.tilesets[0].name, map.tilesets[0].name)
     let layer = map.createLayer(0);
     layer.fixedToCamera = false;
+    // move layer in y direction to make room for selector
     layer.position.setTo(0, 64);
 
     // Creates editor selection
