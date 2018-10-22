@@ -1,5 +1,10 @@
 import * as Manager from "./Managers/Managers"
+import {SimpleTiledModel} from './SimpleTiledModel'
 
+var model = new SimpleTiledModel(false, "item", 10, 10, null, null);
+model.Run(10,2);
+
+debugger;
 export class WFC {
     constructor(periodic, height, width, tile_json, constraints_json = null) {
         
