@@ -508,7 +508,7 @@ export class WFC {
                     "imageheight":512,
                     "imagewidth":256,
                     "margin":0,
-                    "name":"Town_B",
+                    "name":"Town_A",
                     "spacing":0,
                     "tilecount":128,
                     "tileheight":32,
