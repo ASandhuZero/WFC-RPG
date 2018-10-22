@@ -181,7 +181,7 @@ export class Editor {
     this.marker.x = this.layer.getTileX(this.Game.input.activePointer.worldX) * this.tileSize;
     this.marker.y = this.layer.getTileY(this.Game.input.activePointer.worldY) * this.tileSize;
 
-    if (this.Game.input.mousePointer.isDown && this.marker.y > this.tileSize*this.selectorHeight)
+    if (this.Game.input.mousePointer.isDown && this.marker.y >= this.tileSize*this.selectorHeight)
     {
         this.wfcMap.removeTile(this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y-(this.tileSize*this.selectorHeight)), this.layer);
         map.putTile(currentTile, this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y), editorLayer);
