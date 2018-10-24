@@ -33,14 +33,13 @@ export class Editor {
     this.Game = game;
     this.layer = layer;
     this.wfcMap = wfcMap;
-
     //  Creates a blank tilemap
     map = game.add.tilemap();
 
     // Adds tileset for tile selection
     map.addTilesetImage(wfcMap.tilesets[0].name, wfcMap.tilesets[0].name);
     
-    editorLayer = map.create('level1', this.tileNum, this.tileNum + this.selectorHeight, this.tileSize, this.tileSize);
+    map.create('level1', this.tileNum, this.tileNum + this.selectorHeight, this.tileSize, this.tileSize);
     let area = new Phaser.Rectangle(0, 0, this.tileSize * this.tileNum, this.tileSize * this.selectorHeight);
     
     bmd = game.make.bitmapData(this.tileSize * this.tileNum, this.tileSize * this.selectorHeight);
@@ -184,12 +183,18 @@ export class Editor {
   UpdateMarker() {
     this.marker.x = this.layer.getTileX(this.Game.input.activePointer.worldX) * this.tileSize;
     this.marker.y = this.layer.getTileY(this.Game.input.activePointer.worldY) * this.tileSize;
-
     if (this.Game.input.mousePointer.isDown && this.marker.y >= this.tileSize*this.selectorHeight)
     {
         this.wfcMap.removeTile(this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y-(this.tileSize*this.selectorHeight)), this.layer);
-        map.putTile(currentTile, this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y), editorLayer);
-     }
+        map.putTile(currentTile, this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y), this.layer);
+        
+        console.log(map.getTile(this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y)));
+        // Calculates the index of tile changed in map
+        this.arrayIndex = this.layer.getTileX(this.marker.x) + (this.layer.getTileY(this.marker.y)-this.selectorHeight) * this.tileNum;
+    }
+  }
 
+  GetChangedTileIndex() {
+      return this.arrayIndex;
   }
 }
