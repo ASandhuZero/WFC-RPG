@@ -12,6 +12,7 @@ export class SimpleTiledModel extends Model {
         this.tiles_info = this.tileset_info.tiles;
         this.tiles = [];
         this.tiles_symmetries = {};
+        this.first_occurrence = {};
         this.constraints = constraints_json;
         
         this.tilesize = this.tileset_info.tilesize ? this.tileset_info.tilesize : 32;
@@ -23,7 +24,7 @@ export class SimpleTiledModel extends Model {
     }
     
     SimpleInit() {
-        let tempStationary, action, first_occurrence, tile;
+        let tempStationary, action, tile;
 
         for (let i = 0; i < this.tiles_info.length; i++) {
             tile = this.tiles_info[i];
