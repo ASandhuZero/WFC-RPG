@@ -1,8 +1,8 @@
 import * as Manager from "./Managers/Managers"
 import {SimpleTiledModel} from './SimpleTiledModel'
-import * as tile_json from "./tiles.json!json"
+import * as tileset_info from "./tile_info.json!json"
 
-var model = new SimpleTiledModel(false, "item", 10, 10, tile_json, null);
+var model = new SimpleTiledModel(false, "item", 10, 10, tileset_info, null);
 model.Run(10,2);
 
 debugger;

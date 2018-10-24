@@ -204,8 +204,8 @@ export class Model {
             for (let t = 0; t < this.tiles.length; t++) {
                 this.wave[i][t] = true;
                 for (let d = 0; d < 4; d++) {
-                    this.compatible[i][t][d] = this.propagtor[opposite[d]][t].length;
                     debugger;
+                    this.compatible[i][t][d] = this.propagtor[opposite[d]][t].length;
                 }
 
                 this.sums_of_ones[i] = this.weights.length;
@@ -216,5 +216,6 @@ export class Model {
         }
     }
     OnBoundary(x,y) {
+        pass
     }
 }
