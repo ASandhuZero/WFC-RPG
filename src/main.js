@@ -38,6 +38,7 @@ WFCTest = new WFC(false, tileNum, tileNum, test_json);
 
 exportButton.addEventListener("click", function(){
     // WFCTest.getTiled2dmap();
+    console.log(editor.GetChangedTilePair());
     var json_to_file = WFCTest.getTiled2dmap();
 
     let a = document.createElement("a");

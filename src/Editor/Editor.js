@@ -22,6 +22,7 @@ export class Editor {
     this.tileNum = tileNum;
     this.tileSize = tileSize;
     this.selectorHeight = height;
+    this.changedTileArray = new Array();
   }
 
 
@@ -188,13 +189,18 @@ export class Editor {
         this.wfcMap.removeTile(this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y-(this.tileSize*this.selectorHeight)), this.layer);
         map.putTile(currentTile, this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y), this.layer);
         
-        console.log(map.getTile(this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y)));
         // Calculates the index of tile changed in map
-        this.arrayIndex = this.layer.getTileX(this.marker.x) + (this.layer.getTileY(this.marker.y)-this.selectorHeight) * this.tileNum;
+        var arrayIndex = this.layer.getTileX(this.marker.x) + (this.layer.getTileY(this.marker.y)-this.selectorHeight) * this.tileNum;
+        
+        // Create array of tiles placed and index position of placed tile on map pair
+        var changedTileObject = new Object();
+        changedTileObject.tile = map.getTile(this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y));   // tile placed
+        changedTileObject.index = arrayIndex; // index position of placed tile on map
+        this.changedTileArray.push(changedTileObject);
     }
   }
 
-  GetChangedTileIndex() {
-      return this.arrayIndex;
+  GetChangedTilePair() {
+      return this.changedTileArray;
   }
 }
