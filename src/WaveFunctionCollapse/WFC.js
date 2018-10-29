@@ -3,7 +3,7 @@ import {SimpleTiledModel} from './SimpleTiledModel'
 import * as tileset_info from "./tile_info.json!json"
 
 var model = new SimpleTiledModel(false, "item", 10, 10, tileset_info, null);
-model.Run(10,2);
+model.Run(10,0);
 
 debugger;
 export class WFC {
@@ -132,6 +132,8 @@ export class WFC {
                 tile_amount++;
             }
         }
+        this.weights = this.stationary;
+        debugger
         return [tiles, tile_amount]
     }
     /**
