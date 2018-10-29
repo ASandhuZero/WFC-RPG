@@ -6,7 +6,6 @@
     ],
     "neighbors": [
         {"left": "tile_1 0", "right": "tile_2 0"},
-        {"left": "tile_2 0", "right": "tile_3 0"},
-        {"left": "tile_3 0", "right": "tile_1 1"}
+        {"left": "tile_2 0", "right": "tile_3 0"}  
     ]
   }

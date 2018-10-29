@@ -146,10 +146,10 @@ export class SimpleTiledModel extends Model {
             propagator[1][U_id + U[4]][D_id + D[4]] = true;
             propagator[1][D_id + D[2]][U_id + U[2]] = true;
         }
-        for (let t = 0; t < this.tile_amount; t++) {
-            for (let t2 = 0; t2 < this.tile_amount; t2++) {
-                propagator[2][t][t2] = this.propagator[0][t2][t];
-                propagator[3][t][t2] = this.propagator[1][t2][t];
+        for (let t = 0; t < this.tiles.length; t++) {
+            for (let t2 = 0; t2 < this.tiles.length; t2++) {
+                propagator[2][t][t2] = propagator[0][t2][t];
+                propagator[3][t][t2] = propagator[1][t2][t];
             }
         }
         
@@ -160,7 +160,7 @@ export class SimpleTiledModel extends Model {
                 sparse_propagator[d][t] = [];
             }
         }
-        for (let    d = 0; d < 4; d++) {
+        for (let d = 0; d < 4; d++) {
             for (let t = 0; t < this.tiles.length; t++) {
                 let sp = sparse_propagator[d][t];
                 let p = propagator[d][t]

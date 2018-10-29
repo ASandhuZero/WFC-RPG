@@ -49,7 +49,7 @@ export class Model {
             this.summed_log_weights += this.log_weights[t];
         }
 
-        this.starting_entropy = Math.log(this.summed_log_weights) - this.summed_log_weights / this.summed_weights;
+        this.starting_entropy = Math.log(this.summed_weights) - this.summed_log_weights / this.summed_weights;
         this.sums_of_ones = new Array(init_array_length);
         this.sums_of_weights = new Array(init_array_length);
         this.sums_of_log_weights = new Array(init_array_length);
@@ -94,13 +94,13 @@ export class Model {
         for (let t = 0; t < this.tiles.length; t++) {
             distribution[t] = this.wave[argmin][t] ? this.weights[t] : 0;
         }
-        // let r = distribution.random
         let r = distribution[Math.floor(Math.random()*distribution.length)];
 
         let w = this.wave[argmin];
         for (let t = 0; t < this.tiles.length; t++) {
             if (w[t] != (t == r)) {
                 this.Ban(argmin, t);
+                debugger;
             }
         }
         return null;
@@ -140,16 +140,16 @@ export class Model {
                 }
 
                 let i2 = x2 + y2 * this.width; // Item 2
-                debugger;
                 let p = this.propagator[d][e1[1]];
                 let compat = this.compatible[i2];
                 for (let l = 0; l < p.length; l++) {
                     let t2 = p[l] // tile of some sort
                     let comp = compat[t2]; // all compatible tiles of t2?
-
+                    
                     comp[d]--;
                     if (comp[d] == 0) {
                         this.Ban(i2, t2);
+                        debugger;
                     }
                 }
             }
@@ -179,7 +179,6 @@ export class Model {
     Ban(item, tile) {
         this.wave[item][tile] = false;
         console.log(this.wave[item], item, tile);
-        
 
         let comp = this.compatible[item][tile];
         for (let d = 0; d < 4; d++) {
