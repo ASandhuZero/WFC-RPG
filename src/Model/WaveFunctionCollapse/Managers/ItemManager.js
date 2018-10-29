@@ -1,5 +1,4 @@
 export function testFunc(wave=null, constraints=null) {
   console.log(wave);
-  // debugger;
-  console.log('line 2')
+  console.log('Item Manager has run and has done nothing!')
 }

@@ -22,6 +22,31 @@ var test_json = {
       {left: 'tile_3 0', right: 'tile_1 1'}
   ]
 }
+// more spagetti code dump - yay
+// listens for tile number change
+var sizeButton = document.getElementById("sizeButton");
+var tileNum = +document.getElementById("tileSizeInput").value;      // number of tiles in x
+var exportButton = document.getElementById("exportButton");
+
+sizeButton.addEventListener("click", function(){
+    tileNum = +document.getElementById("tileSizeInput").value;
+    handler();
+});
+
+WFCTest = new WFC(false, tileNum, tileNum, test_json);
+
+exportButton.addEventListener("click", function(){
+    // WFCTest.getTiled2dmap();
+    var json_to_file = WFCTest.getTiled2dmap();
+
+    let a = document.createElement("a");
+    let json_string = JSON.stringify(json_to_file, null, 4);
+    let file = new Blob([json_string], {type: 'text/plain'});
+    a.href = URL.createObjectURL(file);
+    a.download = 'testJson.json';
+    a.click(); // wow what a terrible hack.
+});
+
 
 // more spagetti code dump - yay
 // listens for tile number change

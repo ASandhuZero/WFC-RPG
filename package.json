@@ -1,6 +1,9 @@
 {
   "registry": "jspm",
   "main": "app.js",
+  "scripts": {
+    "start": "electron ."
+  },
   "directories": {
     "src": "src"
   },
