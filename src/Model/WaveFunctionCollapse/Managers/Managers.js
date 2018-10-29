@@ -7,13 +7,12 @@ export function Manager(wave = null, constraints) {
     ItemManager
   ]
   let constraint;
-
-  managers.forEach(function(manager) {
-    constraint = constraints[manager];
-    manager.testFunc(wave, constraint);
-    
-  })
+  
+  // managers.forEach(function(manager) {
+  //   debugger;
+  //   constraint = constraints[manager];
+  //   manager.testFunc(wave, constraint);
+  // })
   LayerManager.testFunc(wave);
   ItemManager.testFunc(wave);
-  debugger
 }

@@ -7,7 +7,7 @@ import {WFC} from 'WFC';
 // set WFC dimensions
 var WFCTest;
 var editor;
-var tile_json = {
+var test_json = {
   tiles: [
       {name: 'tile_1', symmetry: '\\'},
       {name: 'tile_2', symmetry: 'L'},
@@ -22,46 +22,6 @@ var tile_json = {
       {left: 'tile_3 0', right: 'tile_1 1'}
   ]
 }
-<<<<<<< 3d5dd3c053d64a6a9c392f9d080972bd8bf7fc8b
-var constraint_json = {
-    LayerManager : 2,
-    ItemManager : {}
-}
-=======
-
-// more spagetti code dump - yay
-// listens for tile number change
-var sizeButton = document.getElementById("sizeButton");
-var tileNum = +document.getElementById("tileSizeInput").value;      // number of tiles in x
-var exportButton = document.getElementById("exportButton");
-
-sizeButton.addEventListener("click", function(){
-    tileNum = +document.getElementById("tileSizeInput").value;
-    handler();
-});
-
-<<<<<<< e6a1b9ad0422cebc529166ccc791248eefe609c7
-
->>>>>>> feat: add regenerate and user input for tile size to generate map - still need to make input button functional
-=======
->>>>>>> feat: add export button with functionality
-WFCTest = new WFC(false, tileNum, tileNum, test_json);
-
-exportButton.addEventListener("click", function(){
-    // WFCTest.getTiled2dmap();
-    var json_to_file = WFCTest.getTiled2dmap();
-
-    let a = document.createElement("a");
-    let json_string = JSON.stringify(json_to_file, null, 4);
-    let file = new Blob([json_string], {type: 'text/plain'});
-    a.href = URL.createObjectURL(file);
-    a.download = 'testJson.json';
-    a.click(); // wow what a terrible hack.
-});
-
-
-<<<<<<< HEAD
-=======
 // more spagetti code dump - yay
 // listens for tile number change
 var sizeButton = document.getElementById("sizeButton");
@@ -88,7 +48,32 @@ exportButton.addEventListener("click", function(){
 });
 
 
->>>>>>> 93b34ce105169a2bc5389354a8ea84b6acb53995
+// more spagetti code dump - yay
+// listens for tile number change
+var sizeButton = document.getElementById("sizeButton");
+var tileNum = +document.getElementById("tileSizeInput").value;      // number of tiles in x
+var exportButton = document.getElementById("exportButton");
+
+sizeButton.addEventListener("click", function(){
+    tileNum = +document.getElementById("tileSizeInput").value;
+    handler();
+});
+
+WFCTest = new WFC(false, tileNum, tileNum, test_json);
+
+exportButton.addEventListener("click", function(){
+    // WFCTest.getTiled2dmap();
+    var json_to_file = WFCTest.getTiled2dmap();
+
+    let a = document.createElement("a");
+    let json_string = JSON.stringify(json_to_file, null, 4);
+    let file = new Blob([json_string], {type: 'text/plain'});
+    a.href = URL.createObjectURL(file);
+    a.download = 'testJson.json';
+    a.click(); // wow what a terrible hack.
+});
+
+
 var pcg_tilemap = WFCTest.getTiled2dmap();
 var tileSize = pcg_tilemap.tilesets[0].tileheight;     // x size of tiles (pixels)
 
@@ -98,17 +83,10 @@ var selectorY = Math.ceil(pcg_tilemap.tilesets[0].tilecount/pcg_tilemap.height);
 // calculate world dimensions
 var worldWidth = tileSize * tileNum;   // x size of world (pixels)
 var worldLength = tileSize * (tileNum+selectorY);     // y size of world (pixels)
-<<<<<<< HEAD
 
 /*************** Start Phaser ************** */
 var game = new Phaser.Game(worldWidth, worldLength, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
-=======
-
-/*************** Start Phaser ************** */
-var game = new Phaser.Game(worldWidth, worldLength, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-
->>>>>>> 93b34ce105169a2bc5389354a8ea84b6acb53995
 editor = new Editor(tileNum, tileSize, selectorY);
 function preload () {
 //   editor.Preload(game);
