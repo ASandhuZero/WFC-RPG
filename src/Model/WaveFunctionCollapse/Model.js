@@ -70,7 +70,7 @@ export class Model {
             }
             let entropy = this.entropies[i];
             if (amount > 1 && entropy <= min) {
-                let noise = 0.000001 * this.random;
+                let noise = 0.000001 * this.random();
                 if (entropy + noise < min) {
                     min = entropy + noise;
                     argmin = i;
@@ -95,12 +95,11 @@ export class Model {
             distribution[t] = this.wave[argmin][t] ? this.weights[t] : 0;
         }
         let r = distribution[Math.floor(Math.random()*distribution.length)];
-
         let w = this.wave[argmin];
         for (let t = 0; t < this.tiles.length; t++) {
             if (w[t] != (t == r)) {
                 this.Ban(argmin, t);
-                debugger;
+                console.log(this.wave[argmin], argmin, t);
             }
         }
         return null;
@@ -115,8 +114,8 @@ export class Model {
 
             let i1 = e1[0]; // Item 1
             let x1 = i1 % this.width;
-            let y1 = i1 % this.height;
-
+            let y1 = Math.floor(i1 / this.height);
+            
             for (let d = 0; d < 4; d++) {
                 let dx = DX[d]; 
                 let dy = DY[d];
@@ -139,17 +138,16 @@ export class Model {
                     y2 -= this.height;
                 }
 
-                let i2 = x2 + y2 * this.width; // Item 2
+                let i2 = x2 + y2 * this.width;  // Item 2
                 let p = this.propagator[d][e1[1]];
                 let compat = this.compatible[i2];
                 for (let l = 0; l < p.length; l++) {
                     let t2 = p[l] // tile of some sort
                     let comp = compat[t2]; // all compatible tiles of t2?
                     
-                    comp[d]--;
+                    comp[d] = comp[d] - 1;
                     if (comp[d] == 0) {
                         this.Ban(i2, t2);
-                        debugger;
                     }
                 }
             }
@@ -162,7 +160,8 @@ export class Model {
         }
 
         this.Clear();
-        this.random = Math.random() // IS NOT SEEDED
+        this.random = Math.random // IS NOT SEEDED
+        
 
         for (let l = 0; l < limit || limit == 0; l++) {
             let result = this.Observe();
@@ -171,31 +170,30 @@ export class Model {
                 return result;
             }
             this.Propagate();
-            // console.log(this.wave);
         }
         return true;
     }
 
     Ban(item, tile) {
         this.wave[item][tile] = false;
-        console.log(this.wave[item], item, tile);
 
         let comp = this.compatible[item][tile];
         for (let d = 0; d < 4; d++) {
             comp[d] = 0;
-            this.stack[this.stacksize] = [item, tile];
-            this.stacksize++;
-
-            let sum = this.sums_of_weights[item];
-            this.entropies[item] += this.sums_of_log_weights[item] / sum - Math.log(sum);
-
-            this.sums_of_ones[item] -= 1;
-            this.sums_of_weights[item] -= this.weights[tile];
-            this.sums_of_log_weights[item] -= this.log_weights[tile];
-
-            sum = this. sums_of_weights[item];
-            this.entropies[item] -= this.sums_of_log_weights[item] / sum - Math.log(sum);
         }
+        
+        this.stack[this.stacksize] = [item, tile];
+        this.stacksize++;
+
+        let sum = this.sums_of_weights[item];
+        this.entropies[item] += this.sums_of_log_weights[item] / sum - Math.log(sum);
+
+        this.sums_of_ones[item] -= 1;
+        this.sums_of_weights[item] -= this.weights[tile];
+        this.sums_of_log_weights[item] -= this.log_weights[tile];
+
+        sum = this.sums_of_weights[item];
+        this.entropies[item] -= this.sums_of_log_weights[item] / sum - Math.log(sum);
     }
 
     Clear() {
@@ -213,7 +211,6 @@ export class Model {
                 this.entropies[i] = this.starting_entropy;
             }
         }
-        debugger;
     }
     OnBoundary(x,y) {
         pass;

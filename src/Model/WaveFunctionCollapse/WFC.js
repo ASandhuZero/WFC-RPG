@@ -2,10 +2,20 @@ import * as Manager from "./Managers/Managers"
 import {SimpleTiledModel} from './SimpleTiledModel'
 import * as tileset_info from "./tile_info.json!json"
 
-var model = new SimpleTiledModel(false, "item", 2, 2, tileset_info, null);
-model.Run(10,0);
-
+var model = new SimpleTiledModel(false, "item", 4, 4, tileset_info, null);
+var tilemap = model.GenerateTileMap(10,0);
+var i = 0;
+while (tilemap[0] == undefined) {
+    tilemap = model.GenerateTileMap(10, 0);
+    if (i == 100) {
+        throw "100 passes and still nothing."
+    }
+    i++;
+}
 debugger;
+debugger;   
+
+
 export class WFC {
     constructor(periodic, height, width, tile_json, constraints_json = null) {
         

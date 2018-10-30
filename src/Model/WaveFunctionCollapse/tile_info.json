@@ -1,11 +1,15 @@
 {
     "tiles": [
-        {"name": "tile_1", "symmetry": "\\"},
-        {"name": "tile_2", "symmetry": "L"},
-        {"name": "tile_3", "symmetry": "X"}
+        {"name": "1", "symmetry": "X"},
+        {"name": "2", "symmetry": "X"},
+        {"name": "3", "symmetry": "X"},
+        {"name": "4", "symmetry": "X"}
     ],
     "neighbors": [
-        {"left": "tile_1 0", "right": "tile_2 0"},
-        {"left": "tile_2 0", "right": "tile_3 0"}  
+        {"left": "1 0", "right": "2 0"},
+        {"left": "2 0", "right": "3 0"},
+        {"left": "3 0", "right": "4 0"},
+        {"left": "4 0", "right": "1 0"}
+
     ]
   }
