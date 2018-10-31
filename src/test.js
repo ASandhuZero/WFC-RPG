@@ -16,14 +16,23 @@ var test_json = {
     ]
 }
 
-var wfcController = new Controller('Phaser',test_json);
+var wfcController = new Controller('Phaser',test_json, false);
 wfcController.displayView();
 console.log(wfcController);
 
-
 var numButton = document.getElementById("numButton");
 numButton.addEventListener("click", function(){
-    // tileNum = +document.getElementById("tileNumInput").value;
-    var wfcController = new Controller('Phaser',test_json);
-    wfcController.displayView();
+    wfcController.updateView();
+});
+
+var exportButton = document.getElementById("exportButton");
+exportButton.addEventListener("click", function(){
+    var json_to_file = wfcController.getTile2DJSON();
+
+    let a = document.createElement("a");
+    let json_string = JSON.stringify(json_to_file, null, 4);
+    let file = new Blob([json_string], {type: 'text/plain'});
+    a.href = URL.createObjectURL(file);
+    a.download = 'testJson.json';
+    a.click(); // wow what a terrible hack.
 });

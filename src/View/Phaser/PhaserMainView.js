@@ -23,8 +23,6 @@ export class MainState extends Phaser.State {
 
     create () {
         this.game.stage.backgroundColor = '#ccc';
-        console.log(this.mapName);
-        console.log(this.tileMap);
         this.map = this.game.add.tilemap(this.mapName);
         this.map.addTilesetImage(this.map.tilesets[0].name, this.map.tilesets[0].name);
     

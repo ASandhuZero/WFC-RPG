@@ -15,12 +15,13 @@ import {View} from '../View/View'
 
 export class Controller {
     // type = view type such as Phaser or Babylon
-    constructor(type, tileConstraints) {
+    constructor(type, tileConstraints, newGame) {
         this.tileConstraints = tileConstraints; // object of tiles and neighbors
         this.viewType = type;
         this.view = new View();
         //TileMapModel parameters: int height, int width, {tile, neighbors}
         this.model = new TileMapModel(this.view.tileNum, this.view.tileNum, this.tileConstraints);  
+        this.newGame = newGame;
     }
 
     getTileMap() {
@@ -58,22 +59,50 @@ export class Controller {
     }
 
     getTile2DJSON() {
-        return this.model.getTile2DJSON;
+        this.tile2DJSON = this.model.getTile2DJSON();
+        return this.tile2DJSON;
+    }
+
+    calculateViewParam() {
+        this.selectorY = Math.ceil(this.model.tileMap.tilesets[0].tilecount/this.view.tileNum); // number of rows of tiles
+        this.worldWidth = this.view.tileSize * this.view.tileNum;   // x size of world (pixels)
+        this.worldLength = this.view.tileSize * (this.view.tileNum+this.selectorY);     // y size of world (pixels)
+        return [this.worldLength, this.worldWidth, this.selectorY];
+    }
+    getPhaserViewParam() {
+        let param = this.calculateViewParam();
+        this.phaserViewParam = {
+            worldLength: param[0],
+            worldWidth: param[1],
+            selectorY: param[2],
+            tileSize: this.view.tileSize,
+            tileNum: this.view.tileNum,
+            tileMap: this.model.tileMap,
+        }
+        return this.phaserViewParam;
     }
 
     updateView() {
-
+        switch(this.viewType){
+            case 'Phaser':
+                this.view.getInputs();
+                this.model = new TileMapModel(this.view.tileNum, this.view.tileNum, this.tileConstraints);
+                let phaserParam = this.getPhaserViewParam();
+                this.displayView = this.view.updatePhaserView(phaserParam);
+                break;
+            case 'Babylon':
+                this.view.displayBabylonView;
+                break;
+        }
     }
 
     // choose display type
     displayView() {
         switch(this.viewType){
             case 'Phaser':
-                this.selectorY = Math.ceil(this.model.tileMap.tilesets[0].tilecount/this.view.tileNum); // number of rows of tiles
-                this.worldWidth = this.view.tileSize * this.view.tileNum;   // x size of world (pixels)
-                this.worldLength = this.view.tileSize * (this.view.tileNum+this.selectorY);     // y size of world (pixels)
-                this.view.clearPhaserView();
-                this.view.displayPhaserView(this.worldLength, this.worldWidth, this.selectorY, this.view.tileSize, this.view.tileNum, this.model.tileMap);
+                let phaserParam = this.getPhaserViewParam();
+                console.log(phaserParam);
+                this.displayView = this.view.displayPhaserView(phaserParam);
                 break;
             case 'Babylon':
                 this.view.displayBabylonView;

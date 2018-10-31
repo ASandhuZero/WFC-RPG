@@ -1,8 +1,3 @@
-// import * as Phaser from 'phaser'
-/**
- * Inherit from PhaserView
- */
-
 var currentTile = 0;
 var bmd;
 var map;
