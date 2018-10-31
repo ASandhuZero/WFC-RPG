@@ -36,3 +36,9 @@ exportButton.addEventListener("click", function(){
     a.download = 'testJson.json';
     a.click(); // wow what a terrible hack.
 });
+
+var updateButton = document.getElementById("updateButton");
+updateButton.addEventListener("click", function(){
+    let updates = wfcController.getTilesUpdated();
+    console.log(updates);
+});

@@ -15,6 +15,11 @@ export class View {
         this.numButton = document.getElementById("numButton");
     }
 
+    getTileUpdated() {
+        this.tileChanged = this.phaserView.getTileUpdated();
+        return this.tileChanged;
+    }
+
     getInputs() {
         this.tileNum = +document.getElementById("tileNumInput").value;      // number of tiles in x
         this.tileSize = +document.getElementById("tileSizeInput").value;    // defaults to 32 pixels

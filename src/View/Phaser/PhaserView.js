@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser'
 import {MainState} from './PhaserMainView'
+import {EditorView} from './PhaserEditorView'
 
 /**
  * phaser view parent class
@@ -8,6 +9,11 @@ import {MainState} from './PhaserMainView'
 export class PhaserView {
     constructor(phaserParam) {
         this.setParam(phaserParam);
+    }
+
+    getTileUpdated() {
+        this.tileChanged = this.editor.GetChangedTilePair();
+        return this.tileChanged;
     }
 
     setParam (phaserParam) {
@@ -26,17 +32,28 @@ export class PhaserView {
 
     createNewGame() {
         // console.log(this.newGame);
-        this.game = new Game(this.worldLength, this.worldWidth, this.selectorY, this.tileSize, this.tileNum, this.tileMap);
+        this.editor = new EditorView(this.tileNum, this.tileSize, this.selectorY);
+        this.game = new Game(this.worldLength, this.worldWidth, this.selectorY, this.tileSize, this.tileNum, this.tileMap, this.editor);
         // this.gameExists = true;
+        console.log(this.game);
     }
+
+    // createNewEditor() {
+    //     // Creates editor selection
+    //     this.editor = new EditorView(this.tileNum, this.tileSize, this.selectorY);
+    //     this.tileChanged = editor.GetChangedTilePair();
+    //     console.log(this.tileChanged);
+    //     // console.log(typeof EditorView.Create(this.game, this.map, layer));
+    //     editor.Create(this.game, this.map, layer);
+    // }
 }
 
 class Game extends Phaser.Game {
 
-	constructor(worldLength, worldWidth, selectorY, tileSize, tileNum, tileMap) {
+	constructor(worldLength, worldWidth, selectorY, tileSize, tileNum, tileMap, editor) {
         super(worldWidth, worldLength, Phaser.AUTO, 'content', null);
         this.state.add('MainState', MainState, false);
-        this.state.start('MainState', false, false, selectorY, tileSize, tileNum, tileMap);
+        this.state.start('MainState', false, false, selectorY, tileSize, tileNum, tileMap, editor);
 	}
 
 }

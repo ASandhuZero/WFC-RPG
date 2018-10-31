@@ -14,10 +14,10 @@ export class EditorView {
         this.tileNum = tileNum;
         this.tileSize = tileSize;
         this.selectorHeight = height;
-        this.changedTileArray = new Array();
     }
 
     Create(game, wfcMap, layer) {
+        this.changedTileArray = new Array();
         this.Game = game;
         this.layer = layer;
         this.wfcMap = wfcMap;
@@ -181,13 +181,15 @@ export class EditorView {
             
             // Create array of tiles placed and index position of placed tile on map pair
             var changedTileObject = new Object();
-            changedTileObject.tile = map.getTile(this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y));   // tile placed
+            let tilePlaced = map.getTile(this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y));
+            changedTileObject.tile = tilePlaced.index;   // tile placed
             changedTileObject.index = arrayIndex; // index position of placed tile on map
             this.changedTileArray.push(changedTileObject);
+            // console.log(this.changedTileArray);
         }
     }
     
     GetChangedTilePair() {
-          return this.changedTileArray;
+        return this.changedTileArray;
     }
 }

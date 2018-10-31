@@ -58,6 +58,11 @@ export class Controller {
 
     }
 
+    getTilesUpdated() {
+        this.tilesUpdated = this.view.getTileUpdated();
+        return this.tilesUpdated;
+    }
+
     getTile2DJSON() {
         this.tile2DJSON = this.model.getTile2DJSON();
         return this.tile2DJSON;

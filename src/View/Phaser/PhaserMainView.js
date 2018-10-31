@@ -6,12 +6,13 @@ import {EditorView} from './PhaserEditorView'
  */
 
 export class MainState extends Phaser.State {
-    init(selectorY, tileSize, tileNum, tileMap){
+    init(selectorY, tileSize, tileNum, tileMap, editor){
         this.tileMap = tileMap;
         this.selectorY = selectorY;
         this.tileSize = tileSize;
         this.tileNum = tileNum;
         this.mapName = 'map';
+        this.editor = editor;
     }
 
     preload () {
@@ -32,14 +33,17 @@ export class MainState extends Phaser.State {
         layer.position.setTo(0, this.selectorY* this.tileSize);
     
         // Creates editor selection
-        let editor = new EditorView(this.tileNum, this.tileSize, this.selectorY);
+        // this.editor = new EditorView(this.tileNum, this.tileSize, this.selectorY);
+        // this.tileChanged = this.editor.GetChangedTilePair();
+        // console.log(this.tileChanged);
         // console.log(typeof EditorView.Create(this.game, this.map, layer));
-        editor.Create(this.game, this.map, layer);
+        this.editor.Create(this.game, this.map, layer);
         this.game.scale.pageAlignHorizontally = true;
         this.game.scale.pageAlignVertically = true;
         this.game.scale.refresh();
 
         layer.resizeWorld();
+        return [this.game, this.map, layer];
     }
 }
 
