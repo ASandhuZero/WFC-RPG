@@ -26,7 +26,6 @@ export class View {
     }
 
     displayPhaserView(phaserParam) {
-        console.log(phaserParam);
         this.phaserView = new PhaserView(phaserParam); 
         this.phaserView.createNewGame();
         return this.phaserView;

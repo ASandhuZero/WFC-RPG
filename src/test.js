@@ -18,7 +18,6 @@ var test_json = {
 
 var wfcController = new Controller('Phaser',test_json, false);
 wfcController.displayView();
-console.log(wfcController);
 
 var numButton = document.getElementById("numButton");
 numButton.addEventListener("click", function(){
@@ -27,6 +26,7 @@ numButton.addEventListener("click", function(){
 
 var exportButton = document.getElementById("exportButton");
 exportButton.addEventListener("click", function(){
+    wfcController.updateTileMap();
     var json_to_file = wfcController.getTile2DJSON();
 
     let a = document.createElement("a");
@@ -39,6 +39,6 @@ exportButton.addEventListener("click", function(){
 
 var updateButton = document.getElementById("updateButton");
 updateButton.addEventListener("click", function(){
-    let updates = wfcController.getTilesUpdated();
-    console.log(updates);
+    wfcController.getTilesUpdated();
+    wfcController.updateTileMap();
 });

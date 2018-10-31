@@ -22,40 +22,37 @@ export class Controller {
         //TileMapModel parameters: int height, int width, {tile, neighbors}
         this.model = new TileMapModel(this.view.tileNum, this.view.tileNum, this.tileConstraints);  
         this.newGame = newGame;
+        // this.updateTileMap();
     }
 
     getTileMap() {
         return this.model.getTileMap;
     }
 
-    // getTileSet() {
-    //     return this.view.getTileSet;
-    // }
+    updateTileMap() {
+        console.log(this.model.tileArray);
+        let tiles = this.getTilesUpdated();
+        let sortedTiles = tiles.sort(function compare(a, b) {
+            const indexA = a.index;
+            const indexB = b.index;
+          
+            let comparison = 0;
+            if (indexA > indexB) {
+              comparison = 1;
+            } else if (indexA < indexB) {
+              comparison = -1;
+            }
+            return comparison;
+          }
+        );
+
+        for (let i = 0; i < sortedTiles.length; i++) {
+            this.model.tileArray[sortedTiles[i].index] = sortedTiles[i].tile;
+        }
+    }
 
     getTileNum() {
         return this.view.tileNum;
-    }
-
-    // getUserConstraints() {
-    //     return this.view.userConstraints;
-    // }
-
-    // getUserConfig() {
-    //     return this.view.userConfig;
-    // }
-
-    // Pass tile set chosen from view to model for computation
-    setTileSet() {
-
-    }
-
-    // Pass user constraints
-    setUserConstraints() {
-
-    }
-
-    setUserConfig() {
-
     }
 
     getTilesUpdated() {
@@ -106,7 +103,6 @@ export class Controller {
         switch(this.viewType){
             case 'Phaser':
                 let phaserParam = this.getPhaserViewParam();
-                console.log(phaserParam);
                 this.displayView = this.view.displayPhaserView(phaserParam);
                 break;
             case 'Babylon':

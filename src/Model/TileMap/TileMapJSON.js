@@ -12,10 +12,6 @@ import { WFC } from "../WaveFunctionCollapse/WFC";
  * {
  *  "tileMap": [array of tile_id],
  *  "tileDict": [{"index":"tileName"}],
- *  "dimensions": {
- *      "height": int,
- *      "width": int
- * },
  * }
  * ----- WFC INPUT --------
  * {
@@ -53,7 +49,6 @@ export class TileMapModel {
     }
 
     getTile2DJSON() {
-        console.log(this.tileArray);
         let tile2DJSON = {
             "height":this.height,
             "infinite": false,

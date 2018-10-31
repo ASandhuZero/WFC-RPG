@@ -31,21 +31,10 @@ export class PhaserView {
     }
 
     createNewGame() {
-        // console.log(this.newGame);
         this.editor = new EditorView(this.tileNum, this.tileSize, this.selectorY);
         this.game = new Game(this.worldLength, this.worldWidth, this.selectorY, this.tileSize, this.tileNum, this.tileMap, this.editor);
-        // this.gameExists = true;
-        console.log(this.game);
     }
 
-    // createNewEditor() {
-    //     // Creates editor selection
-    //     this.editor = new EditorView(this.tileNum, this.tileSize, this.selectorY);
-    //     this.tileChanged = editor.GetChangedTilePair();
-    //     console.log(this.tileChanged);
-    //     // console.log(typeof EditorView.Create(this.game, this.map, layer));
-    //     editor.Create(this.game, this.map, layer);
-    // }
 }
 
 class Game extends Phaser.Game {

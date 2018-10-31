@@ -37,7 +37,7 @@ export class EditorView {
         for (var n = 0; n < this.selectorHeight; n++) {
             for (var m = 0; m < this.tileNum; m++) {
                 map.putTile(i, m, n, layer);
-                i++;
+                i++;                
             }
         }
     
