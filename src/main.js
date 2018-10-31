@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser'
 import * as spriteAssetKey from 'assets/spriteAssetKey.json!json';
-import {Editor} from "Editor";
+import {Editor} from "Editor"; 
 import {WFC} from 'WFC';
 
 /*************** TODO: refactor code ************** */
@@ -24,12 +24,12 @@ var test_json = {
 }
 // more spagetti code dump - yay
 // listens for tile number change
-var sizeButton = document.getElementById("sizeButton");
-var tileNum = +document.getElementById("tileSizeInput").value;      // number of tiles in x
+var numButton = document.getElementById("numButton");
+var tileNum = +document.getElementById("tileNumInput").value;      // number of tiles in x
 var exportButton = document.getElementById("exportButton");
 
-sizeButton.addEventListener("click", function(){
-    tileNum = +document.getElementById("tileSizeInput").value;
+numButton.addEventListener("click", function(){
+    tileNum = +document.getElementById("tileNumInput").value;
     handler();
 });
 
@@ -48,31 +48,31 @@ exportButton.addEventListener("click", function(){
 });
 
 
-// more spagetti code dump - yay
-// listens for tile number change
-var sizeButton = document.getElementById("sizeButton");
-var tileNum = +document.getElementById("tileSizeInput").value;      // number of tiles in x
-var exportButton = document.getElementById("exportButton");
+// // more spagetti code dump - yay
+// // listens for tile number change
+// var sizeButton = document.getElementById("sizeButton");
+// var tileNum = +document.getElementById("tileSizeInput").value;      // number of tiles in x
+// var exportButton = document.getElementById("exportButton");
 
-sizeButton.addEventListener("click", function(){
-    tileNum = +document.getElementById("tileSizeInput").value;
-    handler();
-});
+// sizeButton.addEventListener("click", function(){
+//     tileNum = +document.getElementById("tileSizeInput").value;
+//     handler();
+// });
 
-WFCTest = new WFC(false, tileNum, tileNum, test_json);
+// WFCTest = new WFC(false, tileNum, tileNum, test_json);
 
-exportButton.addEventListener("click", function(){
-    // WFCTest.getTiled2dmap();
-    console.log(editor.GetChangedTilePair());
-    var json_to_file = WFCTest.getTiled2dmap();
+// exportButton.addEventListener("click", function(){
+//     // WFCTest.getTiled2dmap();
+//     console.log(editor.GetChangedTilePair());
+//     var json_to_file = WFCTest.getTiled2dmap();
 
-    let a = document.createElement("a");
-    let json_string = JSON.stringify(json_to_file, null, 4);
-    let file = new Blob([json_string], {type: 'text/plain'});
-    a.href = URL.createObjectURL(file);
-    a.download = 'testJson.json';
-    a.click(); // wow what a terrible hack.
-});
+//     let a = document.createElement("a");
+//     let json_string = JSON.stringify(json_to_file, null, 4);
+//     let file = new Blob([json_string], {type: 'text/plain'});
+//     a.href = URL.createObjectURL(file);
+//     a.download = 'testJson.json';
+//     a.click(); // wow what a terrible hack.
+// });
 
 
 var pcg_tilemap = WFCTest.getTiled2dmap();
@@ -82,8 +82,10 @@ var tileSize = pcg_tilemap.tilesets[0].tileheight;     // x size of tiles (pixel
 var selectorY = Math.ceil(pcg_tilemap.tilesets[0].tilecount/pcg_tilemap.height);    // number of rows of tiles
 
 // calculate world dimensions
+// TODO: replace with Controller.getWorldSize(tilemap) returns [worldWidth, worldLength]
 var worldWidth = tileSize * tileNum;   // x size of world (pixels)
 var worldLength = tileSize * (tileNum+selectorY);     // y size of world (pixels)
+
 
 /*************** Start Phaser ************** */
 var game = new Phaser.Game(worldWidth, worldLength, Phaser.AUTO, '', { preload: preload, create: create, update: update });

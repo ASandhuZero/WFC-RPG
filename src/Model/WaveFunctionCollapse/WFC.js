@@ -9,8 +9,14 @@ export class WFC {
         this.tile_json = tile_json;
         this.constraints = constraints_json;
         
+        console.log(this.periodic);
+        console.log(this.height);
+        console.log(this.width);
+        console.log(this.constraints_json);
+        console.log(this.tile_json);
+
         this.stationary = [];
-        this.subsets = this.tile_json.subsets;
+        // this.subsets = this.tile_json.subsets;
 
         this.tile_occurrence = {}; // Object: tile_name (string) : occurrence (int)
         this.unique_tile_occurrence = {}; // Same as this.tile_occurrence, just takes into account rotations.
@@ -27,7 +33,7 @@ export class WFC {
         this.tilemap = this.Generate();
         this.tilemap = this.CreateTiledJson(); // TODO: This seems bad
         this.tiled2dmap = this.WriteToFile(); // Sometimes God hides in their heaven from monsters and this is one.
-        console.log(this.tilemap);
+        // console.log(this.tilemap);
         
         // debugger;
         // this.WriteToFile();
