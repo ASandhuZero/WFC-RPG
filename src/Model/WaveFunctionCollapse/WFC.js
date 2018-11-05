@@ -2,7 +2,7 @@ import * as Manager from "./Managers/Managers"
 import {SimpleTiledModel} from './SimpleTiledModel'
 import * as tileset_info from "./tile_info.json!json"
 
-var model = new SimpleTiledModel(false, "item", 4, 4, tileset_info, null);
+var model = new SimpleTiledModel(false, "item", 10, 10, tileset_info, null);
 var tilemap = model.GenerateTileMap(10,0);
 var i = 0;
 while (tilemap[0] == undefined) {

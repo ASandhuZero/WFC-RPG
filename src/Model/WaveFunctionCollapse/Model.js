@@ -5,7 +5,7 @@ export class Model {
         this.compatible;
         this.observed;
 
-        this.stack = {};
+        this.stack = [];
         this.stacksize = 0;
 
         this.random;
@@ -30,7 +30,6 @@ export class Model {
         
         this.wave = new Array(init_array_length);
         this.compatible = new Array(init_array_length);
-
         for (let i = 0; i < init_array_length; i++) {
             this.wave[i] = new Array(this.tiles.length).fill(true);
             this.compatible[i] = new Array(this.tiles.length);
@@ -61,7 +60,7 @@ export class Model {
         let argmin = -1;
 
         for (let i = 0; i < this.wave.length; i++) {
-            if (this.OnBoundary(i % this.width, i / this.height)) {
+            if (this.OnBoundary(i % this.width, i / this.width)) {
                 continue;
             }
             let amount = this.sums_of_ones[i];
@@ -83,6 +82,7 @@ export class Model {
                 for (let t = 0; t < this.tiles.length; t++) {
                     if (this.wave[i][t]) {
                         this.observed[i] = t;
+                        debugger;
                         break;
                     }
                 }
@@ -91,15 +91,16 @@ export class Model {
         }
 
         let distribution = new Array(this.tiles.length);
-        for (let t = 0; t < this.tiles.length; t++) {
-            distribution[t] = this.wave[argmin][t] ? this.weights[t] : 0;
-        }
-        let r = distribution[Math.floor(Math.random()*distribution.length)];
         let w = this.wave[argmin];
+        for (let t = 0; t < this.tiles.length; t++) {
+            distribution[t] = w[t] ? this.weights[t] : 0;
+            distribution[t] /= this.tiles.length;
+        }
+        let r = this._NonZeroIndex(distribution);
         for (let t = 0; t < this.tiles.length; t++) {
             if (w[t] != (t == r)) {
                 this.Ban(argmin, t);
-                console.log(this.wave[argmin], argmin, t);
+                console.log(this.sums_of_ones)
             }
         }
         return null;
@@ -108,13 +109,15 @@ export class Model {
     Propagate() {
         let DX = [-1, 0, 1, 0];
         let DY = [0, 1, 0, -1];
+        
         while(this.stacksize > 0) {
-            let e1 = this.stack[this.stacksize - 1]; //element 1
-            this.stacksize = this.stacksize - 1;
+            let e1 = this.stack.pop(); // element 1
+            this.stacksize = this.stack.length;
 
             let i1 = e1[0]; // Item 1
+            let t1 = e1[1];
             let x1 = i1 % this.width;
-            let y1 = Math.floor(i1 / this.height);
+            let y1 = Math.floor(i1 / this.width);
             
             for (let d = 0; d < 4; d++) {
                 let dx = DX[d]; 
@@ -128,26 +131,27 @@ export class Model {
 
                 if (x2 < 0) {
                     x2 += this.width;
-                } else if (x2 > this.width) {
+                } else if (x2 >= this.width) {
                     x2 -= this.width;
                 }
 
                 if (y2 < 0) {
                     y2 += this.height;
-                } else if (y2 > this.height) {
+                } else if (y2 >= this.height) {
                     y2 -= this.height;
                 }
 
                 let i2 = x2 + y2 * this.width;  // Item 2
-                let p = this.propagator[d][e1[1]];
+                let p = this.propagator[d][t1];
                 let compat = this.compatible[i2];
                 for (let l = 0; l < p.length; l++) {
                     let t2 = p[l] // tile of some sort
                     let comp = compat[t2]; // all compatible tiles of t2?
-                    
                     comp[d] = comp[d] - 1;
                     if (comp[d] == 0) {
+                        // console.log(comp, this.compatible[i2], i2, i1)
                         this.Ban(i2, t2);
+                        // debugger;
                     }
                 }
             }
@@ -165,6 +169,7 @@ export class Model {
 
         for (let l = 0; l < limit || limit == 0; l++) {
             let result = this.Observe();
+            console.warn("Observe has ran");
             
             if (result != null) {
                 return result;
@@ -176,14 +181,10 @@ export class Model {
 
     Ban(item, tile) {
         this.wave[item][tile] = false;
-
-        let comp = this.compatible[item][tile];
-        for (let d = 0; d < 4; d++) {
-            comp[d] = 0;
-        }
+        this.compatible[item][tile] = [0,0,0,0];
         
-        this.stack[this.stacksize] = [item, tile];
-        this.stacksize++;
+        this.stack.push([item, tile]);
+        this.stacksize = this.stack.length;
 
         let sum = this.sums_of_weights[item];
         this.entropies[item] += this.sums_of_log_weights[item] / sum - Math.log(sum);
@@ -194,6 +195,7 @@ export class Model {
 
         sum = this.sums_of_weights[item];
         this.entropies[item] -= this.sums_of_log_weights[item] / sum - Math.log(sum);
+        // debugger;
     }
 
     Clear() {
@@ -204,7 +206,6 @@ export class Model {
                 for (let d = 0; d < 4; d++) {
                     this.compatible[i][t][d] = this.propagator[opposite[d]][t].length; // compatible is the compatible tiles of t. NOT t itself. Which is why opposite is involved.
                 }
-                
                 this.sums_of_ones[i] = this.weights.length;
                 this.sums_of_weights[i] = this.summed_weights;
                 this.sums_of_log_weights[i] = this.summed_log_weights;
@@ -214,5 +215,22 @@ export class Model {
     }
     OnBoundary(x,y) {
         pass;
+    }
+    _NonZeroIndex(array) {
+        let index = Math.floor(Math.random()*array.length);
+        let elem = array[index];
+        let zero_array = [];
+        for (let i = 0; i < array.length; i++) {
+            if (elem == 0) {
+                zero_array.push(index);
+            }
+            if (!zero_array.includes(index)) {
+                return index;
+            }
+            else {
+                index = Math.floor(Math.random()*array.length);
+                elem = array[index];
+            }
+        }
     }
 }

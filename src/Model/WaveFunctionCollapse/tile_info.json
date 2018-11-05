@@ -2,14 +2,13 @@
     "tiles": [
         {"name": "1", "symmetry": "X"},
         {"name": "2", "symmetry": "X"},
-        {"name": "3", "symmetry": "X"},
-        {"name": "4", "symmetry": "X"}
+        {"name": "3", "symmetry": "X"}
     ],
     "neighbors": [
+        {"left": "1 0", "right": "1 0"},
         {"left": "1 0", "right": "2 0"},
         {"left": "2 0", "right": "3 0"},
-        {"left": "3 0", "right": "4 0"},
-        {"left": "4 0", "right": "1 0"}
+        {"left": "3 0", "right": "1 0"}
 
     ]
   }

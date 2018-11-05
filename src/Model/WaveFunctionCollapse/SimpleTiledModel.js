@@ -136,11 +136,10 @@ export class SimpleTiledModel extends Model {
             D = this.tiles_symmetries[left[0]][L[1]];
             U = this.tiles_symmetries[right[0]][R[1]];
 
-            console.log(left, right, L, R, D, U, L_id, R_id);
             propagator[0][R_id + R[0]][L_id + L[0]] = true;
             propagator[0][R_id + R[6]][L_id + L[6]] = true;
             propagator[0][L_id + L[4]][R_id + R[4]] = true;
-            propagator[0][L_id + L[2]][R_id + R[2]] = true
+            propagator[0][L_id + L[2]][R_id + R[2]] = true;
             propagator[1][U_id + U[0]][D_id + D[0]] = true;
             propagator[1][D_id + D[6]][U_id + U[6]] = true;
             propagator[1][U_id + U[4]][D_id + D[4]] = true;
@@ -180,7 +179,6 @@ export class SimpleTiledModel extends Model {
         for (let x = 0; x < this.width; x++) {
             for (let y = 0; y < this.height; y++) {
                 let a = this.wave[x + y * this.height];
-                console.log(a);
                 
                 let amount = 0;
                 for (let i = 0; i < a.length; i++) {
@@ -192,7 +190,6 @@ export class SimpleTiledModel extends Model {
                     console.log(amount)
                     this._warning("It seems the wave might not be observed.")
                 } else {
-
                     for (let t = 0; t < this.tiles.length; t++) {
                         if (a[t]) {
                             console.log(this.tiles[t])
