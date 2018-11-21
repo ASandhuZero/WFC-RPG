@@ -69,7 +69,8 @@ export class Model {
             }
             let entropy = this.entropies[i];
             if (amount > 1 && entropy <= min) {
-                let noise = 0.000001 * this.random();
+                // let noise = 0.000001 * this.random();
+                let noise = 0.000001;
                 if (entropy + noise < min) {
                     min = entropy + noise;
                     argmin = i;
@@ -82,7 +83,6 @@ export class Model {
                 for (let t = 0; t < this.tiles.length; t++) {
                     if (this.wave[i][t]) {
                         this.observed[i] = t;
-                        debugger;
                         break;
                     }
                 }
@@ -100,7 +100,6 @@ export class Model {
         for (let t = 0; t < this.tiles.length; t++) {
             if (w[t] != (t == r)) {
                 this.Ban(argmin, t);
-                console.log(this.sums_of_ones)
             }
         }
         return null;
@@ -152,6 +151,7 @@ export class Model {
                         // console.log(comp, this.compatible[i2], i2, i1)
                         this.Ban(i2, t2);
                         // debugger;
+                        console.log(this.sums_of_ones)
                     }
                 }
             }
@@ -195,7 +195,6 @@ export class Model {
 
         sum = this.sums_of_weights[item];
         this.entropies[item] -= this.sums_of_log_weights[item] / sum - Math.log(sum);
-        // debugger;
     }
 
     Clear() {
@@ -216,21 +215,26 @@ export class Model {
     OnBoundary(x,y) {
         pass;
     }
+
     _NonZeroIndex(array) {
         let index = Math.floor(Math.random()*array.length);
+        // let index = Math.floor(array.length);
         let elem = array[index];
         let zero_array = [];
         for (let i = 0; i < array.length; i++) {
             if (elem == 0) {
                 zero_array.push(index);
+                // array.splice(index, 1);
             }
-            if (!zero_array.includes(index)) {
-                return index;
-            }
-            else {
+            if (zero_array.includes(index)) {
                 index = Math.floor(Math.random()*array.length);
+                // index = Math.floor(array.length);
                 elem = array[index];
             }
+            else {
+                return index;
+            }
         }
-    }
+    }                
+
 }

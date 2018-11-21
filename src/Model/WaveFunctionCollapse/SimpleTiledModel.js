@@ -200,7 +200,6 @@ export class SimpleTiledModel extends Model {
             } 
         }
         console.log(array);
-        
         return array;
     }
     OnBoundary(x, y) {

@@ -1,33 +1,42 @@
 import * as Phaser from 'phaser'
 import * as spriteAssetKey from 'assets/spriteAssetKey.json!json';
 import {Editor} from "Editor";
-import {WFC} from 'WFC';
+import {SimpleTiledModel} from './Model//WaveFunctionCollapse/SimpleTiledModel'
+import * as tileset_info from "./Model/WaveFunctionCollapse/tile_info.json!json"
 
+
+// var jsA = []
+// for (let i = 0; i < 10; i++) {
+//     for (let k = 0; k < 10; k++) {
+//         if (i == k) {
+//             continue
+//         }
+//         let js = {
+//             "left" : i.toString() + " 0", "right": k.toString() + " 0"
+//         }
+//         jsA.push(js);
+//     }
+//     for (let j)
+// }
+
+// console.log(JSON.stringify(jsA))
+
+// debugger
 var game = new Phaser.Game(512, 512, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-var WFCTest;
 var editor;
-var tile_json = {
-  tiles: [
-      {name: 'tile_1', symmetry: '\\'},
-      {name: 'tile_2', symmetry: 'L'},
-      {name: 'tile_3', symmetry: 'X'}
-  ],
-  // Number after tile name is referring to rotation. 
-  // 0 = 0 degree rotation, 1 = 90 degree rotation, 2 = 180 degree rotation,
-  // 3 = 270 degree rotation.
-  neighbors: [
-      {left: 'tile_1 0', right: 'tile_2 0'},
-      {left: 'tile_2 0', right: 'tile_3 0'},
-      {left: 'tile_3 0', right: 'tile_1 1'}
-  ]
-}
-var constraint_json = {
-    LayerManager : 2,
-    ItemManager : {}
+var model = new SimpleTiledModel(false, "item", 10, 10, tileset_info, null);
+var tilemap = model.GenerateTileMap(10,0);
+var i = 0;
 
+
+while (tilemap[0] == undefined) {
+    tilemap = model.GenerateTileMap(10, 0);
+    if (i == 1000) {
+        throw "10 passes and still nothing."
+    }
+    i++;
 }
-WFCTest = new WFC(false, 16, 16, tile_json, constraint_json);
-var pcg_tilemap = WFCTest.getTiled2dmap();
+debugger;
 
 editor = new Editor();
 function preload () {

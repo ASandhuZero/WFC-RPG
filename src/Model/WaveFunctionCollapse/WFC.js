@@ -1,10 +1,19 @@
-import * as Manager from "./Managers/Managers"
-import {SimpleTiledModel} from './SimpleTiledModel'
-import * as tileset_info from "./tile_info.json!json"
+
 
 var model = new SimpleTiledModel(false, "item", 10, 10, tileset_info, null);
 var tilemap = model.GenerateTileMap(10,0);
 var i = 0;
+var jsA = []
+for (let i = 0; i < 256; i++) {
+    let r = i + 1;
+    r = r % 255;
+    let js = {
+        "left":i.toString(), "right": r.toString()
+    }
+    jsA.push(js)
+}
+console.log(JSON.stringify(jsA))
+debugger;
 while (tilemap[0] == undefined) {
     tilemap = model.GenerateTileMap(10, 0);
     if (i == 100) {
