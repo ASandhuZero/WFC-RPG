@@ -1,5 +1,9 @@
 import {Model} from './Model';
+import * as Constraints from "./Constraints/Constraints"
 
+Constraints.Locality()
+
+debugger;
 export class SimpleTiledModel extends Model {
     constructor(periodic, subset_name,width, height, tileset_info, constraints_json) {
         super(width, height);
