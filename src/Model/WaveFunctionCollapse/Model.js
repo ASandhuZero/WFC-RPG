@@ -1,7 +1,7 @@
 export class Model {
     constructor(width, height) {
         this.wave;
-        this.propagator;
+        this.locality_propagator;
         this.compatible;
         this.observed;
 
@@ -141,7 +141,7 @@ export class Model {
                 }
 
                 let i2 = x2 + y2 * this.width;  // Item 2
-                let p = this.propagator[d][t1];
+                let p = this.locality_propagator[d][t1];
                 let compat = this.compatible[i2];
                 for (let l = 0; l < p.length; l++) {
                     let t2 = p[l] // tile of some sort
@@ -150,7 +150,7 @@ export class Model {
                     if (comp[d] == 0) {
                         // console.log(comp, this.compatible[i2], i2, i1)
                         this.Ban(i2, t2);
-                        console.log(this.sums_of_ones)
+                        // console.log(this.sums_of_ones)
                         // debugger;
                     }
                 }
@@ -233,7 +233,7 @@ export class Model {
             for (let t = 0; t < this.tiles.length; t++) {
                 this.wave[i][t] = true;
                 for (let d = 0; d < 4; d++) {
-                    this.compatible[i][t][d] = this.propagator[opposite[d]][t].length; // compatible is the compatible tiles of t. NOT t itself. Which is why opposite is involved.
+                    this.compatible[i][t][d] = this.locality_propagator[opposite[d]][t].length; // compatible is the compatible tiles of t. NOT t itself. Which is why opposite is involved.
                 }
                 this.sums_of_ones[i] = this.weights.length;
                 this.sums_of_weights[i] = this.summed_weights;

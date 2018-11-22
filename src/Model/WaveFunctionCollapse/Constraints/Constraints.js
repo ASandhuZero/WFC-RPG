@@ -8,7 +8,20 @@ export function Locality() {
     console.log("locality")
 }
 
-export function GenerateItemTiles(item_info, rotations  , tiles, tile_IDs) {
+export function GetNeighbors(tiles) {
+    let neighbor_json_to_return = []
+    for (let i = 0; i < tiles.length; i++) {
+        for (let j = 0; j < tiles.length; j++) {
+            if (i == j) {
+                continue;
+            }
+            neighbor_json_to_return.push({"left":tiles[i], "right":tiles[j]})
+        }
+    }
+    return neighbor_json_to_return
+}
+
+export function GenerateItemTiles(item_info, rotations, tiles, tile_IDs) {
     let item_tile_name, item_tile_ID, items;
     let weights_array = []
     let occurrences = {}
