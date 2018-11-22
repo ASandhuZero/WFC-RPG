@@ -138,7 +138,6 @@ export class SimpleTiledModel extends Model {
                         tiles.push(tile_name)
                         temp_stationary.push(1)
                     }
-                    // delete this.occurrences[tile]
                 }
             }
         }
