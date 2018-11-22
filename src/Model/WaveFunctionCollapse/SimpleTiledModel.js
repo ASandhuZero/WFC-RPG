@@ -1,5 +1,9 @@
 import {Model} from './Model';
+import * as Constraints from "./Constraints/Constraints"
 
+Constraints.Locality()
+
+debugger;
 export class SimpleTiledModel extends Model {
     constructor(periodic, subset_name,width, height, tileset_info, constraints_json) {
         super(width, height);
@@ -10,10 +14,12 @@ export class SimpleTiledModel extends Model {
         
         this.tiles_info = this.tileset_info.tiles;
         this.neighbors_info = this.tileset_info.neighbors;
+        this.items_info = this.tileset_info.items;
         this.tiles = [];
         this.tiles_symmetries = {};
-        this.occurrences = {};
-        this.unique_occurrences = {};
+        this.occurrences = {}
+        this.rotations = {};
+        this.tile_IDs = {};
         this.tempStationary = [];
         this.constraints = constraints_json;
         
@@ -21,16 +27,39 @@ export class SimpleTiledModel extends Model {
         this.unique = false; // have no clue what this does
 
         this.subsets = this.tileset_info.subsets;
+
         this.SimpleInit();
     }
     SimpleInit() {
         this.InitTileSymmetry();
+        this.InitItemNumbering()
         this.InitPropagator();
+        debugger;
+    }
+
+    SetCardinality(cardinality, tile, tile_ID) {
+        let new_tile, is_unique_tile;
+        for (let i = 0; i < cardinality; i++) {
+            new_tile = tile.name + ' ' + i.toString(); // tile name and rotation.
+            this.tiles.push(new_tile);
+            this.tempStationary.push(tile.weight || 1);
+            is_unique_tile = i == 0 ? true : false;
+            
+            this.rotations[new_tile] = {
+                is_unique_tile : is_unique_tile,
+                tile_ID : tile_ID
+            }
+            if (is_unique_tile) {
+                this.tile_IDs[tile["name"]] = {
+                    tile_ID : tile_ID
+                }
+            }
+        }
     }
     InitTileSymmetry() {
-        let tile, cardinality, new_tile, is_unique_tile;
+        let tile, cardinality;
 
-        let tile_id = 0;
+        let tile_ID = 0;
         for (let i = 0; i < this.tiles_info.length; i++) {
             tile = this.tiles_info[i];
             switch(tile.symmetry) {
@@ -81,26 +110,46 @@ export class SimpleTiledModel extends Model {
                 }
                 break;
             }
-            for (let j = 0; j < cardinality; j++) {
-                new_tile = tile.name + ' ' + j.toString(); // tile name and rotation.
-                this.tiles.push(new_tile);
-                this.tempStationary.push(tile.weight || 1);
-                is_unique_tile = j == 0 ? true : false;
-                this.occurrences[new_tile] = {
-                    is_unique_tile : is_unique_tile,
-                    tile_id : tile_id
-                }
-                if (is_unique_tile) {
-                    this.unique_occurrences[new_tile] = {
-                        tile_id : i
-                    }
-                }
-                tile_id = tile_id + 1;
-            }
+            this.SetCardinality(cardinality, tile, tile_ID);
+            tile_ID++;
         }
         this.weights = this.tempStationary;
     }
+    InitItemNumbering() {
 
+        let item_tile_name, item_tile_ID, items;
+        let items_array = this.items_info;
+        let temp_stationary = []
+        let occurrences = {}
+        let tiles = []
+        
+        for (let i = 0; i < items_array.length; i++) {
+            items = items_array[i].items;
+            item_tile_name = items_array[i]["tile"]
+            item_tile_ID = this.tile_IDs[item_tile_name].tile_ID
+
+            for (let j = 0; j < this.tiles.length; j++) {
+                let tile = this.tiles[j];
+                let occurrence = this.rotations[tile];
+                if (item_tile_ID == occurrence.tile_ID) {
+
+                    for (let j = 0; j < items.length; j++) {
+                        let tile_name = tile + " " + j.toString()
+                        occurrences[tile_name] = {
+                            is_unique_tile : occurrence.is_unique_tile,
+                            tile_ID : occurrence.tile_ID
+                        }
+                        tiles.push(tile_name)
+                        temp_stationary.push(1)
+                    }
+                }
+            }
+        }
+        this.tiles = tiles
+        this.occurrences = occurrences
+        this.tempStationary = temp_stationary
+        this.weights = this.tempStationary
+    }
     InitPropagator() {
         let sparse_propagator, propagator, neighbors;
         let left, L_id, L;
@@ -118,38 +167,35 @@ export class SimpleTiledModel extends Model {
                 propagator[d][t] = new Array(this.tiles.length).fill(false); // This will be the bool array. Since each tile should know what it's possible neighbor tile is.
             }
         }
-        // console.log(propagator);
-
         for (let n = 0; n < this.neighbors_info.length; n++) { // n is for neighbor object
             neighbors = this.neighbors_info[n];
 
             left = neighbors["left"].split(/[ ]+/).filter(function(x) { return x.trim() !== ''});
             right = neighbors["right"].split(/[ ]+/).filter(function(x) { return x.trim() !== ''});;
-            L_id = this.occurrences[neighbors["left"]].tile_id;
-            R_id = this.occurrences[neighbors["right"]].tile_id;
+            L_id = this.occurrences[neighbors["left"]].tile_ID;
+            R_id = this.occurrences[neighbors["right"]].tile_ID;
             L = this.tiles_symmetries[left[0]][left[1]];
             R = this.tiles_symmetries[right[0]][right[1]];
             down = [left[0], L[1].toString()];
             up = [right[0], R[1].toString()];
-            D_id = this.occurrences[down[0] + ' ' + down[1]].tile_id; //geting string name of tile
-            U_id = this.occurrences[up[0] + ' ' + up[1]].tile_id;
+            D_id = this.rotations[down[0] + ' ' + down[1]].tile_ID; //geting string name of tile
+            U_id = this.rotations[up[0] + ' ' + up[1]].tile_ID;
             D = this.tiles_symmetries[left[0]][L[1]];
             U = this.tiles_symmetries[right[0]][R[1]];
 
-            console.log(left, right, L, R, D, U, L_id, R_id);
             propagator[0][R_id + R[0]][L_id + L[0]] = true;
             propagator[0][R_id + R[6]][L_id + L[6]] = true;
             propagator[0][L_id + L[4]][R_id + R[4]] = true;
-            propagator[0][L_id + L[2]][R_id + R[2]] = true
+            propagator[0][L_id + L[2]][R_id + R[2]] = true;
             propagator[1][U_id + U[0]][D_id + D[0]] = true;
             propagator[1][D_id + D[6]][U_id + U[6]] = true;
             propagator[1][U_id + U[4]][D_id + D[4]] = true;
             propagator[1][D_id + D[2]][U_id + U[2]] = true;
         }
-        for (let t = 0; t < this.tile_amount; t++) {
-            for (let t2 = 0; t2 < this.tile_amount; t2++) {
-                propagator[2][t][t2] = this.propagator[0][t2][t];
-                propagator[3][t][t2] = this.propagator[1][t2][t];
+        for (let t = 0; t < this.tiles.length; t++) {
+            for (let t2 = 0; t2 < this.tiles.length; t2++) {
+                propagator[2][t][t2] = propagator[0][t2][t];
+                propagator[3][t][t2] = propagator[1][t2][t];
             }
         }
         
@@ -160,7 +206,7 @@ export class SimpleTiledModel extends Model {
                 sparse_propagator[d][t] = [];
             }
         }
-        for (let    d = 0; d < 4; d++) {
+        for (let d = 0; d < 4; d++) {
             for (let t = 0; t < this.tiles.length; t++) {
                 let sp = sparse_propagator[d][t];
                 let p = propagator[d][t]
@@ -174,6 +220,7 @@ export class SimpleTiledModel extends Model {
             }
         }
     }
+
     OnBoundary(x, y) {
         return !this.periodic && (x < 0 || y < 0 || x >= this.width || y >= this.height);
     }

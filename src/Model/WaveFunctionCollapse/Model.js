@@ -5,7 +5,7 @@ export class Model {
         this.compatible;
         this.observed;
 
-        this.stack = {};
+        this.stack = [];
         this.stacksize = 0;
 
         this.random;
@@ -30,7 +30,6 @@ export class Model {
         
         this.wave = new Array(init_array_length);
         this.compatible = new Array(init_array_length);
-
         for (let i = 0; i < init_array_length; i++) {
             this.wave[i] = new Array(this.tiles.length).fill(true);
             this.compatible[i] = new Array(this.tiles.length);
@@ -49,7 +48,7 @@ export class Model {
             this.summed_log_weights += this.log_weights[t];
         }
 
-        this.starting_entropy = Math.log(this.summed_log_weights) - this.summed_log_weights / this.summed_weights;
+        this.starting_entropy = Math.log(this.summed_weights) - this.summed_log_weights / this.summed_weights;
         this.sums_of_ones = new Array(init_array_length);
         this.sums_of_weights = new Array(init_array_length);
         this.sums_of_log_weights = new Array(init_array_length);
@@ -61,7 +60,7 @@ export class Model {
         let argmin = -1;
 
         for (let i = 0; i < this.wave.length; i++) {
-            if (this.OnBoundary(i % this.width, i / this.height)) {
+            if (this.OnBoundary(i % this.width, i / this.width)) {
                 continue;
             }
             let amount = this.sums_of_ones[i];
@@ -70,7 +69,8 @@ export class Model {
             }
             let entropy = this.entropies[i];
             if (amount > 1 && entropy <= min) {
-                let noise = 0.000001 * this.random;
+                // let noise = 0.000001 * this.random();
+                let noise = 0.000001;
                 if (entropy + noise < min) {
                     min = entropy + noise;
                     argmin = i;
@@ -91,13 +91,12 @@ export class Model {
         }
 
         let distribution = new Array(this.tiles.length);
-        for (let t = 0; t < this.tiles.length; t++) {
-            distribution[t] = this.wave[argmin][t] ? this.weights[t] : 0;
-        }
-        // let r = distribution.random
-        let r = distribution[Math.floor(Math.random()*distribution.length)];
-
         let w = this.wave[argmin];
+        for (let t = 0; t < this.tiles.length; t++) {
+            distribution[t] = w[t] ? this.weights[t] : 0;
+            distribution[t] /= this.tiles.length;
+        }
+        let r = this._NonZeroIndex(distribution);
         for (let t = 0; t < this.tiles.length; t++) {
             if (w[t] != (t == r)) {
                 this.Ban(argmin, t);
@@ -109,14 +108,16 @@ export class Model {
     Propagate() {
         let DX = [-1, 0, 1, 0];
         let DY = [0, 1, 0, -1];
+        
         while(this.stacksize > 0) {
-            let e1 = this.stack[this.stacksize - 1]; //element 1
-            this.stacksize = this.stacksize - 1;
+            let e1 = this.stack.pop(); // element 1
+            this.stacksize = this.stack.length;
 
             let i1 = e1[0]; // Item 1
+            let t1 = e1[1];
             let x1 = i1 % this.width;
-            let y1 = i1 % this.height;
-
+            let y1 = Math.floor(i1 / this.width);
+            
             for (let d = 0; d < 4; d++) {
                 let dx = DX[d]; 
                 let dy = DY[d];
@@ -129,27 +130,28 @@ export class Model {
 
                 if (x2 < 0) {
                     x2 += this.width;
-                } else if (x2 > this.width) {
+                } else if (x2 >= this.width) {
                     x2 -= this.width;
                 }
 
                 if (y2 < 0) {
                     y2 += this.height;
-                } else if (y2 > this.height) {
+                } else if (y2 >= this.height) {
                     y2 -= this.height;
                 }
 
-                let i2 = x2 + y2 * this.width; // Item 2
-                debugger;
-                let p = this.propagator[d][e1[1]];
+                let i2 = x2 + y2 * this.width;  // Item 2
+                let p = this.propagator[d][t1];
                 let compat = this.compatible[i2];
                 for (let l = 0; l < p.length; l++) {
                     let t2 = p[l] // tile of some sort
                     let comp = compat[t2]; // all compatible tiles of t2?
-
-                    comp[d]--;
+                    comp[d] = comp[d] - 1;
                     if (comp[d] == 0) {
+                        // console.log(comp, this.compatible[i2], i2, i1)
                         this.Ban(i2, t2);
+                        console.log(this.sums_of_ones)
+                        // debugger;
                     }
                 }
             }
@@ -162,41 +164,67 @@ export class Model {
         }
 
         this.Clear();
-        this.random = Math.random() // IS NOT SEEDED
+        this.random = Math.random // IS NOT SEEDED
+        
 
         for (let l = 0; l < limit || limit == 0; l++) {
             let result = this.Observe();
+            console.warn("Observe has ran");
             
             if (result != null) {
                 return result;
             }
             this.Propagate();
-            // console.log(this.wave);
         }
         return true;
     }
 
+    GenerateTileMap(seed, limit) {
+    this.Run(seed, limit);
+    let array = [];
+    for (let x = 0; x < this.width; x++) {
+        for (let y = 0; y < this.height; y++) {
+            let a = this.wave[x + y * this.height];
+            
+            let amount = 0;
+            for (let i = 0; i < a.length; i++) {
+                if (a[i]) {
+                    amount += 1;
+                }
+            }
+            if (amount == this.tiles.length) {
+                console.log(amount)
+                this._warning("It seems the wave might not be observed.")
+            } else {
+                for (let t = 0; t < this.tiles.length; t++) {
+                    if (a[t]) {
+                        console.log(this.tiles[t])
+                        array.push(this.tiles[t]);
+                    }
+                }
+            }
+        } 
+    }
+    console.log(array);
+    return array;
+}
+
     Ban(item, tile) {
         this.wave[item][tile] = false;
-        console.log(this.wave[item], item, tile);
+        this.compatible[item][tile] = [0,0,0,0];
         
+        this.stack.push([item, tile]);
+        this.stacksize = this.stack.length;
 
-        let comp = this.compatible[item][tile];
-        for (let d = 0; d < 4; d++) {
-            comp[d] = 0;
-            this.stack[this.stacksize] = [item, tile];
-            this.stacksize++;
+        let sum = this.sums_of_weights[item];
+        this.entropies[item] += this.sums_of_log_weights[item] / sum - Math.log(sum);
 
-            let sum = this.sums_of_weights[item];
-            this.entropies[item] += this.sums_of_log_weights[item] / sum - Math.log(sum);
+        this.sums_of_ones[item] -= 1;
+        this.sums_of_weights[item] -= this.weights[tile];
+        this.sums_of_log_weights[item] -= this.log_weights[tile];
 
-            this.sums_of_ones[item] -= 1;
-            this.sums_of_weights[item] -= this.weights[tile];
-            this.sums_of_log_weights[item] -= this.log_weights[tile];
-
-            sum = this. sums_of_weights[item];
-            this.entropies[item] -= this.sums_of_log_weights[item] / sum - Math.log(sum);
-        }
+        sum = this.sums_of_weights[item];
+        this.entropies[item] -= this.sums_of_log_weights[item] / sum - Math.log(sum);
     }
 
     Clear() {
@@ -207,16 +235,36 @@ export class Model {
                 for (let d = 0; d < 4; d++) {
                     this.compatible[i][t][d] = this.propagator[opposite[d]][t].length; // compatible is the compatible tiles of t. NOT t itself. Which is why opposite is involved.
                 }
-                
                 this.sums_of_ones[i] = this.weights.length;
                 this.sums_of_weights[i] = this.summed_weights;
                 this.sums_of_log_weights[i] = this.summed_log_weights;
                 this.entropies[i] = this.starting_entropy;
             }
         }
-        debugger;
     }
     OnBoundary(x,y) {
         pass;
     }
+
+    _NonZeroIndex(array) {
+        let index = Math.floor(Math.random()*array.length);
+        // let index = Math.floor(array.length);
+        let elem = array[index];
+        let zero_array = [];
+        for (let i = 0; i < array.length; i++) {
+            if (elem == 0) {
+                zero_array.push(index);
+                // array.splice(index, 1);
+            }
+            if (zero_array.includes(index)) {
+                index = Math.floor(Math.random()*array.length);
+                // index = Math.floor(array.length);
+                elem = array[index];
+            }
+            else {
+                return index;
+            }
+        }
+    }                
+
 }
