@@ -151,7 +151,7 @@ export class Model {
                         // console.log(comp, this.compatible[i2], i2, i1)
                         this.Ban(i2, t2);
                         console.log(this.sums_of_ones)
-                        debugger;
+                        // debugger;
                     }
                 }
             }
@@ -178,6 +178,36 @@ export class Model {
         }
         return true;
     }
+
+    GenerateTileMap(seed, limit) {
+    this.Run(seed, limit);
+    let array = [];
+    for (let x = 0; x < this.width; x++) {
+        for (let y = 0; y < this.height; y++) {
+            let a = this.wave[x + y * this.height];
+            
+            let amount = 0;
+            for (let i = 0; i < a.length; i++) {
+                if (a[i]) {
+                    amount += 1;
+                }
+            }
+            if (amount == this.tiles.length) {
+                console.log(amount)
+                this._warning("It seems the wave might not be observed.")
+            } else {
+                for (let t = 0; t < this.tiles.length; t++) {
+                    if (a[t]) {
+                        console.log(this.tiles[t])
+                        array.push(this.tiles[t]);
+                    }
+                }
+            }
+        } 
+    }
+    console.log(array);
+    return array;
+}
 
     Ban(item, tile) {
         this.wave[item][tile] = false;

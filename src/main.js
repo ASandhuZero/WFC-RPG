@@ -7,8 +7,8 @@ import * as tileset_info from "./Model/WaveFunctionCollapse/tile_info.json!json"
 
 // var jsA = []
 // var item_num = [0, 1, 2]
-// for (let i = 0; i < 10; i++) {
-//     for (let k = 0; k < 10; k++) {
+// for (let i = 0; i < 100; i++) {
+//     for (let k = 0; k < 100; k++) {
 //         if (i == k) {
 //             continue
 //         }
@@ -32,7 +32,7 @@ var i = 0;
 
 while (tilemap[0] == undefined) {
     tilemap = model.GenerateTileMap(10, 0);
-    if (i == 10) {
+    if (i == 1) {
         throw "10 passes and still nothing."
     }
     i++;

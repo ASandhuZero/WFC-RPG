@@ -13,7 +13,8 @@ export class SimpleTiledModel extends Model {
         this.items_info = this.tileset_info.items;
         this.tiles = [];
         this.tiles_symmetries = {};
-        this.occurrences = {};
+        this.occurrences = {}
+        this.rotations = {};
         this.tile_IDs = {};
         this.tempStationary = [];
         this.constraints = constraints_json;
@@ -29,6 +30,7 @@ export class SimpleTiledModel extends Model {
         this.InitTileSymmetry();
         this.InitItemNumbering()
         this.InitPropagator();
+        debugger;
     }
 
     SetCardinality(cardinality, tile, tile_ID) {
@@ -39,7 +41,7 @@ export class SimpleTiledModel extends Model {
             this.tempStationary.push(tile.weight || 1);
             is_unique_tile = i == 0 ? true : false;
             
-            this.occurrences[new_tile] = {
+            this.rotations[new_tile] = {
                 is_unique_tile : is_unique_tile,
                 tile_ID : tile_ID
             }
@@ -114,6 +116,8 @@ export class SimpleTiledModel extends Model {
         let item_tile_name, item_tile_ID, items;
         let items_array = this.items_info;
         let temp_stationary = []
+        let occurrences = {}
+        let tiles = []
         
         for (let i = 0; i < items_array.length; i++) {
             items = items_array[i].items;
@@ -122,23 +126,26 @@ export class SimpleTiledModel extends Model {
 
             for (let j = 0; j < this.tiles.length; j++) {
                 let tile = this.tiles[j];
-                let occurrence = this.occurrences[tile];
+                let occurrence = this.rotations[tile];
                 if (item_tile_ID == occurrence.tile_ID) {
 
                     for (let j = 0; j < items.length; j++) {
-                        this.occurrences[tile + " " + j.toString()] = {
+                        let tile_name = tile + " " + j.toString()
+                        occurrences[tile_name] = {
                             is_unique_tile : occurrence.is_unique_tile,
                             tile_ID : occurrence.tile_ID
                         }
+                        tiles.push(tile_name)
                         temp_stationary.push(1)
                     }
                     // delete this.occurrences[tile]
                 }
             }
         }
+        this.tiles = tiles
+        this.occurrences = occurrences
         this.tempStationary = temp_stationary
         this.weights = this.tempStationary
-        // debugger;
     }
     InitPropagator() {
         let sparse_propagator, propagator, neighbors;
@@ -168,8 +175,8 @@ export class SimpleTiledModel extends Model {
             R = this.tiles_symmetries[right[0]][right[1]];
             down = [left[0], L[1].toString()];
             up = [right[0], R[1].toString()];
-            D_id = this.occurrences[down[0] + ' ' + down[1]].tile_ID; //geting string name of tile
-            U_id = this.occurrences[up[0] + ' ' + up[1]].tile_ID;
+            D_id = this.rotations[down[0] + ' ' + down[1]].tile_ID; //geting string name of tile
+            U_id = this.rotations[up[0] + ' ' + up[1]].tile_ID;
             D = this.tiles_symmetries[left[0]][L[1]];
             U = this.tiles_symmetries[right[0]][R[1]];
 
@@ -210,35 +217,7 @@ export class SimpleTiledModel extends Model {
             }
         }
     }
-    GenerateTileMap(seed, limit) {
-        this.Run(seed, limit);
-        let array = [];
-        for (let x = 0; x < this.width; x++) {
-            for (let y = 0; y < this.height; y++) {
-                let a = this.wave[x + y * this.height];
-                
-                let amount = 0;
-                for (let i = 0; i < a.length; i++) {
-                    if (a[i]) {
-                        amount += 1;
-                    }
-                }
-                if (amount == this.tiles.length) {
-                    console.log(amount)
-                    this._warning("It seems the wave might not be observed.")
-                } else {
-                    for (let t = 0; t < this.tiles.length; t++) {
-                        if (a[t]) {
-                            console.log(this.tiles[t])
-                            array.push(this.tiles[t]);
-                        }
-                    }
-                }
-            } 
-        }
-        console.log(array);
-        return array;
-    }
+
     OnBoundary(x, y) {
         return !this.periodic && (x < 0 || y < 0 || x >= this.width || y >= this.height);
     }
