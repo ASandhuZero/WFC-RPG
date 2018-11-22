@@ -1,4 +1,5 @@
 import { WFC } from "../WaveFunctionCollapse/WFC";
+import { SimpleTiledModel } from "../WaveFunctionCollapse/SimpleTiledModel";
 
 /**
  * Creates tile map JSON for Tile2D
@@ -36,18 +37,58 @@ export class TileMapModel {
         this.height = height;
         this.width = width;
         this.periodic = false;
+        this.subset = null;
         this.tileConstraints = tileConstraints;
         this.constraints = null;
-        this.tileMapArray = this.getWFCModel();
-        this.tileArray = this.tileMapArray.getTilemap();
+        // this.tileMapArray = this.getWFCModel();
+        this.tileArray = this.getTilemap();
         this.tileMap = this.getTile2DJSON();
     }
 
     getWFCModel() {
-        this.model = new WFC(this.periodic, this.height, this.width, this.tileConstraints); // Output: {tileMap, tileDict}
+        this.model = new SimpleTiledModel(this.periodic, this.subset,this.height, this.width, this.tileConstraints); // Output: tileMap ["tile rotation item","1 0 0"]
         return this.model;
     }
 
+    // Output: [tile, tile ...]
+    getTileMap() {
+        let tileArray = [];
+        // let tile_number, tile_name, name, rotation, item;
+        for (let i = 0; i < this.model.length; i++) {
+            tile_number = this.model[i];
+            tile_name = this.tile_names[tile_number];
+            [name, rotation] = tile_name.split(/[ ]+/);
+            tile_number = this.tile_occurrence[name];
+            tile_number = tile_number + 10; // TEST TODO:
+            // remember to change this later.
+            switch (rotation) {
+                case '3':
+                    tileArray.push(tile_number + 0xA0000000);
+                    break;
+                case '2':
+                    tileArray.push(tile_number + 0xC0000000);
+                    break;
+                case '1':
+                    tileArray.push(tile_number + 0x60000000);
+                    break;
+                case '0':
+                    tile_number = this.tile_occurrence[name];
+                    tileArray.push(tile_number);
+                    break;
+                default:
+                    tileArray.push(tile_number);
+                    break;
+            }
+        }
+        return tileArray;
+    }
+
+    // Output: [itemId, itemId ...]
+    getItemMap() {
+
+    }
+
+    // Output: JSON file compatiblewith Tiled2D
     getTile2DJSON() {
         let tile2DJSON = {
             "height":this.height,
