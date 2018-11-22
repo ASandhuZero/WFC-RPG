@@ -8,8 +8,40 @@ export function Locality() {
     console.log("locality")
 }
 
+export function GenerateItemTiles(item_info, rotations  , tiles, tile_IDs) {
+    let item_tile_name, item_tile_ID, items;
+    let weights_array = []
+    let occurrences = {}
+    let new_tiles = []
+    let return_array = [new_tiles, occurrences, weights_array] 
+    for (let i = 0; i < item_info.length; i++) {
+        items = item_info[i].items;
+        item_tile_name = item_info[i]["tile"]
+        item_tile_ID = tile_IDs[item_tile_name].tile_ID
+        
+        for (let j = 0; j < tiles.length; j++) {
+            let tile = tiles[j];
+            let occurrence = rotations[tile];
+            if (item_tile_ID == occurrence.tile_ID) {
+                
+                for (let j = 0; j < items.length; j++) {
+                    let tile_name = tile + " " + j.toString()
+                    occurrences[tile_name] = {
+                        is_unique_tile : occurrence.is_unique_tile,
+                        tile_ID : occurrence.tile_ID
+                    }
+                    new_tiles.push(tile_name)
+                    weights_array.push(1)
+                }
+            }
+        }
+    }
+    return return_array
+}
+
 export function GenerateTileSymmetry(tiles_info) {
     let cardinality, tile; 
+    let new_tile, is_unique_tile;
     let tile_ID = 0;
     let weights_array = []
     let tiles = [];
@@ -68,31 +100,24 @@ export function GenerateTileSymmetry(tiles_info) {
             }
             break;
         }
-        return_array = GenerateTileCardinality(cardinality, tile, tile_ID, tiles, rotations, tile_IDs, weights_array);
+        for (let i = 0; i < cardinality; i++) {
+            new_tile = tile.name + ' ' + i.toString(); // tile name and rotation.
+            tiles.push(new_tile);
+            weights_array.push(tile.weight || 1);
+            is_unique_tile = i == 0 ? true : false;
+            
+            rotations[new_tile] = {
+                is_unique_tile : is_unique_tile,
+                tile_ID : tile_ID
+            }
+            if (is_unique_tile) {
+                tile_IDs[tile["name"]] = {
+                    tile_ID : tile_ID
+                }
+            }
+        }
         tile_ID++;
     }
     return_array.push(tile_symmetries)
     return return_array
-    this.weights = this.tempStationary;
-}
-
-function GenerateTileCardinality(cardinality, tile, tile_ID, tiles, rotations, tile_IDs, weights_array) {
-    let new_tile, is_unique_tile;
-    for (let i = 0; i < cardinality; i++) {
-        new_tile = tile.name + ' ' + i.toString(); // tile name and rotation.
-        tiles.push(new_tile);
-        weights_array.push(tile.weight || 1);
-        is_unique_tile = i == 0 ? true : false;
-        
-        rotations[new_tile] = {
-            is_unique_tile : is_unique_tile,
-            tile_ID : tile_ID
-        }
-        if (is_unique_tile) {
-            tile_IDs[tile["name"]] = {
-                tile_ID : tile_ID
-            }
-        }
-    }
-    return [tiles, rotations, tile_IDs, weights_array]
 }

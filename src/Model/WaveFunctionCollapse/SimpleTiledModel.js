@@ -29,14 +29,21 @@ export class SimpleTiledModel extends Model {
     }
     SimpleInit() {
         let sym_return = []
+        let items_return = []
         sym_return = Constraints.GenerateTileSymmetry(this.tiles_info);
-        [this.tiles, this.rotations, this.tile_IDs, this.weights, this.tiles_symmetries] = sym_return
-        console.log(sym_return)
-        this.InitItemNumbering()
-        debugger;
+        this.tiles = sym_return[0];
+        this.rotations = sym_return[1];
+        this.tile_IDs = sym_return[2];
+        this.weights = sym_return[3];
+        this.tiles_symmetries = sym_return[4];
+        
+        items_return = Constraints.GenerateItemTiles(this.items_info, this.rotations, this.tiles, this.tile_IDs)
+        this.tiles = items_return[0];
+        this.occurrences = items_return[1];
+        this.weights = items_return[2]
         this.InitPropagator();
     }
-    
+
     InitItemNumbering() {
 
         let item_tile_name, item_tile_ID, items;
