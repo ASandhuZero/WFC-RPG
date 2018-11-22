@@ -150,8 +150,8 @@ export class Model {
                     if (comp[d] == 0) {
                         // console.log(comp, this.compatible[i2], i2, i1)
                         this.Ban(i2, t2);
-                        // debugger;
                         console.log(this.sums_of_ones)
+                        debugger;
                     }
                 }
             }

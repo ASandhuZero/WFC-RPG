@@ -6,17 +6,18 @@ import * as tileset_info from "./Model/WaveFunctionCollapse/tile_info.json!json"
 
 
 // var jsA = []
+// var item_num = [0, 1, 2]
 // for (let i = 0; i < 10; i++) {
 //     for (let k = 0; k < 10; k++) {
 //         if (i == k) {
 //             continue
 //         }
+//         let item_s = item_num[Math.floor(Math.random() * item_num.length)].toString()
 //         let js = {
-//             "left" : i.toString() + " 0", "right": k.toString() + " 0"
+//             "left" : i.toString() + " 0" + " " + item_s, "right": k.toString() + " 0" + " 0" 
 //         }
 //         jsA.push(js);
 //     }
-//     for (let j)
 // }
 
 // console.log(JSON.stringify(jsA))
@@ -31,7 +32,7 @@ var i = 0;
 
 while (tilemap[0] == undefined) {
     tilemap = model.GenerateTileMap(10, 0);
-    if (i == 1000) {
+    if (i == 10) {
         throw "10 passes and still nothing."
     }
     i++;
