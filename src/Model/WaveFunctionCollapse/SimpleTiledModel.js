@@ -1,9 +1,6 @@
 import {Model} from './Model';
 import * as Constraints from "./Constraints/Constraints"
 
-Constraints.Locality()
-
-debugger;
 export class SimpleTiledModel extends Model {
     constructor(periodic, subset_name,width, height, tileset_info, constraints_json) {
         super(width, height);
@@ -31,90 +28,15 @@ export class SimpleTiledModel extends Model {
         this.SimpleInit();
     }
     SimpleInit() {
-        this.InitTileSymmetry();
+        let sym_return = []
+        sym_return = Constraints.GenerateTileSymmetry(this.tiles_info);
+        [this.tiles, this.rotations, this.tile_IDs, this.weights, this.tiles_symmetries] = sym_return
+        console.log(sym_return)
         this.InitItemNumbering()
-        this.InitPropagator();
         debugger;
+        this.InitPropagator();
     }
-
-    SetCardinality(cardinality, tile, tile_ID) {
-        let new_tile, is_unique_tile;
-        for (let i = 0; i < cardinality; i++) {
-            new_tile = tile.name + ' ' + i.toString(); // tile name and rotation.
-            this.tiles.push(new_tile);
-            this.tempStationary.push(tile.weight || 1);
-            is_unique_tile = i == 0 ? true : false;
-            
-            this.rotations[new_tile] = {
-                is_unique_tile : is_unique_tile,
-                tile_ID : tile_ID
-            }
-            if (is_unique_tile) {
-                this.tile_IDs[tile["name"]] = {
-                    tile_ID : tile_ID
-                }
-            }
-        }
-    }
-    InitTileSymmetry() {
-        let tile, cardinality;
-
-        let tile_ID = 0;
-        for (let i = 0; i < this.tiles_info.length; i++) {
-            tile = this.tiles_info[i];
-            switch(tile.symmetry) {
-            case 'L':
-                cardinality = 4;
-                this.tiles_symmetries[tile.name] = {
-                    '0' : [0,1,2,3,1,0,3,2],
-                    '1' : [1,2,3,1,0,3,2,0],
-                    '2' : [2,3,1,0,3,2,0,1],
-                    '3' : [3,1,0,3,2,0,1,2]
-                }
-                break;
-            case 'T':
-                cardinality = 4;
-                
-                this.tiles_symmetries[tile.name] = {
-                    '0' : [0,1,2,3,0,3,2,1],
-                    '1' : [1,2,3,0,3,2,1,0],
-                    '2' : [2,3,0,3,2,1,0,1],
-                    '3' : [3,0,3,2,1,0,1,2]
-                }
-                break;
-            case 'I':
-                cardinality = 2;
-                this.tiles_symmetries[tile.name] = {
-                    '0' : [0,1,0,1,0,1,0,1],
-                    '1' : [1,0,1,0,1,0,1,0]
-                }
-                break;
-            case '\\':
-                cardinality = 2;
-                this.tiles_symmetries[tile.name] = {
-                    '0' : [0,1,0,1,1,0,1,0],
-                    '1' : [1,0,1,1,0,1,0,0]
-                }
-                break;
-            case 'X': 
-                cardinality = 1;
-                this.tiles_symmetries[tile.name] = {
-                    '0' : [0,0,0,0,0,0,0,0]
-                }
-                break;
-            default: // Tiles with no manually assigned symmetries will default to X sym.
-                this._warning("symmetry for tile " + tile.name + "is not set! Setting symmetry to default symmetry of X. Please change symmetry.")
-                cardinality = 1;
-                tiles[tile.name] = {
-                    '0' : [0,0,0,0,0,0,0,0]
-                }
-                break;
-            }
-            this.SetCardinality(cardinality, tile, tile_ID);
-            tile_ID++;
-        }
-        this.weights = this.tempStationary;
-    }
+    
     InitItemNumbering() {
 
         let item_tile_name, item_tile_ID, items;
@@ -224,10 +146,5 @@ export class SimpleTiledModel extends Model {
     OnBoundary(x, y) {
         return !this.periodic && (x < 0 || y < 0 || x >= this.width || y >= this.height);
     }
-    _warning(string) {
-        console.warn(string);
-    }
-    _throw(string) {
-        throw string;
-    }
+
 }
