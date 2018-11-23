@@ -26,7 +26,8 @@ export function GenerateItemTiles(item_info, rotations, tiles, tile_IDs) {
     let weights_array = []
     let occurrences = {}
     let new_tiles = []
-    let return_array = [new_tiles, occurrences, weights_array] 
+    let return_array = [new_tiles, occurrences, weights_array]
+    let tile_ID = 0
     for (let i = 0; i < item_info.length; i++) {
         items = item_info[i].items;
         item_tile_name = item_info[i]["tile"]
@@ -41,8 +42,9 @@ export function GenerateItemTiles(item_info, rotations, tiles, tile_IDs) {
                     let tile_name = tile + " " + j.toString()
                     occurrences[tile_name] = {
                         is_unique_tile : occurrence.is_unique_tile,
-                        tile_ID : occurrence.tile_ID
+                        tile_ID : tile_ID
                     }
+                    tile_ID++;
                     new_tiles.push(tile_name)
                     weights_array.push(1)
                 }

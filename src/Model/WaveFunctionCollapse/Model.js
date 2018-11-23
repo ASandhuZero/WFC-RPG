@@ -55,7 +55,7 @@ export class Model {
         this.entropies = new Array(init_array_length);
     }
 
-    Observe() {
+    Observe(subset) {
         let min = 1000;
         let argmin = -1;
 
@@ -64,6 +64,7 @@ export class Model {
                 continue;
             }
             let amount = this.sums_of_ones[i];
+            
             if (amount == 0) {
                 return false;
             }
@@ -80,7 +81,7 @@ export class Model {
         if (argmin == -1) {
             this.observed = new Array(this.width * this.height);
             for (let i = 0; i < this.wave.length; i++) {
-                for (let t = 0; t < this.tiles.length; t++) {
+                for (let t = 0; t < subset.tiles.length; t++) {
                     if (this.wave[i][t]) {
                         this.observed[i] = t;
                         break;
@@ -89,15 +90,14 @@ export class Model {
             }
             return true;
         }
-
-        let distribution = new Array(this.tiles.length);
+        let distribution = new Array(subset.tiles.length);
         let w = this.wave[argmin];
-        for (let t = 0; t < this.tiles.length; t++) {
+        for (let t = 0; t < subset.tiles.length; t++) {
             distribution[t] = w[t] ? this.weights[t] : 0;
-            distribution[t] /= this.tiles.length;
+            distribution[t] /= subset.tiles.length;
         }
         let r = this._NonZeroIndex(distribution);
-        for (let t = 0; t < this.tiles.length; t++) {
+        for (let t = 0; t < subset.tiles.length; t++) {
             if (w[t] != (t == r)) {
                 this.Ban(argmin, t);
             }
@@ -105,7 +105,7 @@ export class Model {
         return null;
     }
 
-    Propagate() {
+    Propagate(subset) {
         let DX = [-1, 0, 1, 0];
         let DY = [0, 1, 0, -1];
         
@@ -141,7 +141,7 @@ export class Model {
                 }
 
                 let i2 = x2 + y2 * this.width;  // Item 2
-                let p = this.locality_propagator[d][t1];
+                let p = subset.neighbor_propagator[d][t1];
                 let compat = this.compatible[i2];
                 for (let l = 0; l < p.length; l++) {
                     let t2 = p[l] // tile of some sort
@@ -166,15 +166,15 @@ export class Model {
         this.Clear();
         this.random = Math.random // IS NOT SEEDED
         
-
+        let subset = this.subsets_info[0]
         for (let l = 0; l < limit || limit == 0; l++) {
-            let result = this.Observe();
+            let result = this.Observe(subset);
             console.warn("Observe has ran");
             
             if (result != null) {
                 return result;
             }
-            this.Propagate();
+            this.Propagate(subset);
         }
         return true;
     }
@@ -194,7 +194,7 @@ export class Model {
             }
             if (amount == this.tiles.length) {
                 console.log(amount)
-                this._warning("It seems the wave might not be observed.")
+                // Utils._warning("It seems the wave might not be observed.")
             } else {
                 for (let t = 0; t < this.tiles.length; t++) {
                     if (a[t]) {
