@@ -47,6 +47,7 @@ export class SimpleTiledModel extends Model {
         }
         return item_info
     }
+
     SimpleInit(subsets_info) {
         for (let i = 0; i < subsets_info.length; i++) {
 
@@ -74,8 +75,6 @@ export class SimpleTiledModel extends Model {
             tiles= items_return[0];
             occurrences = items_return[1];
             weights = items_return[2]
-            
-            
             
             if (neighbors_info.length == 0) {
                 neighbors_info = Constraints.GetNeighbors(tiles)
