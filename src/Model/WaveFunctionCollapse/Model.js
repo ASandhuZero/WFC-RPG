@@ -34,10 +34,10 @@ export class Model {
             let compatible = new Array(subset.tiles.length);
 
             for (let j = 0; j < init_array_length; j++) {
-                compatible[i] = new Array(subset.tiles.length);
+                compatible[j] = new Array(subset.tiles.length);
 
                 for (let k = 0; k < subset.tiles.length; k++) {
-                    compatible[i][j] = new Array(4);
+                    compatible[j][k] = new Array(4);
                 }
             }
             let log_weights = new Array(subset.tiles.length);
@@ -50,6 +50,7 @@ export class Model {
                 summed_log_weights += log_weights[t];
             }
 
+            subset["compatible"] = compatible;
             subset["log_weights"] = log_weights;
             subset["summed_weighs"] = summed_weights;
             subset["starting_entropy"] = Math.log(summed_weights) - summed_log_weights / summed_weights;
@@ -261,22 +262,20 @@ export class Model {
     Clear() {
         let opposite = [2, 3, 0, 1]
         for (let i = 0; i < this.wave.length; i++) {
-            for (let t = 0; t < this.tiles.length; t++) {
+            for (let t = 0; t < this.tiles.length; t++) { // TODO: The errror here is that tiles are different in length from subset to subset
                 this.wave[i][t] = true;
                 for (let i = 0; i < this.subsets_info.length; i++) {
                     let subset = this.subsets_info[i];
-                    debugger;
                     for (let d = 0; d < 4; d++) {
                         subset.compatible[i][t][d] = subset.neighbor_propagator[opposite[d]][t].length; // compatible is the compatible tiles of t. NOT t itself. Which is why opposite is involved.
                     }
                     subset.sums_of_ones[i] = this.weights.length;
-                    subst.sums_of_weights[i] = subset.summed_weights;
+                    subset.sums_of_weights[i] = subset.summed_weights;
                     subset.sums_of_log_weights[i] = subset.summed_log_weights;
                     subset.entropies[i] = subset.starting_entropy;
                 }
             }
         }
-        debugger
     }
     OnBoundary(x,y) {
         pass;
