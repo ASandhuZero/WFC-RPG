@@ -33,61 +33,66 @@ import { SimpleTiledModel } from "../WaveFunctionCollapse/SimpleTiledModel";
 
 
 export class TileMapModel {
-    constructor (height, width, tileConstraints) {
+    constructor (subset,height, width, tileJSON) {
         this.height = height;
         this.width = width;
         this.periodic = false;
-        this.subset = null;
-        this.tileConstraints = tileConstraints;
+        this.subset = subset;
+        this.tileJSON = tileJSON;
+        // this.tileConstraints = tileConstraints;
         this.constraints = null;
-        // this.tileMapArray = this.getWFCModel();
-        this.tileArray = this.getTilemap();
+        this.tileMapArray = this.getWFCModel();
+        // this.tileArray = this.getTileMap();
+        this.map = this.tileMapArray.GenerateTileMap(this.height, 0);
         this.tileMap = this.getTile2DJSON();
+        this.tiles = this.getMap(0);
+        this.items = this.getMap(1);
     }
 
     getWFCModel() {
-        this.model = new SimpleTiledModel(this.periodic, this.subset,this.height, this.width, this.tileConstraints); // Output: tileMap ["tile rotation item","1 0 0"]
-        console.log(this.model);
-        debugger;
+        this.model = new SimpleTiledModel(this.periodic, this.subset,this.height, this.width, this.tileJSON); 
         return this.model;
     }
 
+    // Input: int a - 0 >> array of tiles; 1 >> array of items
     // Output: [tile, tile ...]
-    getTileMap() {
-        // let tileArray = [];
-        // // let tile_number, tile_name, name, rotation, item;
-        // for (let i = 0; i < this.model.length; i++) {
-        //     tile_number = this.model[i];
-        //     tile_name = this.tile_names[tile_number];
-        //     [name, rotation] = tile_name.split(/[ ]+/);
-        //     tile_number = this.tile_occurrence[name];
-        //     tile_number = tile_number + 10; // TEST TODO:
-        //     // remember to change this later.
-        //     switch (rotation) {
-        //         case '3':
-        //             tileArray.push(tile_number + 0xA0000000);
-        //             break;
-        //         case '2':
-        //             tileArray.push(tile_number + 0xC0000000);
-        //             break;
-        //         case '1':
-        //             tileArray.push(tile_number + 0x60000000);
-        //             break;
-        //         case '0':
-        //             tile_number = this.tile_occurrence[name];
-        //             tileArray.push(tile_number);
-        //             break;
-        //         default:
-        //             tileArray.push(tile_number);
-        //             break;
-        //     }
-        // }
-        // return tileArray;
-    }
-
-    // Output: [itemId, itemId ...]
-    getItemMap() {
-
+    getMap(a) {
+        var array = [];
+        var elements, element, tile_number, rotation;
+        switch(a) {
+            case 1:
+                for (let i = 0; i < this.map.length; i++){
+                    elements = this.map[i];
+                    element = elements.split(/[ ]+/);
+                    array.push(element[a+1]);
+                }
+                break;
+            case 0:
+                for (let i = 0; i < this.map.length; i++) {
+                    elements = this.map[i];
+                    element = elements.split(/[ ]+/);
+                    tile_number = element[a];
+                    rotation = element[a+1];
+                    switch (rotation) {
+                        case '3':
+                        array.push(tile_number + 0xA0000000);
+                            break;
+                        case '2':
+                        array.push(tile_number + 0xC0000000);
+                            break;
+                        case '1':
+                        array.push(tile_number + 0x60000000);
+                            break;
+                        case '0':
+                        array.push(tile_number);
+                            break;
+                        default:
+                        array.push(tile_number);
+                            break;
+                    }
+                }
+        }
+        return array;
     }
 
     // Output: JSON file compatiblewith Tiled2D
@@ -97,7 +102,7 @@ export class TileMapModel {
             "infinite": false,
             "layers":[
                 {
-                "data": this.tileArray,
+                "data": this.getMap(0),
                 "height":this.height,
                 "name":"Tile Layer 1",
                 "opacity":1,

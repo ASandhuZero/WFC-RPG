@@ -1,199 +1,138 @@
 import {Model} from './Model';
 import * as Constraints from "./Constraints/Constraints"
 
-Constraints.Locality()
-
-debugger;
 export class SimpleTiledModel extends Model {
-    constructor(periodic, subset_name,width, height, tileset_info, constraints_json) {
+    constructor(periodic, subset_name, width, height, tileset_info) {
         super(width, height);
         this.periodic = periodic; 
         this.height = height;
         this.width = width;
         this.tileset_info = tileset_info ? tileset_info : this._throw("No tile json has been passed to SimpleTiled.") ;
         
-        this.tiles_info = this.tileset_info.tiles;
-        this.neighbors_info = this.tileset_info.neighbors;
-        this.items_info = this.tileset_info.items;
+        this.subsets_info = this.tileset_info.subsets;
+        this.subset_names = [];
+        // this.tiles_info = this.GetTilesFromSubsets(this.subsets_info);
+
+        // this.tiles_info = this.tileset_info.tiles;
+        // this.neighbors_info = this.tileset_info.neighbors;
+        // this.items_info = this.GetItemInfo(this.tiles_info);
+        
         this.tiles = [];
         this.tiles_symmetries = {};
         this.occurrences = {}
         this.rotations = {};
         this.tile_IDs = {};
-        this.tempStationary = [];
-        this.constraints = constraints_json;
         
         this.tilesize = this.tileset_info.tilesize ? this.tileset_info.tilesize : 32;
         this.unique = false; // have no clue what this does
-
-        this.subsets = this.tileset_info.subsets;
-
-        this.SimpleInit();
     }
-    SimpleInit() {
-        this.InitTileSymmetry();
-        this.InitItemNumbering()
-        this.InitPropagator();
-        debugger;
+    GetTilesFromSubsets(subsets_info) {
+        let tile_array_to_return = []
+        for (let i = 0; i < subsets_info.length; i++) {
+            console.log(subsets_info[i])
+        }
+
+        return tile_array_to_return
     }
 
-    SetCardinality(cardinality, tile, tile_ID) {
-        let new_tile, is_unique_tile;
-        for (let i = 0; i < cardinality; i++) {
-            new_tile = tile.name + ' ' + i.toString(); // tile name and rotation.
-            this.tiles.push(new_tile);
-            this.tempStationary.push(tile.weight || 1);
-            is_unique_tile = i == 0 ? true : false;
+    GetItemInfo(tiles_info) {
+        let item_info = []
+        console.log(tiles_info)
+        debugger
+        for (let i = 0; i < tiles_info.length; i++) {
+            let tile_info = tiles_info[i];
+            item_info.push({
+                "tile": tile_info["name"], "items": tile_info["items"]
+            })
+        }
+        return item_info
+    }
+
+    SimpleInit(subsets_info, subset_index) {
+        for (let i = 0; i < subsets_info.length; i++) {
+
+            let subset = subsets_info[i];
+            this.subset_names.push(subset["name"])
+
+            let tiles_info = subset["tiles_info"];
+            let items_info = subset["items_info"];
+            let neighbors_info = subset["neighbors"]
             
-            this.rotations[new_tile] = {
-                is_unique_tile : is_unique_tile,
-                tile_ID : tile_ID
+            let sym_return = []
+            let items_return = []
+            let rotations, tiles, tile_IDs, occurrences, tiles_symmetries, weights;
+    
+            sym_return = Constraints.GenerateTileSymmetry(tiles_info);
+            tiles = sym_return[0];
+            rotations = sym_return[1];
+            tile_IDs = sym_return[2];
+            weights = sym_return[3];
+            tiles_symmetries = sym_return[4];
+
+            items_return = Constraints.GenerateItemTiles(items_info, rotations, tiles, tile_IDs)
+            tiles = items_return[0];
+            occurrences = items_return[1];
+            weights = items_return[2]
+            
+            if (neighbors_info.length == 0) {
+                neighbors_info = Constraints.GetNeighbors(tiles)
             }
-            if (is_unique_tile) {
-                this.tile_IDs[tile["name"]] = {
-                    tile_ID : tile_ID
-                }
-            }
+            subset["tiles"] = tiles
+            subset["neighbor_propagator"] = this.InitSubsetPropagator(neighbors_info, tiles, occurrences, tiles_symmetries, rotations);
+            subset["weights"] = weights;
         }
+        this.tiles = subsets_info[subset_index].tiles;
+        this.weights = subsets_info[subset_index].weights;
     }
-    InitTileSymmetry() {
-        let tile, cardinality;
 
-        let tile_ID = 0;
-        for (let i = 0; i < this.tiles_info.length; i++) {
-            tile = this.tiles_info[i];
-            switch(tile.symmetry) {
-            case 'L':
-                cardinality = 4;
-                this.tiles_symmetries[tile.name] = {
-                    '0' : [0,1,2,3,1,0,3,2],
-                    '1' : [1,2,3,1,0,3,2,0],
-                    '2' : [2,3,1,0,3,2,0,1],
-                    '3' : [3,1,0,3,2,0,1,2]
-                }
-                break;
-            case 'T':
-                cardinality = 4;
-                
-                this.tiles_symmetries[tile.name] = {
-                    '0' : [0,1,2,3,0,3,2,1],
-                    '1' : [1,2,3,0,3,2,1,0],
-                    '2' : [2,3,0,3,2,1,0,1],
-                    '3' : [3,0,3,2,1,0,1,2]
-                }
-                break;
-            case 'I':
-                cardinality = 2;
-                this.tiles_symmetries[tile.name] = {
-                    '0' : [0,1,0,1,0,1,0,1],
-                    '1' : [1,0,1,0,1,0,1,0]
-                }
-                break;
-            case '\\':
-                cardinality = 2;
-                this.tiles_symmetries[tile.name] = {
-                    '0' : [0,1,0,1,1,0,1,0],
-                    '1' : [1,0,1,1,0,1,0,0]
-                }
-                break;
-            case 'X': 
-                cardinality = 1;
-                this.tiles_symmetries[tile.name] = {
-                    '0' : [0,0,0,0,0,0,0,0]
-                }
-                break;
-            default: // Tiles with no manually assigned symmetries will default to X sym.
-                this._warning("symmetry for tile " + tile.name + "is not set! Setting symmetry to default symmetry of X. Please change symmetry.")
-                cardinality = 1;
-                tiles[tile.name] = {
-                    '0' : [0,0,0,0,0,0,0,0]
-                }
-                break;
-            }
-            this.SetCardinality(cardinality, tile, tile_ID);
-            tile_ID++;
-        }
-        this.weights = this.tempStationary;
-    }
-    InitItemNumbering() {
-
-        let item_tile_name, item_tile_ID, items;
-        let items_array = this.items_info;
-        let temp_stationary = []
-        let occurrences = {}
-        let tiles = []
-        
-        for (let i = 0; i < items_array.length; i++) {
-            items = items_array[i].items;
-            item_tile_name = items_array[i]["tile"]
-            item_tile_ID = this.tile_IDs[item_tile_name].tile_ID
-
-            for (let j = 0; j < this.tiles.length; j++) {
-                let tile = this.tiles[j];
-                let occurrence = this.rotations[tile];
-                if (item_tile_ID == occurrence.tile_ID) {
-
-                    for (let j = 0; j < items.length; j++) {
-                        let tile_name = tile + " " + j.toString()
-                        occurrences[tile_name] = {
-                            is_unique_tile : occurrence.is_unique_tile,
-                            tile_ID : occurrence.tile_ID
-                        }
-                        tiles.push(tile_name)
-                        temp_stationary.push(1)
-                    }
-                }
-            }
-        }
-        this.tiles = tiles
-        this.occurrences = occurrences
-        this.tempStationary = temp_stationary
-        this.weights = this.tempStationary
-    }
-    InitPropagator() {
+    
+    InitSubsetPropagator(neighbors_info, tiles, occurrences, tiles_symmetries, rotations) {
         let sparse_propagator, propagator, neighbors;
         let left, L_id, L;
         let right, R_id, R;
         let up, U_id, U;
         let down, D_id, D;
+        let locality_propagator = new Array(4)
 
-        this.propagator = new Array(4);
         propagator = new Array(4);
         for (let d = 0; d < 4; d++) { // d is for direction.
-            this.propagator[d] = new Array(this.tiles.length); // all the tiles. We are reaching that superposition stuff
-            propagator[d] = new Array(this.tiles.length); // all the tiles. We are reaching that superposition stuff
-            for (let t = 0; t < this.tiles.length; t++) {
-                this.propagator[d][t] = new Array(this.tiles.length); // This will be the bool array. Since each tile should know what it's possible neighbor tile is.
-                propagator[d][t] = new Array(this.tiles.length).fill(false); // This will be the bool array. Since each tile should know what it's possible neighbor tile is.
+            locality_propagator[d] = new Array(tiles.length); // all the tiles. We are reaching that superposition stuff
+            propagator[d] = new Array(tiles.length); // all the tiles. We are reaching that superposition stuff
+            for (let t = 0; t < tiles.length; t++) {
+                locality_propagator[d][t] = new Array(tiles.length); // This will be the bool array. Since each tile should know what it's possible neighbor tile is.
+                propagator[d][t] = new Array(tiles.length).fill(false); // This will be the bool array. Since each tile should know what it's possible neighbor tile is.
             }
         }
-        for (let n = 0; n < this.neighbors_info.length; n++) { // n is for neighbor object
-            neighbors = this.neighbors_info[n];
+        for (let n = 0; n < neighbors_info.length; n++) { // n is for neighbor object
+            neighbors = neighbors_info[n];
 
             left = neighbors["left"].split(/[ ]+/).filter(function(x) { return x.trim() !== ''});
-            right = neighbors["right"].split(/[ ]+/).filter(function(x) { return x.trim() !== ''});;
-            L_id = this.occurrences[neighbors["left"]].tile_ID;
-            R_id = this.occurrences[neighbors["right"]].tile_ID;
-            L = this.tiles_symmetries[left[0]][left[1]];
-            R = this.tiles_symmetries[right[0]][right[1]];
+            right = neighbors["right"].split(/[ ]+/).filter(function(x) { return x.trim() !== ''});
+            L_id = occurrences[neighbors["left"]].tile_ID;
+            R_id = occurrences[neighbors["right"]].tile_ID;
+            L = tiles_symmetries[left[0]][left[1]];
+            R = tiles_symmetries[right[0]][right[1]];
             down = [left[0], L[1].toString()];
             up = [right[0], R[1].toString()];
-            D_id = this.rotations[down[0] + ' ' + down[1]].tile_ID; //geting string name of tile
-            U_id = this.rotations[up[0] + ' ' + up[1]].tile_ID;
-            D = this.tiles_symmetries[left[0]][L[1]];
-            U = this.tiles_symmetries[right[0]][R[1]];
+            let d_key = down[0] + ' ' + down[1] + ' ' + left[2];
+            let u_key = up[0] + ' ' + up[1] + ' ' +right[2]
+            D_id = occurrences[d_key].tile_ID; //geting string name of tile
+            U_id = occurrences[u_key].tile_ID;
+            D = tiles_symmetries[left[0]][L[1]];
+            U = tiles_symmetries[right[0]][R[1]];
 
             propagator[0][R_id + R[0]][L_id + L[0]] = true;
             propagator[0][R_id + R[6]][L_id + L[6]] = true;
             propagator[0][L_id + L[4]][R_id + R[4]] = true;
             propagator[0][L_id + L[2]][R_id + R[2]] = true;
+            
             propagator[1][U_id + U[0]][D_id + D[0]] = true;
             propagator[1][D_id + D[6]][U_id + U[6]] = true;
             propagator[1][U_id + U[4]][D_id + D[4]] = true;
             propagator[1][D_id + D[2]][U_id + U[2]] = true;
         }
-        for (let t = 0; t < this.tiles.length; t++) {
-            for (let t2 = 0; t2 < this.tiles.length; t2++) {
+        for (let t = 0; t < tiles.length; t++) {
+            for (let t2 = 0; t2 < tiles.length; t2++) {
                 propagator[2][t][t2] = propagator[0][t2][t];
                 propagator[3][t][t2] = propagator[1][t2][t];
             }
@@ -202,32 +141,50 @@ export class SimpleTiledModel extends Model {
         sparse_propagator = new Array(4);
         for (let d = 0; d < 4; d++) {
             sparse_propagator[d] = new Array(4);
-            for (let t = 0; t < this.tiles.length; t++) {
+            for (let t = 0; t < tiles.length; t++) {
                 sparse_propagator[d][t] = [];
             }
         }
         for (let d = 0; d < 4; d++) {
-            for (let t = 0; t < this.tiles.length; t++) {
+            for (let t = 0; t < tiles.length; t++) {
                 let sp = sparse_propagator[d][t];
                 let p = propagator[d][t]
 
-                for (let t1 = 0; t1 < this.tiles.length; t1++) {
+                for (let t1 = 0; t1 < tiles.length; t1++) {
                     if (p[t1]) {
                         sp.push(t1);
                     }
                 }
-                this.propagator[d][t] = sp;
+                locality_propagator[d][t] = sp;
             }
         }
+        return locality_propagator;
     }
 
     OnBoundary(x, y) {
         return !this.periodic && (x < 0 || y < 0 || x >= this.width || y >= this.height);
     }
-    _warning(string) {
-        console.warn(string);
+
+    Run(seed, limit) {
+        let subset_index = 0;
+        if (this.wave == null) {
+            this.SimpleInit(this.subsets_info, subset_index);
+            this.Init(this.subsets_info);
+        }
+        this.Clear();
+        this.random = Math.random // IS NOT SEEDED
+        
+        let subset = this.subsets_info[subset_index]
+        for (let l = 0; l < limit || limit == 0; l++) {
+            let result = this.Observe(subset);
+            console.warn("Observe has ran");
+            
+            if (result != null) {
+                return result;
+            }
+            this.Propagate(subset);
+        }
+        return true;
     }
-    _throw(string) {
-        throw string;
-    }
+    
 }

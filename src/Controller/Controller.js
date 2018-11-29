@@ -1,4 +1,4 @@
-import {TileMapModel} from '../Model/TileMap/TileMapJSON'
+import {TileMapModel} from '../Model/TileMap/TileMapModel'
 // import {PhaserMainView} from 'phaserMainView'
 import {View} from '../View/View'
 // import {Model} from 'WFCModel'
@@ -15,12 +15,15 @@ import {View} from '../View/View'
 
 export class Controller {
     // type = view type such as Phaser or Babylon
-    constructor(type, tileConstraints, newGame) {
-        this.tileConstraints = tileConstraints; // object of tiles and neighbors
+    constructor(type, tileJSON, subset, newGame) {
+        this.tileJSON = tileJSON;   // object of tiles and neighbors
+        // this.tileConstraints = tileConstraints; // object of tiles and neighbors
         this.viewType = type;
         this.view = new View();
+        this.subset = subset;
         //TileMapModel parameters: int height, int width, {tile, neighbors}
-        this.model = new TileMapModel(this.view.tileNum, this.view.tileNum, this.tileConstraints);  
+        this.model = new TileMapModel(this.subset, this.view.tileNum, this.view.tileNum, this.tileJSON);  
+        console.log(this.model);
         this.newGame = newGame;
         // this.updateTileMap();
     }
@@ -30,7 +33,7 @@ export class Controller {
     }
 
     updateTileMap() {
-        console.log(this.model.tileArray);
+        console.log(this.model.tiles);
         let tiles = this.getTilesUpdated();
         let sortedTiles = tiles.sort(function compare(a, b) {
             const indexA = a.index;
@@ -47,7 +50,7 @@ export class Controller {
         );
 
         for (let i = 0; i < sortedTiles.length; i++) {
-            this.model.tileArray[sortedTiles[i].index] = sortedTiles[i].tile;
+            this.model.tiles[sortedTiles[i].index] = sortedTiles[i].tile;
         }
     }
 
@@ -88,7 +91,7 @@ export class Controller {
         switch(this.viewType){
             case 'Phaser':
                 this.view.getInputs();
-                this.model = new TileMapModel(this.view.tileNum, this.view.tileNum, this.tileConstraints);
+                this.model = new TileMapModel(this.subset, this.view.tileNum, this.view.tileNum, this.tileJSON);
                 let phaserParam = this.getPhaserViewParam();
                 this.displayView = this.view.updatePhaserView(phaserParam);
                 break;
