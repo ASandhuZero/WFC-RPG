@@ -25,18 +25,13 @@ import * as tileset_info from "./Model/WaveFunctionCollapse/tile_info.json!json"
 // debugger
 var game = new Phaser.Game(512, 512, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 var editor;
-var model = new SimpleTiledModel(false, "item", 10, 10, tileset_info);
+var model = new SimpleTiledModel(false, "item", 16, 16, tileset_info);
 var tilemap = model.GenerateTileMap(10,0);
 var i = 0;
+var j = 0;
+var k = 0;
+console.log(tilemap)
 
-
-while (tilemap[0] == undefined) {
-    tilemap = model.GenerateTileMap(10, 0);
-    if (i == 1) {
-        throw "10 passes and still nothing."
-    }
-    i++;
-}
 debugger;
 
 editor = new Editor();

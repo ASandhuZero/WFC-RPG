@@ -13,9 +13,9 @@ export class SimpleTiledModel extends Model {
         this.subset_names = [];
         // this.tiles_info = this.GetTilesFromSubsets(this.subsets_info);
 
-        this.tiles_info = this.tileset_info.tiles;
-        this.neighbors_info = this.tileset_info.neighbors;
-        this.items_info = this.GetItemInfo(this.tiles_info);
+        // this.tiles_info = this.tileset_info.tiles;
+        // this.neighbors_info = this.tileset_info.neighbors;
+        // this.items_info = this.GetItemInfo(this.tiles_info);
         
         this.tiles = [];
         this.tiles_symmetries = {};
@@ -25,8 +25,6 @@ export class SimpleTiledModel extends Model {
         
         this.tilesize = this.tileset_info.tilesize ? this.tileset_info.tilesize : 32;
         this.unique = false; // have no clue what this does
-
-        this.SimpleInit(this.subsets_info);
     }
     GetTilesFromSubsets(subsets_info) {
         let tile_array_to_return = []
@@ -39,6 +37,8 @@ export class SimpleTiledModel extends Model {
 
     GetItemInfo(tiles_info) {
         let item_info = []
+        console.log(tiles_info)
+        debugger
         for (let i = 0; i < tiles_info.length; i++) {
             let tile_info = tiles_info[i];
             item_info.push({
@@ -48,15 +48,15 @@ export class SimpleTiledModel extends Model {
         return item_info
     }
 
-    SimpleInit(subsets_info) {
+    SimpleInit(subsets_info, subset_index) {
         for (let i = 0; i < subsets_info.length; i++) {
 
             let subset = subsets_info[i];
             this.subset_names.push(subset["name"])
 
             let tiles_info = subset["tiles_info"];
+            let items_info = subset["items_info"];
             let neighbors_info = subset["neighbors"]
-            let items_info = this.GetItemInfo(tiles_info);
             
             let sym_return = []
             let items_return = []
@@ -69,10 +69,8 @@ export class SimpleTiledModel extends Model {
             weights = sym_return[3];
             tiles_symmetries = sym_return[4];
 
-            
-            
             items_return = Constraints.GenerateItemTiles(items_info, rotations, tiles, tile_IDs)
-            tiles= items_return[0];
+            tiles = items_return[0];
             occurrences = items_return[1];
             weights = items_return[2]
             
@@ -83,9 +81,8 @@ export class SimpleTiledModel extends Model {
             subset["neighbor_propagator"] = this.InitSubsetPropagator(neighbors_info, tiles, occurrences, tiles_symmetries, rotations);
             subset["weights"] = weights;
         }
-        this.tiles = subsets_info[0].tiles;
-        this.weights = subsets_info[0].weights;
-        this.locality_propagator = subsets_info[0].neighbor_propagator
+        this.tiles = subsets_info[subset_index].tiles;
+        this.weights = subsets_info[subset_index].weights;
     }
 
     
@@ -168,4 +165,26 @@ export class SimpleTiledModel extends Model {
         return !this.periodic && (x < 0 || y < 0 || x >= this.width || y >= this.height);
     }
 
+    Run(seed, limit) {
+        let subset_index = 0;
+        if (this.wave == null) {
+            this.SimpleInit(this.subsets_info, subset_index);
+            this.Init(this.subsets_info);
+        }
+        this.Clear();
+        this.random = Math.random // IS NOT SEEDED
+        
+        let subset = this.subsets_info[subset_index]
+        for (let l = 0; l < limit || limit == 0; l++) {
+            let result = this.Observe(subset);
+            console.warn("Observe has ran");
+            
+            if (result != null) {
+                return result;
+            }
+            this.Propagate(subset);
+        }
+        return true;
+    }
+    
 }

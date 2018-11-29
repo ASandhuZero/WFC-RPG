@@ -1,62 +1,52 @@
 {
-    "tiles": [
-        {"name":"0", "symmetry":"T", "items":["0","1","2"]},
-        {"name":"1", "symmetry":"T", "items":["0","1","2"]},
-        {"name":"2", "symmetry":"T", "items":["0","1","2"]},
-        {"name":"3", "symmetry":"T", "items":["0","1","2"]},
-        {"name":"4", "symmetry":"T", "items":["0","1","2"]},
-        {"name":"5", "symmetry":"T", "items":["0","1","2"]},
-        {"name":"6", "symmetry":"T", "items":["0","1","2"]},
-        {"name":"7", "symmetry":"T", "items":["0","1","2"]},
-        {"name":"8", "symmetry":"T", "items":["0","1","2"]},
-        {"name":"9", "symmetry":"T", "items":["0","1","2"]}
-    ], 
     "subsets": [
         {
             "name": "main",
             "tiles_info": [
-                {"name":"0", "symmetry":"X", "items":["0","1","2"]},
-                {"name":"1", "symmetry":"X", "items":["0","1","2"]},
-                {"name":"2", "symmetry":"X", "items":["0","1","2"]},
-                {"name":"3", "symmetry":"X", "items":["0","1","2"]},
-                {"name":"4", "symmetry":"X", "items":["0","1","2"]},
-                {"name":"5", "symmetry":"X", "items":["0","1","2"]},
-                {"name":"6", "symmetry":"X", "items":["0","1","2"]},
-                {"name":"7", "symmetry":"X", "items":["0","1","2"]},
-                {"name":"8", "symmetry":"X", "items":["0","1","2"]},
-                {"name":"9", "symmetry":"X", "items":["0","1","2"]}
+                {"name":"0", "symmetry":"X"},
+                {"name":"1", "symmetry":"X"},
+                {"name":"2", "symmetry":"X"},
+                {"name":"3", "symmetry":"X"},
+                {"name":"4", "symmetry":"X"},
+                {"name":"5", "symmetry":"X"},
+                {"name":"6", "symmetry":"X"},
+                {"name":"7", "symmetry":"X"},
+                {"name":"8", "symmetry":"X"},
+                {"name":"9", "symmetry":"X"}
             ],
+            "items_info":["0","1"],
             "neighbors":[]
         },
         {
             "name":"Sub_1",
             "tiles_info" : [
-                {"name":"1", "symmetry":"X", "items":["0","2"]},
-                {"name":"0", "symmetry":"X", "items":["0","2"]},
-                {"name":"2", "symmetry":"X", "items":["0","2"]},
-                {"name":"3", "symmetry":"X", "items":["0","2"]},
-                {"name":"4", "symmetry":"X", "items":["0","2"]}
+                {"name":"1", "symmetry":"X"},
+                {"name":"0", "symmetry":"X"},
+                {"name":"2", "symmetry":"X"},
+                {"name":"3", "symmetry":"X"},
+                {"name":"4", "symmetry":"X"}
             ],
+            "items_info":["0"],
             "neighbors":[]
         },
         {
             "name":"No_items",
             "tiles_info" : [
-                {"name":"0", "symmetry":"X", "items":["0"]},
-                {"name":"1", "symmetry":"X", "items":["0"]},
-                {"name":"2", "symmetry":"X", "items":["0"]},
-                {"name":"3", "symmetry":"X", "items":["0"]},
-                {"name":"4", "symmetry":"X", "items":["0"]},
-                {"name":"5", "symmetry":"X", "items":["0"]},
-                {"name":"6", "symmetry":"X", "items":["0"]},
-                {"name":"7", "symmetry":"X", "items":["0"]},
-                {"name":"8", "symmetry":"X", "items":["0"]},
-                {"name":"9", "symmetry":"X", "items":["0"]}
+                {"name":"0", "symmetry":"X"},
+                {"name":"1", "symmetry":"X"},
+                {"name":"2", "symmetry":"X"},
+                {"name":"3", "symmetry":"X"},
+                {"name":"4", "symmetry":"X"},
+                {"name":"5", "symmetry":"X"},
+                {"name":"6", "symmetry":"X"},
+                {"name":"7", "symmetry":"X"},
+                {"name":"8", "symmetry":"X"},
+                {"name":"9", "symmetry":"X"}
             ],
+            "items_info":["0"],
             "neighbors":[]
         }
     ],
-    "neighbors":[],
     "item_deps": [
         {"item":"1", "dep":"2"}
     ],

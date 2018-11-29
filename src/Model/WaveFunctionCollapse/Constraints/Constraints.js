@@ -28,27 +28,20 @@ export function GenerateItemTiles(item_info, rotations, tiles, tile_IDs) {
     let new_tiles = []
     let return_array = [new_tiles, occurrences, weights_array]
     let tile_ID = 0
+
     for (let i = 0; i < item_info.length; i++) {
-        items = item_info[i].items;
-        item_tile_name = item_info[i]["tile"]
-        item_tile_ID = tile_IDs[item_tile_name].tile_ID
-        
-        for (let j = 0; j < tiles.length; j++) {
-            let tile = tiles[j];
-            let occurrence = rotations[tile];
-            if (item_tile_ID == occurrence.tile_ID) {
-                
-                for (let j = 0; j < items.length; j++) {
-                    let tile_name = tile + " " + j.toString()
-                    occurrences[tile_name] = {
-                        is_unique_tile : occurrence.is_unique_tile,
-                        tile_ID : tile_ID
-                    }
-                    tile_ID++;
-                    new_tiles.push(tile_name)
-                    weights_array.push(1)
-                }
+        for (let t = 0; t < tiles.length; t++) {
+            
+            let tile = tiles[t];
+            let item = item_info[i];
+            let tile_name = tile + " " + item.toString()
+
+            occurrences[tile_name] = {
+                tile_ID : tile_ID
             }
+            tile_ID++;
+            new_tiles.push(tile_name)
+            weights_array.push(1)
         }
     }
     return return_array
