@@ -1,5 +1,3 @@
-import * as Utils from "../../Utils"
-
 export function Dependency() {
     console.log("dependency")
 }
@@ -8,124 +6,106 @@ export function Locality() {
     console.log("locality")
 }
 
+export function GetDependecies(items) {
+    let dependecies = {
+        items: []
+    }
+    return dependecies
+}
+
 export function GetNeighbors(tiles) {
-    let neighbor_json_to_return = []
-    for (let i = 0; i < tiles.length; i++) {
-        for (let j = 0; j < tiles.length; j++) {
+    let neighbors = {
+        tiles: []
+    }
+    let tile_names = tiles["names"]
+    for (let i = 0; i < tile_names.length; i++) {
+        for (let j = 0; j < tile_names.length; j++) {
             if (i == j) {
                 continue;
             }
-            neighbor_json_to_return.push({"left":tiles[i], "right":tiles[j]})
+            neighbors["tiles"].push({"left":tile_names[i], "right":tile_names[j]})
         }
     }
-    return neighbor_json_to_return
+    return neighbors
 }
 
-export function GenerateItemTiles(item_info, rotations, tiles, tile_IDs) {
-    let item_tile_name, item_tile_ID, items;
-    let weights_array = []
-    let occurrences = {}
-    let new_tiles = []
-    let return_array = [new_tiles, occurrences, weights_array]
-    let tile_ID = 0
-
-    for (let i = 0; i < item_info.length; i++) {
-        for (let t = 0; t < tiles.length; t++) {
-            
-            let tile = tiles[t];
-            let item = item_info[i];
-            let tile_name = tile + " " + item.toString()
-
-            occurrences[tile_name] = {
-                tile_ID : tile_ID
-            }
-            tile_ID++;
-            new_tiles.push(tile_name)
-            weights_array.push(1)
-        }
+export function GenerateItems(item_info) {
+    let item;
+    let items = {
+        names: [],
+        weights: []
     }
-    return return_array
+    for (let i = 0; i < item_info.length; i++) {
+        item = item_info[i];
+        items["names"].push(item.name);
+        items["weights"].push(item.weight || 1);
+    }
+    return items
 }
 
 export function GenerateTileSymmetry(tiles_info) {
-    let cardinality, tile; 
-    let new_tile, is_unique_tile;
-    let tile_ID = 0;
-    let weights_array = []
-    let tiles = [];
-    let rotations = {} 
-    let tile_IDs = {}
-    let tile_symmetries = {};
+    let tile, tile_name, new_tile;
 
-    let return_array = [tiles, rotations, tile_IDs, weights_array]
+    let tiles = {
+        rotations: [],
+        names: [],
+        weights: [],
+        IDs: {}
+    };
+    let cardinality = 1;
+    let tile_ID = 0;
+
+    let rotation = function(x) { return x; }
+    let mirror = function(x) { return x; }
     
     for (let i = 0; i < tiles_info.length; i++) {
         tile = tiles_info[i];
+
         switch(tile.symmetry) {
+        case 'X':
+            break;
         case 'L':
             cardinality = 4;
-            tile_symmetries[tile.name] = {
-                '0' : [0,1,2,3,1,0,3,2],
-                '1' : [1,2,3,1,0,3,2,0],
-                '2' : [2,3,1,0,3,2,0,1],
-                '3' : [3,1,0,3,2,0,1,2]
-            }
+            rotation = function(x) { return (x + 1) % 4; }
+            mirror = function(x) { return x % 2 == 0 ? x + 1: x - 1; }
             break;
         case 'T':
             cardinality = 4;
-            tile_symmetries[tile.name] = {
-                '0' : [0,1,2,3,0,3,2,1],
-                '1' : [1,2,3,0,3,2,1,0],
-                '2' : [2,3,0,3,2,1,0,1],
-                '3' : [3,0,3,2,1,0,1,2]
-            }
+            rotation = function(x) { return (x + 1) % 4; }
+            mirror = function(x) { return x % 2 == 0 ? x : 4 - x; }
             break;
         case 'I':
             cardinality = 2;
-            tile_symmetries[tile.name] = {
-                '0' : [0,1,0,1,0,1,0,1],
-                '1' : [1,0,1,0,1,0,1,0]
-            }
+            rotation = function(x) { return 1 - x; }
             break;
         case '\\':
             cardinality = 2;
-            tile_symmetries[tile.name] = {
-                '0' : [0,1,0,1,1,0,1,0],
-                '1' : [1,0,1,1,0,1,0,0]
-            }
-            break;
-        case 'X': 
-            cardinality = 1;
-            tile_symmetries[tile.name] = {
-                '0' : [0,0,0,0,0,0,0,0]
-            }
+            rotation = function(x) { return 1 - x; }
+            mirror = function(x) { return 1 - x; }
             break;
         default: // Tiles with no manually assigned symmetries will default to X sym.
             Utils._warning("symmetry for tile " + tile.name + "is not set! Setting symmetry to default symmetry of X. Please change symmetry.")
-            cardinality = 1;
-            tiles[tile.name] = {
-                '0' : [0,0,0,0,0,0,0,0]
-            }
             break;
         }
-        for (let i = 0; i < cardinality; i++) {
-            new_tile = tile.name + ' ' + i.toString(); // tile name and rotation.
-            tiles.push(new_tile);
-            weights_array.push(tile.weight || 1);
-            is_unique_tile = i == 0 ? true : false;
-            
-            rotations[new_tile] = {
-                is_unique_tile : is_unique_tile,
-                tile_ID : tile_ID
-            }
-            if (is_unique_tile) {
-                tile_IDs[tile["name"]] = {
-                    tile_ID : tile_ID
-                }
-            }
+        
+        for (let c = 0; c < cardinality; c++) {
+            tile_name = tile.name + ' ' + c.toString();
+            new_tile = [
+                c + tile_ID,
+                rotation(c) + tile_ID,
+                rotation(rotation(c)) + tile_ID,
+                rotation(rotation(rotation(c))) + tile_ID,
+                mirror(c) + tile_ID,
+                mirror(rotation(c)) + tile_ID,
+                mirror(rotation(rotation(c))) + tile_ID,
+                mirror(rotation(rotation(rotation(c)))) + tile_ID
+            ]
+            tiles["names"].push(tile_name);
+            tiles["rotations"].push(new_tile)
+            tiles["weights"].push(tile.weight || 1);
+            tiles["IDs"][tile_name] = tile_ID + c
         }
-        tile_ID++;
+        tile_ID += cardinality;
     }
-    return_array.push(tile_symmetries)
-    return return_array
+    return tiles
 }

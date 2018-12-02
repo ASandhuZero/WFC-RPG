@@ -1,7 +1,6 @@
 export class Model {
     constructor(width, height) {
         this.wave;
-        this.compatible;
         this.observed;
 
         this.stack = [];
@@ -10,9 +9,7 @@ export class Model {
         this.random;
         this.width = width;
         this.height = height;
-        this.tiles;
-        this.weights; 
-        this.log_weights;
+        this.total_tiles = [];
 
     }
 
@@ -22,20 +19,20 @@ export class Model {
         this.wave = new Array(init_array_length);
         for(let i = 0; i < subsets_info.length; i++) {
             let subset = subsets_info[i];
-            let compatible = new Array(subset.tiles.length);
+            let compatible = new Array(subset.tile_amount);
 
             for (let j = 0; j < init_array_length; j++) {
-                compatible[j] = new Array(subset.tiles.length);
+                compatible[j] = new Array(subset.tile_amount);
 
-                for (let k = 0; k < subset.tiles.length; k++) {
+                for (let k = 0; k < subset.tile_amount; k++) {
                     compatible[j][k] = new Array(4);
                 }
             }
-            let log_weights = new Array(subset.tiles.length);
+            let log_weights = new Array(subset.tile_amount);
             let summed_weights = 0;
             let summed_log_weights = 0;
             
-            for (let t = 0; t < subset.tiles.length; t++) {
+            for (let t = 0; t < subset.tile_amount; t++) {
                 log_weights[t] = subset.weights[t] * Math.log(subset.weights[t]);
                 summed_weights += subset.weights[t];
                 summed_log_weights += log_weights[t];
@@ -54,7 +51,7 @@ export class Model {
 
         }
         for (let i = 0; i < init_array_length; i++) {
-            this.wave[i] = new Array(this.tiles.length).fill(true);
+            this.wave[i] = new Array(this.total_tiles.length).fill(true);
         }
     }
 
@@ -83,7 +80,7 @@ export class Model {
         if (argmin == -1) {
             this.observed = new Array(this.width * this.height);
             for (let i = 0; i < this.wave.length; i++) {
-                for (let t = 0; t < this.tiles.length; t++) {
+                for (let t = 0; t < this.total_tiles.length; t++) {
                     if (this.wave[i][t]) {
                         this.observed[i] = t;
                         break;
@@ -92,14 +89,14 @@ export class Model {
             }
             return true;
         }
-        let distribution = new Array(subset.tiles.length);
+        let distribution = new Array(subset.tile_amount);
         let w = this.wave[argmin];
-        for (let t = 0; t < subset.tiles.length; t++) {
+        for (let t = 0; t < subset.tile_amount; t++) {
             distribution[t] = w[t] ? subset.weights[t] : 0;
-            distribution[t] /= subset.tiles.length;
+            distribution[t] /= subset.tile_amount;
         }
         let r = this._NonZeroIndex(distribution);
-        for (let t = 0; t < subset.tiles.length; t++) {
+        for (let t = 0; t < subset.tile_amount; t++) {
             if (w[t] != (t == r)) {
                 this.Ban(subset, argmin, t);
             }
@@ -170,27 +167,42 @@ export class Model {
                         amount += 1;
                     }
                 }
-                if (amount == this.tiles.length) {
-                    console.log(amount)
-                    // Utils._warning("It seems the wave might not be observed.")
+                if (amount == this.total_tiles.length) {
+                    console.warn(amount)
                 } else {
-                    for (let t = 0; t < this.tiles.length; t++) {
+                    for (let t = 0; t < this.total_tiles.length; t++) {
                         if (a[t]) {
-                            array.push(this.tiles[t]);
+                            array.push(this.total_tiles[t]);
                         }
                     }
                 }
             } 
         }
-        if (array.length == 2) {
-            debugger;
-        }
-        // console.log(array);
         return array;
     }
 
+    Run(seed, limit) {
+        if (this.wave == null) {
+            this.Init(this.subsets_info);
+        }
+        this.Clear();
+        this.random = Math.random // IS NOT SEEDED
+        
+        let subset = this.subsets_info[0]
+        for (let l = 0; l < limit || limit == 0; l++) {
+            let result = this.Observe(subset);
+            console.warn("Observe has ran");
+            
+            if (result != null) {
+                return result;
+            }
+            this.Propagate(subset);
+        }
+        return true;
+    }
+
     Ban(subset, item, tile) {
-        let tile_amount = subset.tiles.length;
+        let tile_amount = subset.tile_amount;
         for (let i = tile_amount; i < this.wave[item].length; i++) {
             this.wave[item][i] = false;
         }
@@ -213,7 +225,7 @@ export class Model {
     Clear() {
         let opposite = [2, 3, 0, 1]
         for (let i = 0; i < this.wave.length; i++) {
-            for (let t = 0; t < this.tiles.length; t++) {
+            for (let t = 0; t < this.total_tiles.length; t++) {
                 this.wave[i][t] = true;
             }
         }
@@ -221,7 +233,7 @@ export class Model {
         for (let i = 0; i < this.subsets_info.length; i++) {
             let subset = this.subsets_info[i];
             for (let w = 0; w < this.wave.length; w++) {
-                for (let t = 0; t < subset.tiles.length; t++) {
+                for (let t = 0; t < subset.tile_amount; t++) {
                     for (let d = 0; d < 4; d++) {
                         subset.compatible[w][t][d] = subset.neighbor_propagator[opposite[d]][t].length; // compatible is the compatible tiles of t. NOT t itself. Which is why opposite is involved.
                     }

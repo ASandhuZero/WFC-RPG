@@ -10,14 +10,10 @@ export class SimpleTiledModel extends Model {
         this.tileset_info = tileset_info ? tileset_info : this._throw("No tile json has been passed to SimpleTiled.") ;
         
         this.subsets_info = this.tileset_info.subsets;
-        this.subset_names = [];
-        // this.tiles_info = this.GetTilesFromSubsets(this.subsets_info);
 
-        // this.tiles_info = this.tileset_info.tiles;
-        // this.neighbors_info = this.tileset_info.neighbors;
-        // this.items_info = this.GetItemInfo(this.tiles_info);
-        
+        this.subset_names = [];
         this.tiles = [];
+        
         this.tiles_symmetries = {};
         this.occurrences = {}
         this.rotations = {};
@@ -25,30 +21,10 @@ export class SimpleTiledModel extends Model {
         
         this.tilesize = this.tileset_info.tilesize ? this.tileset_info.tilesize : 32;
         this.unique = false; // have no clue what this does
-    }
-    GetTilesFromSubsets(subsets_info) {
-        let tile_array_to_return = []
-        for (let i = 0; i < subsets_info.length; i++) {
-            console.log(subsets_info[i])
-        }
-
-        return tile_array_to_return
+        this.SimpleInit(this.subsets_info)
     }
 
-    GetItemInfo(tiles_info) {
-        let item_info = []
-        console.log(tiles_info)
-        debugger
-        for (let i = 0; i < tiles_info.length; i++) {
-            let tile_info = tiles_info[i];
-            item_info.push({
-                "tile": tile_info["name"], "items": tile_info["items"]
-            })
-        }
-        return item_info
-    }
-
-    SimpleInit(subsets_info, subset_index) {
+    SimpleInit(subsets_info) {
         for (let i = 0; i < subsets_info.length; i++) {
 
             let subset = subsets_info[i];
@@ -57,100 +33,94 @@ export class SimpleTiledModel extends Model {
             let tiles_info = subset["tiles_info"];
             let items_info = subset["items_info"];
             let neighbors_info = subset["neighbors"]
-            
-            let sym_return = []
-            let items_return = []
-            let rotations, tiles, tile_IDs, occurrences, tiles_symmetries, weights;
+            let dependencies_info = subset["dependecies"]
+            let tiles, items, neighbors, dependecies;
     
-            sym_return = Constraints.GenerateTileSymmetry(tiles_info);
-            tiles = sym_return[0];
-            rotations = sym_return[1];
-            tile_IDs = sym_return[2];
-            weights = sym_return[3];
-            tiles_symmetries = sym_return[4];
+            tiles = Constraints.GenerateTileSymmetry(tiles_info);
 
-            items_return = Constraints.GenerateItemTiles(items_info, rotations, tiles, tile_IDs)
-            tiles = items_return[0];
-            occurrences = items_return[1];
-            weights = items_return[2]
-            
+            items = Constraints.GenerateItems(items_info, tiles);
             if (neighbors_info.length == 0) {
-                neighbors_info = Constraints.GetNeighbors(tiles)
+                neighbors = Constraints.GetNeighbors(tiles)
+            } else {
+                neighbors = {
+                    tiles : neighbors_info
+                }
+            }
+            if (dependencies_info.length == 0) {
+                dependecies = Constraints.GetDependecies(items);
             }
             subset["tiles"] = tiles
-            subset["neighbor_propagator"] = this.InitSubsetPropagator(neighbors_info, tiles, occurrences, tiles_symmetries, rotations);
-            subset["weights"] = weights;
+            subset["weights"] = tiles.weights;
+            subset["neighbor_propagator"] = this.GeneratePropagator(neighbors, tiles, items);
+            subset["tile_amount"] = tiles.names.length;
+            
+            if (tiles.names.length > this.total_tiles.length) {
+                this.total_tiles = tiles.names;
+            }
         }
-        this.tiles = subsets_info[subset_index].tiles;
-        this.weights = subsets_info[subset_index].weights;
     }
 
     
-    InitSubsetPropagator(neighbors_info, tiles, occurrences, tiles_symmetries, rotations) {
-        let sparse_propagator, propagator, neighbors;
-        let left, L_id, L;
-        let right, R_id, R;
-        let up, U_id, U;
-        let down, D_id, D;
-        let locality_propagator = new Array(4)
+    GeneratePropagator(neighbors, tiles, items) {
+        let sparse_propagator;
+        let neighbor_pair;
+        let left, right, L_ID, R_ID, L, R, D, U;
 
-        propagator = new Array(4);
+        let neighbor_tiles = neighbors.tiles;
+
+        let locality_propagator = new Array(4)
+        let propagator = new Array(4);
+        
+        let tile_names = tiles["names"];
+
         for (let d = 0; d < 4; d++) { // d is for direction.
-            locality_propagator[d] = new Array(tiles.length); // all the tiles. We are reaching that superposition stuff
-            propagator[d] = new Array(tiles.length); // all the tiles. We are reaching that superposition stuff
-            for (let t = 0; t < tiles.length; t++) {
-                locality_propagator[d][t] = new Array(tiles.length); // This will be the bool array. Since each tile should know what it's possible neighbor tile is.
-                propagator[d][t] = new Array(tiles.length).fill(false); // This will be the bool array. Since each tile should know what it's possible neighbor tile is.
+            locality_propagator[d] = new Array(tile_names.length); // all the tiles. We are reaching that superposition stuff
+            propagator[d] = new Array(tile_names.length); // all the tiles. We are reaching that superposition stuff
+            for (let t = 0; t < tile_names.length; t++) {
+                locality_propagator[d][t] = new Array(tile_names.length); // This will be the bool array. Since each tile should know what it's possible neighbor tile is.
+                propagator[d][t] = new Array(tile_names.length).fill(false); // This will be the bool array. Since each tile should know what it's possible neighbor tile is.
             }
         }
-        for (let n = 0; n < neighbors_info.length; n++) { // n is for neighbor object
-            neighbors = neighbors_info[n];
-
-            left = neighbors["left"].split(/[ ]+/).filter(function(x) { return x.trim() !== ''});
-            right = neighbors["right"].split(/[ ]+/).filter(function(x) { return x.trim() !== ''});
-            L_id = occurrences[neighbors["left"]].tile_ID;
-            R_id = occurrences[neighbors["right"]].tile_ID;
-            L = tiles_symmetries[left[0]][left[1]];
-            R = tiles_symmetries[right[0]][right[1]];
-            down = [left[0], L[1].toString()];
-            up = [right[0], R[1].toString()];
-            let d_key = down[0] + ' ' + down[1] + ' ' + left[2];
-            let u_key = up[0] + ' ' + up[1] + ' ' +right[2]
-            D_id = occurrences[d_key].tile_ID; //geting string name of tile
-            U_id = occurrences[u_key].tile_ID;
-            D = tiles_symmetries[left[0]][L[1]];
-            U = tiles_symmetries[right[0]][R[1]];
-
-            propagator[0][R_id + R[0]][L_id + L[0]] = true;
-            propagator[0][R_id + R[6]][L_id + L[6]] = true;
-            propagator[0][L_id + L[4]][R_id + R[4]] = true;
-            propagator[0][L_id + L[2]][R_id + R[2]] = true;
+        for (let i = 0; i < neighbor_tiles.length; i++) {
+            neighbor_pair = neighbor_tiles[i];
+            left = neighbor_pair.left
+            right = neighbor_pair.right
+            L_ID = tiles["IDs"][left];
+            R_ID = tiles["IDs"][right]
+            L = tiles["rotations"][L_ID];
+            R = tiles["rotations"][R_ID];
+            D = tiles["rotations"][L[1]];
+            U = tiles["rotations"][R[1]];
             
-            propagator[1][U_id + U[0]][D_id + D[0]] = true;
-            propagator[1][D_id + D[6]][U_id + U[6]] = true;
-            propagator[1][U_id + U[4]][D_id + D[4]] = true;
-            propagator[1][D_id + D[2]][U_id + U[2]] = true;
+            propagator[0][R[0]][L[0]] = true;
+            propagator[0][R[6]][L[6]] = true;
+            propagator[0][L[4]][R[4]] = true;
+            propagator[0][L[2]][R[2]] = true;
+
+            propagator[1][U[0]][D[0]] = true;
+            propagator[1][D[6]][U[6]] = true;
+            propagator[1][U[4]][D[4]] = true;
+            propagator[1][D[2]][U[2]] = true;
         }
-        for (let t = 0; t < tiles.length; t++) {
-            for (let t2 = 0; t2 < tiles.length; t2++) {
+        for (let t = 0; t < tile_names.length; t++) {
+            for (let t2 = 0; t2 < tile_names.length; t2++) {
                 propagator[2][t][t2] = propagator[0][t2][t];
                 propagator[3][t][t2] = propagator[1][t2][t];
             }
         }
-        
         sparse_propagator = new Array(4);
         for (let d = 0; d < 4; d++) {
             sparse_propagator[d] = new Array(4);
-            for (let t = 0; t < tiles.length; t++) {
+            for (let t = 0; t < tile_names.length; t++) {
                 sparse_propagator[d][t] = [];
             }
         }
         for (let d = 0; d < 4; d++) {
-            for (let t = 0; t < tiles.length; t++) {
+            for (let t = 0; t < tile_names.length; t++) {
                 let sp = sparse_propagator[d][t];
                 let p = propagator[d][t]
 
-                for (let t1 = 0; t1 < tiles.length; t1++) {
+                for (let t1 = 0; t1 < tile_names.length; t1++) {
                     if (p[t1]) {
                         sp.push(t1);
                     }
@@ -165,26 +135,6 @@ export class SimpleTiledModel extends Model {
         return !this.periodic && (x < 0 || y < 0 || x >= this.width || y >= this.height);
     }
 
-    Run(seed, limit) {
-        let subset_index = 0;
-        if (this.wave == null) {
-            this.SimpleInit(this.subsets_info, subset_index);
-            this.Init(this.subsets_info);
-        }
-        this.Clear();
-        this.random = Math.random // IS NOT SEEDED
-        
-        let subset = this.subsets_info[subset_index]
-        for (let l = 0; l < limit || limit == 0; l++) {
-            let result = this.Observe(subset);
-            console.warn("Observe has ran");
-            
-            if (result != null) {
-                return result;
-            }
-            this.Propagate(subset);
-        }
-        return true;
-    }
+
     
 }

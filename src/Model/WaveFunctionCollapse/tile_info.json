@@ -3,19 +3,23 @@
         {
             "name": "main",
             "tiles_info": [
-                {"name":"0", "symmetry":"X"},
-                {"name":"1", "symmetry":"X"},
-                {"name":"2", "symmetry":"X"},
-                {"name":"3", "symmetry":"X"},
-                {"name":"4", "symmetry":"X"},
-                {"name":"5", "symmetry":"X"},
-                {"name":"6", "symmetry":"X"},
-                {"name":"7", "symmetry":"X"},
-                {"name":"8", "symmetry":"X"},
-                {"name":"9", "symmetry":"X"}
+                {"name":"0", "symmetry":"I"},
+                {"name":"1", "symmetry":"I"},
+                {"name":"2", "symmetry":"I"},
+                {"name":"3", "symmetry":"I"},
+                {"name":"4", "symmetry":"I"},
+                {"name":"5", "symmetry":"I"},
+                {"name":"6", "symmetry":"I"},
+                {"name":"7", "symmetry":"I"},
+                {"name":"8", "symmetry":"I"},
+                {"name":"9", "symmetry":"T"}
             ],
-            "items_info":["0","1"],
-            "neighbors":[]
+            "items_info":[
+                {"name":"0", "weight":1},
+                {"name":"1"}
+            ],
+            "neighbors":[],
+            "dependecies":[]
         },
         {
             "name":"Sub_1",
@@ -27,7 +31,8 @@
                 {"name":"4", "symmetry":"X"}
             ],
             "items_info":["0"],
-            "neighbors":[]
+            "neighbors":[],
+            "dependecies":[]
         },
         {
             "name":"No_items",
@@ -44,7 +49,8 @@
                 {"name":"9", "symmetry":"X"}
             ],
             "items_info":["0"],
-            "neighbors":[]
+            "neighbors":[],
+            "dependecies":[]
         }
     ],
     "item_deps": [
