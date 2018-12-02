@@ -84,7 +84,7 @@ export function GenerateTileSymmetry(tiles_info) {
             mirror = function(x) { return 1 - x; }
             break;
         default: // Tiles with no manually assigned symmetries will default to X sym.
-            Utils._warning("symmetry for tile " + tile.name + "is not set! Setting symmetry to default symmetry of X. Please change symmetry.")
+            console.warn("symmetry for tile " + tile.name + "is not set! Setting symmetry to default symmetry of X. Please change symmetry.")
             break;
         }
         

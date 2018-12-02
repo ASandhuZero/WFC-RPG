@@ -50,12 +50,15 @@ export class SimpleTiledModel extends Model {
                 dependecies = Constraints.GetDependecies(items);
             }
             subset["tiles"] = tiles
-            subset["weights"] = tiles.weights;
-            subset["neighbor_propagator"] = this.GeneratePropagator(neighbors, tiles, items);
-            subset["tile_amount"] = tiles.names.length;
+            subset["tiles"]["weights"] = tiles.weights;
+            subset["tiles"]["neighbor_propagator"] = this.GeneratePropagator(neighbors, tiles, items);
+            subset["tiles"]["tile_amount"] = tiles.names.length;
             
             if (tiles.names.length > this.total_tiles.length) {
                 this.total_tiles = tiles.names;
+            }
+            if (items.names.length > this.total_items.length) {
+                this.total_items = items.names;
             }
         }
     }
