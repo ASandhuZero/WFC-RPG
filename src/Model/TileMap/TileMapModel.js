@@ -102,15 +102,26 @@ export class TileMapModel {
             "infinite": false,
             "layers":[
                 {
-                "data": this.getMap(0),
-                "height":this.height,
-                "name":"Tile Layer 1",
-                "opacity":1,
-                "type":"tilelayer",
-                "visible":true,
-                "width":this.width,
-                "x":0,
-                "y":0
+                    "data": this.getMap(0),
+                    "height":this.height,
+                    "name":"Map",
+                    "opacity":1,
+                    "type":"tilelayer",
+                    "visible":true,
+                    "width":this.width,
+                    "x":0,
+                    "y":0
+                },
+                {
+                    "data": this.getMap(1),
+                    "height":this.height,
+                    "name":"Items",
+                    "opacity":1,
+                    "type":"tilelayer",
+                    "visible":true,
+                    "width":this.width,
+                    "x":0,
+                    "y":0
                 }],
             "nextobjectid":1,
             "orientation":"orthogonal",
@@ -121,7 +132,7 @@ export class TileMapModel {
                 {
                     "columns":8,
                     "firstgid":1,
-                    "image":"../../assets/tilesets/wolfsong/BlackForest_A.png",
+                    "image":"../../assets/tilesets/wolfsong/Town_A.png",
                     "imageheight":512,
                     "imagewidth":256,
                     "margin":0,

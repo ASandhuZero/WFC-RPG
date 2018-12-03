@@ -31,6 +31,7 @@ export class PhaserView {
     }
 
     createNewGame() {
+        // this.items = new ItemView(this.tileNum, this.tileSize);
         this.editor = new EditorView(this.tileNum, this.tileSize, this.selectorY);
         this.game = new Game(this.worldLength, this.worldWidth, this.selectorY, this.tileSize, this.tileNum, this.tileMap, this.editor);
     }

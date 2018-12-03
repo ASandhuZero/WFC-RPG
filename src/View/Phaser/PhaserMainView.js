@@ -18,6 +18,7 @@ export class MainState extends Phaser.State {
     preload () {
         this.game.load.tilemap(this.mapName, null, this.tileMap, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('Town_A', 'assets/tilesets/wolfsong/Town_A.png');
+        this.game.load.image('Town_B', 'assets/tilesets/wolfsong/Town_B.png');
         // this.game.load.image(tileSet.name,tileSet.path);    //game.load.image('Town_A', 'assets/tilesets/wolfsong/Town_A.png'); 
         // this.game.load.tilemap(tileMap.name, null, tileMap.tilemap,Phaser.Tilemap.TILED_JSON);  //game.load.tilemap('testPCG', null, pcg_tilemap, Phaser.Tilemap.TILED_JSON);
     }
@@ -25,7 +26,9 @@ export class MainState extends Phaser.State {
     create () {
         this.game.stage.backgroundColor = '#ccc';
         this.map = this.game.add.tilemap(this.mapName);
+        console.log(this.map);
         this.map.addTilesetImage(this.map.tilesets[0].name, this.map.tilesets[0].name);
+        // this.map.addTilesetImage(this.map.tilesets[1].name, this.map.tilesets[1].name);
     
         let layer = this.map.createLayer(0);
         layer.fixedToCamera = false;
