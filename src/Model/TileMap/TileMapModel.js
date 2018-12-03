@@ -42,11 +42,12 @@ export class TileMapModel {
         // this.tileConstraints = tileConstraints;
         this.constraints = null;
         this.tileMapArray = this.getWFCModel();
+        console.log(this.tiles);
         // this.tileArray = this.getTileMap();
         // this.map = this.tileMapArray.GenerateTileMap(this.height, 0);
         this.tileMap = this.getTile2DJSON();
         this.tiles = this.getMap(0);
-        // this.items = this.getMap(1);
+        this.items = this.getMap(1);
         // this.item_objects = this.createItemObjects();
     }
 
@@ -72,7 +73,7 @@ export class TileMapModel {
                 for (let i = 0; i < this.tileMapArray.length; i++) {
                     elements = this.tileMapArray[i];
                     element = elements.split(/[ ]+/);
-                    tile_number = element[a];
+                    tile_number = parseInt(element[a]);
                     rotation = element[a+1];
                     switch (rotation) {
                         case '3':
@@ -93,40 +94,37 @@ export class TileMapModel {
                     }
                 }
         }
-        debugger
         return array;
     }
 
-    // createItemObjects() {
-    //     for (let i = 0; i < items_array.length; i++)
-    //     let itemJSON = {
-    //         "gid":5,
-    //         "height":0,
-    //         "id":this.tileJSON.items,
-    //         "name":"villager",
-    //         "properties":[
-    //             {
-    //             "name":"hp",
-    //             "type":"int",
-    //             "value":12
-    //             }],
-    //         "rotation":0,
-    //         "type":"npc",
-    //         "visible":true,
-    //         "width":0,
-    //         "x":32,
-    //         "y":32
-    //     }
-    //     return itemJSON;
-    // }
+    createItemObjects() {
+        debugger
+        for (let i = 0; i < this.items.length; i++){
+            if (items[i]>0){
+                let itemJSON = {
+                    "gid":i,
+                    "id":this.tileJSON.items,
+                    "name":this.subset,
+                    "rotation":0,
+                    "visible":true,
+                    "x":32,
+                    "y":32
+                }
+            }
+        }
+        
+        return itemsObjectArray;
+    }
 
     // Output: JSON file compatiblewith Tiled2D
     getTile2DJSON() {
+        console.log(this.getMap(0));
         let tile2DJSON = {
             "height":this.height,
             "infinite": false,
             "layers":[
                 {
+                    "id": 1,
                     "data": this.getMap(0),
                     "height":this.height,
                     "name":"Map",
@@ -138,9 +136,10 @@ export class TileMapModel {
                     "y":0
                 }],
             "nextobjectid":1,
+            "nextlayerid": 2,
             "orientation":"orthogonal",
             "renderorder":"right-down",
-            "tiledversion":"1.1.6",
+            "tiledversion":"1.2",
             "tileheight":32,
             "tilesets":[
                 {
@@ -159,7 +158,7 @@ export class TileMapModel {
             ],
             "tilewidth":32,
             "type":"map",
-            "version":1,
+            "version":1.2,
             "width":this.width
         }
         return tile2DJSON; 

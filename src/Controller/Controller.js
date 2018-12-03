@@ -28,9 +28,9 @@ export class Controller {
         // this.updateTileMap();
     }
 
-    getTileMap() {
-        return this.model.getTileMap;
-    }
+    // getTileMap() {
+    //     return this.model.getTileMap;
+    // }
 
     updateTileMap() {
         console.log(this.model.tiles);
