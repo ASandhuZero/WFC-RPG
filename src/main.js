@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser'
 import * as spriteAssetKey from 'assets/spriteAssetKey.json!json';
 import {Editor} from "Editor";
-import {SimpleTiledModel} from './Model//WaveFunctionCollapse/SimpleTiledModel'
+import {WFC} from './Model/WaveFunctionCollapse/WFC'
 import * as tileset_info from "./Model/WaveFunctionCollapse/tile_info.json!json"
 
 
@@ -25,15 +25,13 @@ import * as tileset_info from "./Model/WaveFunctionCollapse/tile_info.json!json"
 // debugger
 var game = new Phaser.Game(512, 512, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 var editor;
-var model = SimpleTiledModel(false, 16, 16, tileset_info);
-console.log(model)
-// var tilemap = model.GenerateTileMap(10,0);
+var tilemap = WFC(false, 16, 16, tileset_info);
+console.log(tilemap)
 var i = 0;
 var j = 0;
 var k = 0;
 
-debugger;
-
+debugger
 editor = new Editor();
 function preload () {
 //   editor.Preload(game);

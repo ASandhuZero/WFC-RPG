@@ -47,7 +47,8 @@
                 {"name":"9", "symmetry":"L"}
             ],
             "items_info":[
-                {"name":"0", "weight":1}
+                {"name":"0", "weight":1},
+                {"name":"1"}
             ],
             "neighbors":[],
             "rules":[
