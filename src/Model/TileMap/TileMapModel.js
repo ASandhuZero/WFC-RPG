@@ -47,6 +47,7 @@ export class TileMapModel {
         this.tileMap = this.getTile2DJSON();
         this.tiles = this.getMap(0);
         this.items = this.getMap(1);
+        // this.item_objects = this.createItemObjects();
     }
 
     getWFCModel() {
@@ -95,6 +96,29 @@ export class TileMapModel {
         return array;
     }
 
+    // createItemObjects() {
+    //     for (let i = 0; i < items_array.length; i++)
+    //     let itemJSON = {
+    //         "gid":5,
+    //         "height":0,
+    //         "id":this.tileJSON.items,
+    //         "name":"villager",
+    //         "properties":[
+    //             {
+    //             "name":"hp",
+    //             "type":"int",
+    //             "value":12
+    //             }],
+    //         "rotation":0,
+    //         "type":"npc",
+    //         "visible":true,
+    //         "width":0,
+    //         "x":32,
+    //         "y":32
+    //     }
+    //     return itemJSON;
+    // }
+
     // Output: JSON file compatiblewith Tiled2D
     getTile2DJSON() {
         let tile2DJSON = {
@@ -105,17 +129,6 @@ export class TileMapModel {
                     "data": this.getMap(0),
                     "height":this.height,
                     "name":"Map",
-                    "opacity":1,
-                    "type":"tilelayer",
-                    "visible":true,
-                    "width":this.width,
-                    "x":0,
-                    "y":0
-                },
-                {
-                    "data": this.getMap(1),
-                    "height":this.height,
-                    "name":"Items",
                     "opacity":1,
                     "type":"tilelayer",
                     "visible":true,

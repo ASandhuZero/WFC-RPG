@@ -42,6 +42,7 @@ export class SimpleTiledModel extends Model {
         let new_tile, is_unique_tile;
         for (let i = 0; i < cardinality; i++) {
             new_tile = tile.name + ' ' + i.toString(); // tile name and rotation.
+            
             this.tiles.push(new_tile);
             this.tempStationary.push(tile.weight || 1);
             is_unique_tile = i == 0 ? true : false;
@@ -58,12 +59,14 @@ export class SimpleTiledModel extends Model {
         }
     }
     InitTileSymmetry() {
-        let tile, cardinality, tileset;
+        let tile, cardinality;
 
         let tile_ID = 0;
         // debugger;
+        console.log(this.tiles_info.length);
         for (let i = 0; i < this.tiles_info.length; i++) {
             tile = this.tiles_info[i];
+            // console.log(tile);
             switch(tile.symmetry) {
             case 'L':
                 cardinality = 4;
@@ -118,7 +121,7 @@ export class SimpleTiledModel extends Model {
         this.weights = this.tempStationary;
     }
     InitItemNumbering() {
-
+        // **************** POTENTIAL BUG ALERT **************** //
         let item_tile_name, item_tile_ID, items;
         let items_array = this.items_info;
         let temp_stationary = []
@@ -130,12 +133,12 @@ export class SimpleTiledModel extends Model {
             item_tile_name = items_array[i]["name"]
             item_tile_ID = this.tile_IDs[item_tile_name].tile_ID
 
-
+           
             for (let j = 0; j < this.tiles.length; j++) {
                 let tile = this.tiles[j];
                 let occurrence = this.rotations[tile];
                 if (item_tile_ID == occurrence.tile_ID) {
-
+                    // console.log(this.tiles);
                     for (let j = 0; j < items_array.length; j++) {
                         let tile_name = tile + " " + j.toString()
                         occurrences[tile_name] = {
@@ -148,6 +151,8 @@ export class SimpleTiledModel extends Model {
                 }
             }
         }
+        console.log(this.tiles);
+        console.log(tiles);
         this.tiles = tiles
         this.occurrences = occurrences
         this.tempStationary = temp_stationary
@@ -162,6 +167,8 @@ export class SimpleTiledModel extends Model {
 
         this.propagator = new Array(4);
         propagator = new Array(4);
+        console.log(this.tiles.length);
+        console.log(this.tiles);
         for (let d = 0; d < 4; d++) { // d is for direction.
             this.propagator[d] = new Array(this.tiles.length); // all the tiles. We are reaching that superposition stuff
             propagator[d] = new Array(this.tiles.length); // all the tiles. We are reaching that superposition stuff
