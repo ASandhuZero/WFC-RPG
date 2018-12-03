@@ -3,7 +3,7 @@ import * as Constraints from "./Constraints/Constraints"
 
 Constraints.Locality()
 
-debugger;
+
 export class SimpleTiledModel extends Model {
     constructor(periodic, subset_name,width, height, tileset_info, constraints_json) {
         super(width, height);
@@ -12,8 +12,10 @@ export class SimpleTiledModel extends Model {
         this.width = width;
         this.tileset_info = tileset_info ? tileset_info : this._throw("No tile json has been passed to SimpleTiled.") ;
         
-        this.tiles_info = this.tileset_info.tiles;
-        this.neighbors_info = this.tileset_info.neighbors;
+        this.tiles_info = this.tileset_info.subsets[0].tiles_info;
+        
+        // multiple instances of neighbors in the testJSON file?
+        this.neighbors_info = this.tileset_info.subsets[0].neighbors;
         this.items_info = this.tileset_info.items;
         this.tiles = [];
         this.tiles_symmetries = {};
@@ -32,9 +34,8 @@ export class SimpleTiledModel extends Model {
     }
     SimpleInit() {
         this.InitTileSymmetry();
-        this.InitItemNumbering()
+        this.InitItemNumbering();
         this.InitPropagator();
-        debugger;
     }
 
     SetCardinality(cardinality, tile, tile_ID) {
@@ -57,9 +58,10 @@ export class SimpleTiledModel extends Model {
         }
     }
     InitTileSymmetry() {
-        let tile, cardinality;
+        let tile, cardinality, tileset;
 
         let tile_ID = 0;
+        // debugger;
         for (let i = 0; i < this.tiles_info.length; i++) {
             tile = this.tiles_info[i];
             switch(tile.symmetry) {
@@ -122,18 +124,19 @@ export class SimpleTiledModel extends Model {
         let temp_stationary = []
         let occurrences = {}
         let tiles = []
-        
+
         for (let i = 0; i < items_array.length; i++) {
-            items = items_array[i].items;
-            item_tile_name = items_array[i]["tile"]
+            items = items_array[i];
+            item_tile_name = items_array[i]["name"]
             item_tile_ID = this.tile_IDs[item_tile_name].tile_ID
+
 
             for (let j = 0; j < this.tiles.length; j++) {
                 let tile = this.tiles[j];
                 let occurrence = this.rotations[tile];
                 if (item_tile_ID == occurrence.tile_ID) {
 
-                    for (let j = 0; j < items.length; j++) {
+                    for (let j = 0; j < items_array.length; j++) {
                         let tile_name = tile + " " + j.toString()
                         occurrences[tile_name] = {
                             is_unique_tile : occurrence.is_unique_tile,

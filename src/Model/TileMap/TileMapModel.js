@@ -1,4 +1,4 @@
-import { WFC } from "../WaveFunctionCollapse/WFC";
+// import { WFC } from "../WaveFunctionCollapse/WFC";
 import { SimpleTiledModel } from "../WaveFunctionCollapse/SimpleTiledModel";
 
 /**
@@ -50,7 +50,7 @@ export class TileMapModel {
     }
 
     getWFCModel() {
-        this.model = new SimpleTiledModel(this.periodic, this.subset,this.height, this.width, this.tileJSON); 
+        this.model = new SimpleTiledModel(this.periodic, this.subset,this.height, this.width, this.tileJSON, this.constraints); 
         return this.model;
     }
 

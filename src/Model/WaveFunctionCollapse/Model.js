@@ -150,7 +150,7 @@ export class Model {
                     if (comp[d] == 0) {
                         // console.log(comp, this.compatible[i2], i2, i1)
                         this.Ban(i2, t2);
-                        console.log(this.sums_of_ones)
+                        // console.log(this.sums_of_ones)
                         // debugger;
                     }
                 }
@@ -193,12 +193,12 @@ export class Model {
                 }
             }
             if (amount == this.tiles.length) {
-                console.log(amount)
+                // console.log(amount)
                 this._warning("It seems the wave might not be observed.")
             } else {
                 for (let t = 0; t < this.tiles.length; t++) {
                     if (a[t]) {
-                        console.log(this.tiles[t])
+                        // console.log(this.tiles[t])
                         array.push(this.tiles[t]);
                     }
                 }

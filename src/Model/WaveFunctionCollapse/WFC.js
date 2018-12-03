@@ -1,4 +1,4 @@
-
+import { SimpleTiledModel } from "../WaveFunctionCollapse/SimpleTiledModel";
 
 var model = new SimpleTiledModel(false, "item", 10, 10, tileset_info, null);
 var tilemap = model.GenerateTileMap(10,0);
