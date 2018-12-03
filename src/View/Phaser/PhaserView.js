@@ -22,7 +22,8 @@ export class PhaserView {
         this.tileNum = phaserParam.tileNum;
         this.worldLength = phaserParam.worldLength;
         this.worldWidth = phaserParam.worldWidth;  
-        this.tileMap = phaserParam.tileMap;    
+        this.tileMap = phaserParam.tileMap;   
+        // debugger 
     }
 
     destroyOldGame() {

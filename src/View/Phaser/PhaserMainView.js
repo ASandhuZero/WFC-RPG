@@ -13,9 +13,11 @@ export class MainState extends Phaser.State {
         this.tileNum = tileNum;
         this.mapName = 'map';
         this.editor = editor;
+        // debugger
     }
 
     preload () {
+
         this.game.load.tilemap(this.mapName, null, this.tileMap, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('Town_A', 'assets/tilesets/wolfsong/Town_A.png');
         this.game.load.image('Town_B', 'assets/tilesets/wolfsong/Town_B.png');
@@ -25,8 +27,11 @@ export class MainState extends Phaser.State {
 
     create () {
         this.game.stage.backgroundColor = '#ccc';
+        debugger
         this.map = this.game.add.tilemap(this.mapName);
+        debugger
         console.log(this.map);
+        
         this.map.addTilesetImage(this.map.tilesets[0].name, this.map.tilesets[0].name);
         // this.map.addTilesetImage(this.map.tilesets[1].name, this.map.tilesets[1].name);
     

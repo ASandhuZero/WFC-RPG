@@ -1,5 +1,5 @@
-// import { WFC } from "../WaveFunctionCollapse/WFC";
-import { SimpleTiledModel } from "../WaveFunctionCollapse/SimpleTiledModel";
+import { WFC } from "../WaveFunctionCollapse/WFC";
+// import { SimpleTiledModel } from "../WaveFunctionCollapse/SimpleTiledModel";
 
 /**
  * Creates tile map JSON for Tile2D
@@ -43,15 +43,15 @@ export class TileMapModel {
         this.constraints = null;
         this.tileMapArray = this.getWFCModel();
         // this.tileArray = this.getTileMap();
-        this.map = this.tileMapArray.GenerateTileMap(this.height, 0);
+        // this.map = this.tileMapArray.GenerateTileMap(this.height, 0);
         this.tileMap = this.getTile2DJSON();
         this.tiles = this.getMap(0);
-        this.items = this.getMap(1);
+        // this.items = this.getMap(1);
         // this.item_objects = this.createItemObjects();
     }
 
     getWFCModel() {
-        this.model = new SimpleTiledModel(this.periodic, this.subset,this.height, this.width, this.tileJSON, this.constraints); 
+        this.model = WFC(this.periodic, this.height, this.width, this.tileJSON); 
         return this.model;
     }
 
@@ -62,15 +62,15 @@ export class TileMapModel {
         var elements, element, tile_number, rotation;
         switch(a) {
             case 1:
-                for (let i = 0; i < this.map.length; i++){
-                    elements = this.map[i];
+                for (let i = 0; i < this.tileMapArray.length; i++){
+                    elements = this.tileMapArray[i];
                     element = elements.split(/[ ]+/);
                     array.push(element[a+1]);
                 }
                 break;
             case 0:
-                for (let i = 0; i < this.map.length; i++) {
-                    elements = this.map[i];
+                for (let i = 0; i < this.tileMapArray.length; i++) {
+                    elements = this.tileMapArray[i];
                     element = elements.split(/[ ]+/);
                     tile_number = element[a];
                     rotation = element[a+1];
@@ -93,6 +93,7 @@ export class TileMapModel {
                     }
                 }
         }
+        debugger
         return array;
     }
 

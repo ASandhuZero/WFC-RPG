@@ -14,37 +14,55 @@
                 {"name":"8", "symmetry":"X"},
                 {"name":"9", "symmetry":"X"}
             ],
-            "items_info":["0","1"],
-            "neighbors":[]
-        },
-        {
-            "name":"Sub_1",
-            "tiles_info" : [
-                {"name":"1", "symmetry":"X"},
-                {"name":"0", "symmetry":"X"},
-                {"name":"2", "symmetry":"X"},
-                {"name":"3", "symmetry":"X"},
-                {"name":"4", "symmetry":"X"}
+            "items_info":[
+                {"name":"0", "weight":1},
+                {"name":"1"}
             ],
-            "items_info":["0"],
-            "neighbors":[]
+            "neighbors":[],
+            "rules":[
+                {
+                    "type" : "item",
+                    "ID" : "1",
+                    "modifier": "distance",
+                    "constraints" : [
+                        "< INT 5,No_items",
+                        "> INT 5,= item 2",
+                        "= item 2, END"
+                    ]
+                }
+            ]
         },
         {
             "name":"No_items",
             "tiles_info" : [
                 {"name":"0", "symmetry":"X"},
-                {"name":"1", "symmetry":"X"},
-                {"name":"2", "symmetry":"X"},
-                {"name":"3", "symmetry":"X"},
-                {"name":"4", "symmetry":"X"},
-                {"name":"5", "symmetry":"X"},
-                {"name":"6", "symmetry":"X"},
-                {"name":"7", "symmetry":"X"},
-                {"name":"8", "symmetry":"X"},
-                {"name":"9", "symmetry":"X"}
+                {"name":"1", "symmetry":"I"},
+                {"name":"2", "symmetry":"\\"},
+                {"name":"3", "symmetry":"T"},
+                {"name":"4", "symmetry":"L"},
+                {"name":"5", "symmetry":"L"},
+                {"name":"6", "symmetry":"L"},
+                {"name":"7", "symmetry":"L"},
+                {"name":"8", "symmetry":"L"},
+                {"name":"9", "symmetry":"L"}
             ],
-            "items_info":["0"],
-            "neighbors":[]
+            "items_info":[
+                {"name":"0", "weight":1},
+                {"name":"1"}
+            ],
+            "neighbors":[],
+            "rules":[
+                {
+                    "type" : "item",
+                    "ID" : "1",
+                    "modifier": "distance",
+                    "constraints" : [
+                        "< INT 5,No_items",
+                        "> INT 5,= item 2",
+                        "= item 2, END"
+                    ]
+                }
+            ]
         }
     ],
     "item_deps": [

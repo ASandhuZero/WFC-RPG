@@ -1,28 +1,3 @@
-<<<<<<< HEAD
-export function Dependency() {
-    console.log("dependency")
-}
-
-export function Locality() {
-    console.log("locality")
-}
-
-export function Rotation() {
-    console.log("rotation")
-}
-||||||| merged common ancestors
-export function Dependency() {
-    console.log("dependency")
-}
-
-export function Locality() {
-    console.log("locality")
-}
-
-export function Rotation() {
-    console.log("rotation")
-}
-=======
 export function Dependency() {
     console.log("dependency")
 }
@@ -204,4 +179,3 @@ export function GenerateTiles(tiles_info, width, height) {
 
     return tiles
 }
->>>>>>> WFC

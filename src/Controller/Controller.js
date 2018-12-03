@@ -84,6 +84,7 @@ export class Controller {
             tileNum: this.view.tileNum,
             tileMap: this.model.tileMap,
         }
+        console.log(this.phaserViewParam);
         return this.phaserViewParam;
     }
 
