@@ -22,7 +22,7 @@ export class Controller {
         this.view = new View();
         this.subset = subset;
         //TileMapModel parameters: int height, int width, {tile, neighbors}
-        this.model = new TileMapModel(this.subset, this.view.tileNum, this.view.tileNum, this.tileJSON);  
+        this.model = new TileMapModel(this.view.tileSize, this.subset, this.view.tileNum, this.view.tileNum, this.tileJSON);  
         console.log(this.model);
         this.newGame = newGame;
         // this.updateTileMap();

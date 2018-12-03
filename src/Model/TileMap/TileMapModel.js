@@ -33,7 +33,8 @@ import { WFC } from "../WaveFunctionCollapse/WFC";
 
 
 export class TileMapModel {
-    constructor (subset,height, width, tileJSON) {
+    constructor (tilesize, subset,height, width, tileJSON) {
+        this.tilesize = tilesize;
         this.height = height;
         this.width = width;
         this.periodic = false;
@@ -48,7 +49,8 @@ export class TileMapModel {
         this.tileMap = this.getTile2DJSON();
         this.tiles = this.getMap(0);
         this.items = this.getMap(1);
-        // this.item_objects = this.createItemObjects();
+        this.item_objects = this.createItemObjects();
+        console.log(this.createItemObjects());
     }
 
     getWFCModel() {
@@ -97,19 +99,38 @@ export class TileMapModel {
         return array;
     }
 
+    calculateItemPosition(id) {
+        let xWorld = this.width * this.tilesize;
+        let place = id*this.tilesize;
+        let x = xWorld;
+        let y = 0;
+
+        if (place > xWorld ){
+            y = place / xWorld;
+            x = place - xWorld;
+        }
+
+        return [x,y];
+    }
+
     createItemObjects() {
-        debugger
+        let itemsObjectArray = [];
+        let j = 0;
+        console.log(this.items);
         for (let i = 0; i < this.items.length; i++){
-            if (items[i]>0){
+            console.log(this.items[i])
+            if (this.items[i]>0){
                 let itemJSON = {
-                    "gid":i,
-                    "id":this.tileJSON.items,
+                    "gid":this.items[i],
+                    "id":j,
                     "name":this.subset,
                     "rotation":0,
                     "visible":true,
-                    "x":32,
-                    "y":32
+                    "x":this.calculateItemPosition(i)[0], //position x
+                    "y":this.calculateItemPosition(i)[1]
                 }
+                itemsObjectArray.push(itemJSON);
+                j++;
             }
         }
         
