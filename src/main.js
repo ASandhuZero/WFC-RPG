@@ -25,12 +25,12 @@ import * as tileset_info from "./Model/WaveFunctionCollapse/tile_info.json!json"
 // debugger
 var game = new Phaser.Game(512, 512, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 var editor;
-var model = new SimpleTiledModel(false, "item", 16, 16, tileset_info);
-var tilemap = model.GenerateTileMap(10,0);
+var model = SimpleTiledModel(false, 16, 16, tileset_info);
+console.log(model)
+// var tilemap = model.GenerateTileMap(10,0);
 var i = 0;
 var j = 0;
 var k = 0;
-console.log(tilemap)
 
 debugger;
 

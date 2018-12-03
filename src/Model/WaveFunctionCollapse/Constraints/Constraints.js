@@ -28,7 +28,45 @@ export function GetNeighbors(tiles) {
     }
     return neighbors
 }
-
+export function GetItemRules(rules_info) {
+    let rule, constraints_info, constraint, result;
+    let constraints = {
+        "LESS" : {},
+        "GREATER" : {},
+        "EQUALS" : {},
+    }
+    let rules = {
+    }
+    for (let i = 0; i < rules_info.length; i++) {
+        rule = rules_info[i];
+        constraints_info = rule.constraints;
+        for (let c = 0; c < constraints_info.length; c++) {
+            constraint = constraints_info[c];
+            [constraint, result] = constraint.split(',')
+            constraint = constraint.split(' ')
+            if (constraint[0] == "<") {
+                constraints["LESS"][constraint[1]] = [
+                    constraint[2],
+                    result
+                ]
+            } else if (constraint[0] == ">") {
+                constraints["GREATER"][constraint[1]] = [
+                    constraint[2],
+                    result
+                ]
+            }  else if (constraint[0] == "=") {
+                constraints["EQUALS"][constraint[1]] = [
+                    constraint[2],
+                    result
+                ]
+            }
+        }
+            rules[rule.ID] = {
+                "constraints" : constraints
+        }
+    }
+    return rules
+}
 export function GenerateItems(item_info) {
     let item;
     let items = {
@@ -40,17 +78,20 @@ export function GenerateItems(item_info) {
         items["names"].push(item.name);
         items["weights"].push(item.weight || 1);
     }
+    items["item_amount"] = items["names"].length;
     return items
 }
 
-export function GenerateTileSymmetry(tiles_info) {
-    let tile, tile_name, new_tile;
-
+export function GenerateTiles(tiles_info, width, height) {
+    let tile, tile_name, new_tile, compatible, log_weights;
+    let summed_weights = 0;
+    let summed_log_weights = 0;
     let tiles = {
         rotations: [],
         names: [],
         weights: [],
-        IDs: {}
+        IDs: {},
+        amount : 0
     };
     let cardinality = 1;
     let tile_ID = 0;
@@ -103,9 +144,38 @@ export function GenerateTileSymmetry(tiles_info) {
             tiles["names"].push(tile_name);
             tiles["rotations"].push(new_tile)
             tiles["weights"].push(tile.weight || 1);
-            tiles["IDs"][tile_name] = tile_ID + c
+            tiles["IDs"][tile_name] = tile_ID + c;
+            tiles["amount"]++;
         }
         tile_ID += cardinality;
     }
+    
+    compatible = new Array(tiles.amount);
+    log_weights = new Array(tiles.amount);
+
+    for (let j = 0; j < width * height; j++) {
+        compatible[j] = new Array(tiles.amount);
+
+        for (let k = 0; k < tiles.amount; k++) {
+            compatible[j][k] = new Array(4);
+        }
+    }
+
+    
+    for (let t = 0; t < tiles.amount; t++) {
+        log_weights[t] = tiles.weights[t] * Math.log(tiles.weights[t]);
+        summed_weights += tiles.weights[t];
+        summed_log_weights += log_weights[t];
+    }
+    tiles["compatible"] = compatible;
+    tiles["log_weights"] = log_weights;
+    tiles["summed_weights"] = summed_weights;
+    tiles["summed_log_weights"] = summed_log_weights;
+    tiles["starting_entropy"] = Math.log(summed_weights) - summed_log_weights / summed_weights;
+    tiles["sums_of_ones"] = new Array(width * height);
+    tiles["sums_of_weights"] = new Array(width * height);
+    tiles["sums_of_log_weights"] = new Array(width * height);
+    tiles["entropies"] = new Array(width * height);
+
     return tiles
 }

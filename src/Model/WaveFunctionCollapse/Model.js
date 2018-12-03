@@ -14,11 +14,12 @@ export class Model {
 
     }
 
-    Init(subsets_info) {
+    Init(subsets, subset_names) {
         let init_array_length = this.width * this.height;
         this.wave = new Array(init_array_length);
-        for(let i = 0; i < subsets_info.length; i++) {
-            let subset = subsets_info[i];
+        for(let i = 0; i < subset_names.length; i++) {
+            let subset_name = subset_names[i]
+            let subset = subsets[subset_name];
             let tiles_info = subset["tiles"]
             let compatible = new Array(tiles_info.tile_amount);
 
@@ -59,6 +60,7 @@ export class Model {
     }
 
     Observe(subset) {
+        let subset_name
         let min = 1000;
         let argmin = -1;
         let tiles_info = subset["tiles"]
@@ -69,7 +71,7 @@ export class Model {
             }
             let amount = tiles_info.sums_of_ones[i];
             if (amount == 0) {
-                return false;
+                return [false, subset];
             }
             let entropy = tiles_info.entropies[i];
             if (amount > 1 && entropy <= min) {
@@ -92,7 +94,7 @@ export class Model {
                     }
                 }
             }
-            return true;
+            return [true, subset];
         }
         let distribution = new Array(tiles_info.tile_amount);
         let w = this.wave[argmin]["tiles"];
@@ -104,10 +106,11 @@ export class Model {
         for (let t = 0; t < tiles_info.tile_amount; t++) {
             if (w[t] != (t == r)) {
                 this.BanTile(tiles_info, argmin, t);
-                this.BanItem(subset, argmin, 1);
+                subset_name = this.BanItem(subset["items"], argmin, 1);
+                subset = this.subsets[subset_name]
             }
         }
-        return null;
+        return [null, subset];
     }
 
     Propagate(subset) {
@@ -155,7 +158,7 @@ export class Model {
                     comp[d] = comp[d] - 1;
                     if (comp[d] == 0) {
                         this.BanTile(tiles_info, index_2, tile_2);
-                        this.BanItem(subset, index_2, 1);
+                        this.BanItem(subset["items"], index_2, 1);
                     }
                 }
             }
@@ -197,24 +200,38 @@ export class Model {
 
     Run(seed, limit) {
         if (this.wave == null) {
-            this.Init(this.subsets_info);
+            this.Init(this.subsets, this.subset_names);
         }
         this.Clear();
         this.random = Math.random // IS NOT SEEDED
-        
-        let subset = this.subsets_info[0]
+        let result;
+        let subset = this.subsets["main"]
         for (let l = 0; l < limit || limit == 0; l++) {
-            let result = this.Observe(subset);
-            console.warn("Observe has ran");
+            [result, subset] = this.Observe(subset);
             
             if (result != null) {
                 return result;
+            }
+            if (subset == undefined) {
+                debugger
             }
             this.Propagate(subset);
         }
         return true;
     }
-    BanItem(subset, elem, item) {
+    BanItem(items_info, elem, item) {
+        let subset_name;
+        let condition = 0
+        let rules = items_info["rules"]
+        let item_rules = rules[item]["constraints"];
+        
+        if (condition < item_rules["LESS"]["INT"][0]) {
+            subset_name = item_rules["LESS"]["INT"][1] 
+        }
+        if (condition > item_rules["GREATER"]["INT"][0]) {
+            debugger
+        }
+        return subset_name != undefined ? subset_name : this.subset_names[0];
         let item_amount = subset.item_amount;
         let wave_item_array = this.wave[elem]["items"];
         for (let i = item_amount; i < wave_item_array.length; i++) {
@@ -252,8 +269,8 @@ export class Model {
             }
         }
         
-        for (let i = 0; i < this.subsets_info.length; i++) {
-            let subset = this.subsets_info[i];
+        for (let i = 0; i < this.subset_names.length; i++) {
+            let subset = this.subsets[this.subset_names[i]];
             let tiles_info = subset["tiles"]
             for (let w = 0; w < this.wave.length; w++) {
                 for (let t = 0; t < tiles_info.tile_amount; t++) {
