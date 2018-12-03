@@ -1,118 +1,90 @@
 {
-    "tiles": [
-        {"name":"0","symmetry":"X"},
-        {"name":"1","symmetry":"X"},
-        {"name":"2","symmetry":"X"},
-        {"name":"3","symmetry":"X"},
-        {"name":"4","symmetry":"X"},
-        {"name":"5","symmetry":"X"},
-        {"name":"6","symmetry":"X"},
-        {"name":"7","symmetry":"X"},
-        {"name":"8","symmetry":"X"},
-        {"name":"9","symmetry":"X"}
+    "subsets": [
+        {
+            "name": "main",
+            "tiles_info": [
+                {"name":"0", "symmetry":"X"},
+                {"name":"1", "symmetry":"X"},
+                {"name":"2", "symmetry":"X"},
+                {"name":"3", "symmetry":"X"},
+                {"name":"4", "symmetry":"X"},
+                {"name":"5", "symmetry":"X"},
+                {"name":"6", "symmetry":"X"},
+                {"name":"7", "symmetry":"X"},
+                {"name":"8", "symmetry":"X"},
+                {"name":"9", "symmetry":"X"}
+            ],
+            "items_info":[
+                {"name":"0", "weight":1},
+                {"name":"1"}
+            ],
+            "neighbors":[],
+            "rules":[
+                {
+                    "type" : "item",
+                    "ID" : "1",
+                    "modifier": "distance",
+                    "constraints" : [
+                        "< INT 5,No_items",
+                        "> INT 5,= item 2",
+                        "= item 2, END"
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"No_items",
+            "tiles_info" : [
+                {"name":"0", "symmetry":"X"},
+                {"name":"1", "symmetry":"I"},
+                {"name":"2", "symmetry":"\\"},
+                {"name":"3", "symmetry":"T"},
+                {"name":"4", "symmetry":"L"},
+                {"name":"5", "symmetry":"L"},
+                {"name":"6", "symmetry":"L"},
+                {"name":"7", "symmetry":"L"},
+                {"name":"8", "symmetry":"L"},
+                {"name":"9", "symmetry":"L"}
+            ],
+            "items_info":[
+                {"name":"0", "weight":1},
+                {"name":"1"}
+            ],
+            "neighbors":[],
+            "rules":[
+                {
+                    "type" : "item",
+                    "ID" : "1",
+                    "modifier": "distance",
+                    "constraints" : [
+                        "< INT 5,No_items",
+                        "> INT 5,= item 2",
+                        "= item 2, END"
+                    ]
+                }
+            ]
+        }
     ],
-    "neighbors":[
-        {"left":"0 0 1","right":"1 0 0"},
-        {"left":"0 0 1","right":"2 0 0"},
-        {"left":"0 0 0","right":"3 0 0"},
-        {"left":"0 0 2","right":"4 0 0"},
-        {"left":"0 0 1","right":"5 0 0"},
-        {"left":"0 0 2","right":"6 0 0"},
-        {"left":"0 0 1","right":"7 0 0"},
-        {"left":"0 0 2","right":"8 0 0"},
-        {"left":"0 0 1","right":"9 0 0"},
-        {"left":"1 0 2","right":"0 0 0"},
-        {"left":"1 0 1","right":"2 0 0"},
-        {"left":"1 0 2","right":"3 0 0"},
-        {"left":"1 0 2","right":"4 0 0"},
-        {"left":"1 0 2","right":"5 0 0"},
-        {"left":"1 0 1","right":"6 0 0"},
-        {"left":"1 0 1","right":"7 0 0"},
-        {"left":"1 0 1","right":"8 0 0"},
-        {"left":"1 0 2","right":"9 0 0"},
-        {"left":"2 0 0","right":"0 0 0"},
-        {"left":"2 0 2","right":"1 0 0"},
-        {"left":"2 0 1","right":"3 0 0"},
-        {"left":"2 0 2","right":"4 0 0"},
-        {"left":"2 0 2","right":"5 0 0"},
-        {"left":"2 0 1","right":"6 0 0"},
-        {"left":"2 0 1","right":"7 0 0"},
-        {"left":"2 0 2","right":"8 0 0"},
-        {"left":"2 0 1","right":"9 0 0"},
-        {"left":"3 0 1","right":"0 0 0"},
-        {"left":"3 0 0","right":"1 0 0"},
-        {"left":"3 0 0","right":"2 0 0"},
-        {"left":"3 0 1","right":"4 0 0"},
-        {"left":"3 0 1","right":"5 0 0"},
-        {"left":"3 0 1","right":"6 0 0"},
-        {"left":"3 0 2","right":"7 0 0"},
-        {"left":"3 0 1","right":"8 0 0"},
-        {"left":"3 0 2","right":"9 0 0"},
-        {"left":"4 0 0","right":"0 0 0"},
-        {"left":"4 0 1","right":"1 0 0"},
-        {"left":"4 0 2","right":"2 0 0"},
-        {"left":"4 0 2","right":"3 0 0"},
-        {"left":"4 0 0","right":"5 0 0"},
-        {"left":"4 0 1","right":"6 0 0"},
-        {"left":"4 0 0","right":"7 0 0"},
-        {"left":"4 0 0","right":"8 0 0"},
-        {"left":"4 0 2","right":"9 0 0"},
-        {"left":"5 0 2","right":"0 0 0"},
-        {"left":"5 0 2","right":"1 0 0"},
-        {"left":"5 0 1","right":"2 0 0"},
-        {"left":"5 0 0","right":"3 0 0"},
-        {"left":"5 0 2","right":"4 0 0"},
-        {"left":"5 0 2","right":"6 0 0"},
-        {"left":"5 0 2","right":"7 0 0"},
-        {"left":"5 0 2","right":"8 0 0"},
-        {"left":"5 0 0","right":"9 0 0"},
-        {"left":"6 0 0","right":"0 0 0"},
-        {"left":"6 0 1","right":"1 0 0"},
-        {"left":"6 0 1","right":"2 0 0"},
-        {"left":"6 0 1","right":"3 0 0"},
-        {"left":"6 0 1","right":"4 0 0"},
-        {"left":"6 0 0","right":"5 0 0"},
-        {"left":"6 0 1","right":"7 0 0"},
-        {"left":"6 0 1","right":"8 0 0"},
-        {"left":"6 0 2","right":"9 0 0"},
-        {"left":"7 0 2","right":"0 0 0"},
-        {"left":"7 0 1","right":"1 0 0"},
-        {"left":"7 0 0","right":"2 0 0"},
-        {"left":"7 0 1","right":"3 0 0"},
-        {"left":"7 0 2","right":"4 0 0"},
-        {"left":"7 0 2","right":"5 0 0"},
-        {"left":"7 0 1","right":"6 0 0"},
-        {"left":"7 0 0","right":"8 0 0"},
-        {"left":"7 0 0","right":"9 0 0"},
-        {"left":"8 0 0","right":"0 0 0"},
-        {"left":"8 0 1","right":"1 0 0"},
-        {"left":"8 0 1","right":"2 0 0"},
-        {"left":"8 0 0","right":"3 0 0"},
-        {"left":"8 0 0","right":"4 0 0"},
-        {"left":"8 0 1","right":"5 0 0"},
-        {"left":"8 0 0","right":"6 0 0"},
-        {"left":"8 0 2","right":"7 0 0"},
-        {"left":"8 0 0","right":"9 0 0"},
-        {"left":"9 0 2","right":"0 0 0"},
-        {"left":"9 0 0","right":"1 0 0"},
-        {"left":"9 0 0","right":"2 0 0"},
-        {"left":"9 0 2","right":"3 0 0"},
-        {"left":"9 0 1","right":"4 0 0"},
-        {"left":"9 0 0","right":"5 0 0"},
-        {"left":"9 0 1","right":"6 0 0"},
-        {"left":"9 0 0","right":"7 0 0"},
-        {"left":"9 0 2","right":"8 0 0"}
+    "item_deps": [
+        {"item":"1", "dep":"2"}
     ],
+    "weights": {
+        "tiles": [
+            {"name":"0", "weights": 1},
+            {"name":"1", "weights": 1},
+            {"name":"2", "weights": 1},
+            {"name":"3", "weights": 1},
+            {"name":"4", "weights": 1},
+            {"name":"5", "weights": 1},
+            {"name":"6", "weights": 1},
+            {"name":"7", "weights": 1},
+            {"name":"8", "weights": 1},
+            {"name":"9", "weights": 1}
+        ]
+    },
     "items": [
-        {"tile":"0","items":["0","1","2"]},
-        {"tile":"1","items":["0","1","2"]},
-        {"tile":"2","items":["0","1","2"]},
-        {"tile":"3","items":["0","1","2"]},
-        {"tile":"4","items":["0","1","2"]},
-        {"tile":"5","items":["0","1","2"]},
-        {"tile":"6","items":["0","1","2"]},
-        {"tile":"7","items":["0","1","2"]},
-        {"tile":"8","items":["0","1","2"]},
-        {"tile":"9","items":["0","1","2"]}
+        {"name":"0", "weights": 1},
+        {"name":"1", "weights": 1},
+        {"name":"2", "weights": 1}
     ]
 }

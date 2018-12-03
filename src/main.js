@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser'
 import * as spriteAssetKey from 'assets/spriteAssetKey.json!json';
 import {Editor} from "Editor";
-import {SimpleTiledModel} from './Model//WaveFunctionCollapse/SimpleTiledModel'
+import {WFC} from './Model/WaveFunctionCollapse/WFC'
 import * as tileset_info from "./Model/WaveFunctionCollapse/tile_info.json!json"
 
 
@@ -25,10 +25,13 @@ import * as tileset_info from "./Model/WaveFunctionCollapse/tile_info.json!json"
 // debugger
 var game = new Phaser.Game(512, 512, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 var editor;
-var model = new SimpleTiledModel(false, "item", 10, 10, tileset_info, null);
-var tilemap = model.GenerateTileMap(10,0);
+var tilemap = WFC(false, 16, 16, tileset_info);
+console.log(tilemap)
 var i = 0;
+var j = 0;
+var k = 0;
 
+<<<<<<< HEAD
 
 while (tilemap[0] == undefined) {
     tilemap = model.GenerateTileMap(10, 0);
@@ -44,6 +47,22 @@ debugger;
 var game = new Phaser.Game(worldWidth, worldLength, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
 editor = new Editor(tileNum, tileSize, selectorY);
+||||||| merged common ancestors
+
+while (tilemap[0] == undefined) {
+    tilemap = model.GenerateTileMap(10, 0);
+    if (i == 1) {
+        throw "10 passes and still nothing."
+    }
+    i++;
+}
+debugger;
+
+editor = new Editor();
+=======
+debugger
+editor = new Editor();
+>>>>>>> WFC
 function preload () {
 //   editor.Preload(game);
   //Testing
