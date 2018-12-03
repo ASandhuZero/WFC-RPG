@@ -1,4 +1,29 @@
-import * as Manager from "./Managers/Managers"
+
+
+var model = new SimpleTiledModel(false, "item", 10, 10, tileset_info, null);
+var tilemap = model.GenerateTileMap(10,0);
+var i = 0;
+var jsA = []
+for (let i = 0; i < 256; i++) {
+    let r = i + 1;
+    r = r % 255;
+    let js = {
+        "left":i.toString(), "right": r.toString()
+    }
+    jsA.push(js)
+}
+console.log(JSON.stringify(jsA))
+debugger;
+while (tilemap[0] == undefined) {
+    tilemap = model.GenerateTileMap(10, 0);
+    if (i == 100) {
+        throw "100 passes and still nothing."
+    }
+    i++;
+}
+debugger;
+debugger;   
+
 
 export class WFC {
     constructor(periodic, height, width, tile_json, constraints_json = null) {
@@ -132,6 +157,8 @@ export class WFC {
                 tile_amount++;
             }
         }
+        this.weights = this.stationary;
+        debugger
         return [tiles, tile_amount]
     }
     /**

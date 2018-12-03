@@ -1,90 +1,43 @@
 import * as Phaser from 'phaser'
 import * as spriteAssetKey from 'assets/spriteAssetKey.json!json';
-import {Editor} from "Editor"; 
-import {WFC} from 'WFC';
+import {Editor} from "Editor";
+import {SimpleTiledModel} from './Model//WaveFunctionCollapse/SimpleTiledModel'
+import * as tileset_info from "./Model/WaveFunctionCollapse/tile_info.json!json"
 
-/*************** TODO: refactor code ************** */
-// set WFC dimensions
-var WFCTest;
+
+// var jsA = []
+// var item_num = [0, 1, 2]
+// for (let i = 0; i < 100; i++) {
+//     for (let k = 0; k < 100; k++) {
+//         if (i == k) {
+//             continue
+//         }
+//         let item_s = item_num[Math.floor(Math.random() * item_num.length)].toString()
+//         let js = {
+//             "left" : i.toString() + " 0" + " " + item_s, "right": k.toString() + " 0" + " 0" 
+//         }
+//         jsA.push(js);
+//     }
+// }
+
+// console.log(JSON.stringify(jsA))
+
+// debugger
+var game = new Phaser.Game(512, 512, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 var editor;
-var test_json = {
-  tiles: [
-      {name: 'tile_1', symmetry: '\\'},
-      {name: 'tile_2', symmetry: 'L'},
-      {name: 'tile_3', symmetry: 'X'}
-  ],
-  // Number after tile name is referring to rotation. 
-  // 0 = 0 degree rotation, 1 = 90 degree rotation, 2 = 180 degree rotation,
-  // 3 = 270 degree rotation.
-  neighbors: [
-      {left: 'tile_1 0', right: 'tile_2 0'},
-      {left: 'tile_2 0', right: 'tile_3 0'},
-      {left: 'tile_3 0', right: 'tile_1 1'}
-  ]
+var model = new SimpleTiledModel(false, "item", 10, 10, tileset_info, null);
+var tilemap = model.GenerateTileMap(10,0);
+var i = 0;
+
+
+while (tilemap[0] == undefined) {
+    tilemap = model.GenerateTileMap(10, 0);
+    if (i == 1) {
+        throw "10 passes and still nothing."
+    }
+    i++;
 }
-// more spagetti code dump - yay
-// listens for tile number change
-var numButton = document.getElementById("numButton");
-var tileNum = +document.getElementById("tileNumInput").value;      // number of tiles in x
-var exportButton = document.getElementById("exportButton");
-
-numButton.addEventListener("click", function(){
-    tileNum = +document.getElementById("tileNumInput").value;
-    handler();
-});
-
-WFCTest = new WFC(false, tileNum, tileNum, test_json);
-
-exportButton.addEventListener("click", function(){
-    // WFCTest.getTiled2dmap();
-    var json_to_file = WFCTest.getTiled2dmap();
-
-    let a = document.createElement("a");
-    let json_string = JSON.stringify(json_to_file, null, 4);
-    let file = new Blob([json_string], {type: 'text/plain'});
-    a.href = URL.createObjectURL(file);
-    a.download = 'testJson.json';
-    a.click(); // wow what a terrible hack.
-});
-
-
-// // more spagetti code dump - yay
-// // listens for tile number change
-// var sizeButton = document.getElementById("sizeButton");
-// var tileNum = +document.getElementById("tileSizeInput").value;      // number of tiles in x
-// var exportButton = document.getElementById("exportButton");
-
-// sizeButton.addEventListener("click", function(){
-//     tileNum = +document.getElementById("tileSizeInput").value;
-//     handler();
-// });
-
-// WFCTest = new WFC(false, tileNum, tileNum, test_json);
-
-// exportButton.addEventListener("click", function(){
-//     // WFCTest.getTiled2dmap();
-//     console.log(editor.GetChangedTilePair());
-//     var json_to_file = WFCTest.getTiled2dmap();
-
-//     let a = document.createElement("a");
-//     let json_string = JSON.stringify(json_to_file, null, 4);
-//     let file = new Blob([json_string], {type: 'text/plain'});
-//     a.href = URL.createObjectURL(file);
-//     a.download = 'testJson.json';
-//     a.click(); // wow what a terrible hack.
-// });
-
-
-var pcg_tilemap = WFCTest.getTiled2dmap();
-var tileSize = pcg_tilemap.tilesets[0].tileheight;     // x size of tiles (pixels)
-
-// set selector dimensions
-var selectorY = Math.ceil(pcg_tilemap.tilesets[0].tilecount/pcg_tilemap.height);    // number of rows of tiles
-
-// calculate world dimensions
-// TODO: replace with Controller.getWorldSize(tilemap) returns [worldWidth, worldLength]
-var worldWidth = tileSize * tileNum;   // x size of world (pixels)
-var worldLength = tileSize * (tileNum+selectorY);     // y size of world (pixels)
+debugger;
 
 
 /*************** Start Phaser ************** */
@@ -172,6 +125,8 @@ function create () {
 
 function update() {
     // TODO: add player movement mechanics
+    console.log(game.keyboard.lastKey);
+    
 
     // editor.Update(game);
 }
