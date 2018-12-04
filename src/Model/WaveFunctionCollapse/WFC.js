@@ -1,8 +1,16 @@
 import * as Constraints from "./Constraints/Constraints"
 
+/* TODO: put seeded in output 
+ * 1. why knockout vs chose one? 
+ * 2. if you have committed tiles, can you fill out probability constraints including non local constraints? 
+ * 3. what is a subspace?
+ *      data centered 
+ * 4. more than one key? */
+
 export function WFC(periodic, width, height, tileset_info) {
     let subsets_info = tileset_info["subsets"];
     let subsets = GenerateSubsets(subsets_info, width, height);
+    debugger
     let tile_amount = MaxTiles(subsets);
     let item_amount = MaxItems(subsets)
     let wave = GenerateWave(tile_amount, item_amount, width, height);
@@ -99,6 +107,7 @@ function GenerateSubsets(subsets_info, width, height) {
         let items = Constraints.GenerateItems(subset_info["items_info"]);
         let neighbors = subset_info["neighbors"].length != 0 ? subset_info["neighbors"] :
                         Constraints.GetNeighbors(tiles)
+                        // debugger
         let neighbor_propagator = GeneratePropagator(neighbors, tiles, items)
         let subset = {
             "tiles": tiles,
@@ -138,6 +147,7 @@ function GeneratePropagator(neighbors, tiles, items) {
             propagator[d][t] = new Array(tile_names.length).fill(false); // This will be the bool array. Since each tile should know what it's possible neighbor tile is.
         }
     }
+    // debugger
     for (let i = 0; i < neighbor_tiles.length; i++) {
         neighbor_pair = neighbor_tiles[i];
         left = neighbor_pair.left
@@ -166,12 +176,14 @@ function GeneratePropagator(neighbors, tiles, items) {
         }
     }
     sparse_propagator = new Array(4);
+    
     for (let d = 0; d < 4; d++) {
         sparse_propagator[d] = new Array(4);
         for (let t = 0; t < tile_names.length; t++) {
             sparse_propagator[d][t] = [];
         }
     }
+
     for (let d = 0; d < 4; d++) {
         for (let t = 0; t < tile_names.length; t++) {
             let sp = sparse_propagator[d][t];

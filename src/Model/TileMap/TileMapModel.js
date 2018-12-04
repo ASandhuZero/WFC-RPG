@@ -51,6 +51,7 @@ export class TileMapModel {
         this.items = this.getMap(1);
         this.item_objects = this.createItemObjects();
         console.log(this.createItemObjects());
+        console.log(this.tileMapArray);
     }
 
     getWFCModel() {
@@ -101,13 +102,16 @@ export class TileMapModel {
 
     calculateItemPosition(id) {
         let xWorld = this.width * this.tilesize;
+        console.log(id)
         let place = id*this.tilesize;
-        let x = xWorld;
+        let x = place;
         let y = 0;
 
-        if (place > xWorld ){
-            y = place / xWorld;
-            x = place - xWorld;
+        if (place >= xWorld ){
+            
+            y = place % xWorld;
+            x = Math.floor(place / xWorld)*this.tilesize-this.tilesize;
+            console.log([x,y]);
         }
 
         return [x,y];
@@ -116,9 +120,9 @@ export class TileMapModel {
     createItemObjects() {
         let itemsObjectArray = [];
         let j = 0;
-        console.log(this.items);
+        // console.log(this.items);
         for (let i = 0; i < this.items.length; i++){
-            console.log(this.items[i])
+            // console.log(this.items[i])
             if (this.items[i]>0){
                 let itemJSON = {
                     "gid":this.items[i],
