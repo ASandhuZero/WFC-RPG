@@ -42,15 +42,17 @@ export class TileMapModel {
         this.tileJSON = tileJSON;
         // this.tileConstraints = tileConstraints;
         this.constraints = null;
+        // debugger
         this.tileMapArray = this.getWFCModel();
         console.log(this.tiles);
         // this.tileArray = this.getTileMap();
         // this.map = this.tileMapArray.GenerateTileMap(this.height, 0);
+        debugger 
         this.tileMap = this.getTile2DJSON();
-        this.tiles = this.getMap(0);
+        // this.tiles = this.getMap(0);
         this.items = this.getMap(1);
         this.item_objects = this.createItemObjects();
-        console.log(this.createItemObjects());
+        // console.log(this.createItemObjects());
         console.log(this.tileMapArray);
     }
 
@@ -62,6 +64,7 @@ export class TileMapModel {
     // Input: int a - 0 >> array of tiles; 1 >> array of items
     // Output: [tile, tile ...]
     getMap(a) {
+        // debugger
         var array = [];
         var elements, element, tile_number, rotation;
         switch(a) {
@@ -73,6 +76,7 @@ export class TileMapModel {
                 }
                 break;
             case 0:
+            // debugger
                 for (let i = 0; i < this.tileMapArray.length; i++) {
                     elements = this.tileMapArray[i];
                     element = elements.split(/[ ]+/);
@@ -101,28 +105,23 @@ export class TileMapModel {
     }
 
     calculateItemPosition(id) {
-        let xWorld = this.width * this.tilesize;
-        console.log(id)
-        let place = id*this.tilesize;
-        let x = place;
-        let y = 0;
+        let x=id*this.tilesize;
+        let y=0;
 
-        if (place >= xWorld ){
-            
-            y = place % xWorld;
-            x = Math.floor(place / xWorld)*this.tilesize-this.tilesize;
+        if (id >= this.width ){
+            x = (id % this.width)*this.tilesize;
+            y = Math.floor(id / this.width)*this.tilesize;
             console.log([x,y]);
         }
-
         return [x,y];
     }
 
     createItemObjects() {
         let itemsObjectArray = [];
         let j = 0;
-        // console.log(this.items);
+        console.log(this.items);
         for (let i = 0; i < this.items.length; i++){
-            // console.log(this.items[i])
+            
             if (this.items[i]>0){
                 let itemJSON = {
                     "gid":this.items[i],

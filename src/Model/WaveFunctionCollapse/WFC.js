@@ -10,7 +10,7 @@ import * as Constraints from "./Constraints/Constraints"
 export function WFC(periodic, width, height, tileset_info) {
     let subsets_info = tileset_info["subsets"];
     let subsets = GenerateSubsets(subsets_info, width, height);
-    debugger
+    // debugger
     let tile_amount = MaxTiles(subsets);
     let item_amount = MaxItems(subsets)
     let wave = GenerateWave(tile_amount, item_amount, width, height);
@@ -20,7 +20,9 @@ export function WFC(periodic, width, height, tileset_info) {
 
     Clear(wave, tile_amount, subsets);
     while (result == null) {
+        debugger
         result = Observe(wave, subset, tile_amount, tile_array, periodic, width, height);
+        debugger
         if (result) {
             let tiles = subset["tiles"].names
             let items = subset["items"].names
@@ -28,6 +30,7 @@ export function WFC(periodic, width, height, tileset_info) {
             return GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height)
         }
         Propagate(wave, tile_array, periodic, width, height, subset);
+        debugger
     }
     
 }
@@ -91,6 +94,7 @@ function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, he
             }
         } 
     }
+    // debugger
     return array;
 }
 /**
@@ -101,14 +105,18 @@ function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, he
  */
 function GenerateSubsets(subsets_info, width, height) {
     let subsets = {}
+    // debugger
     for (let i = 0; i < subsets_info.length; i++) {
+        // debugger
         let subset_info = subsets_info[i]
         let tiles = Constraints.GenerateTiles(subset_info["tiles_info"], width, height);
         let items = Constraints.GenerateItems(subset_info["items_info"]);
+        // debugger
         let neighbors = subset_info["neighbors"].length != 0 ? subset_info["neighbors"] :
                         Constraints.GetNeighbors(tiles)
                         // debugger
         let neighbor_propagator = GeneratePropagator(neighbors, tiles, items)
+        // debugger
         let subset = {
             "tiles": tiles,
             "items": items,
@@ -117,6 +125,7 @@ function GenerateSubsets(subsets_info, width, height) {
         }
         subsets[subset_info["name"]] = subset;
     }
+    // debugger
     return subsets;
 }
 /**
@@ -133,6 +142,7 @@ function GeneratePropagator(neighbors, tiles, items) {
     let left, right, L_ID, R_ID, L, R, D, U;
 
     let neighbor_tiles = neighbors.tiles;
+    debugger
 
     let locality_propagator = new Array(4)
     let propagator = new Array(4);
@@ -169,12 +179,14 @@ function GeneratePropagator(neighbors, tiles, items) {
         propagator[1][U[4]][D[4]] = true;
         propagator[1][D[2]][U[2]] = true;
     }
+    // debugger
     for (let t = 0; t < tile_names.length; t++) {
         for (let t2 = 0; t2 < tile_names.length; t2++) {
             propagator[2][t][t2] = propagator[0][t2][t];
             propagator[3][t][t2] = propagator[1][t2][t];
         }
     }
+    // debugger
     sparse_propagator = new Array(4);
     
     for (let d = 0; d < 4; d++) {
@@ -183,7 +195,7 @@ function GeneratePropagator(neighbors, tiles, items) {
             sparse_propagator[d][t] = [];
         }
     }
-
+    // debugger
     for (let d = 0; d < 4; d++) {
         for (let t = 0; t < tile_names.length; t++) {
             let sp = sparse_propagator[d][t];
@@ -197,6 +209,7 @@ function GeneratePropagator(neighbors, tiles, items) {
             locality_propagator[d][t] = sp;
         }
     }
+    // debugger
     return locality_propagator;
 }
 /**
@@ -249,7 +262,7 @@ function Observe(wave, subset, tile_amount, tile_array, periodic, width, height)
     let min = 1000;
     let argmin = -1;
     let tiles_info = subset["tiles"];
-    
+    // debugger
     for (let i = 0; i < wave.length; i++) {
         if (OnBoundary(i % width, i / width, periodic, width, height)) {
             continue;
@@ -258,6 +271,7 @@ function Observe(wave, subset, tile_amount, tile_array, periodic, width, height)
         if (amount == 0) {
             return false;
         }
+        // debugger
         entropy = tiles_info.entropies[i];
         if (amount > 1 && entropy <= min) {
             // let noise = 0.000001 * this.random();
@@ -268,6 +282,8 @@ function Observe(wave, subset, tile_amount, tile_array, periodic, width, height)
             }
         }
     }
+    
+    // does this part tell when to terminate the observation?
     if (argmin == -1) {
         let observed = new Array(width * height);
         for (let i = 0; i <  wave.length; i++) {
@@ -279,14 +295,17 @@ function Observe(wave, subset, tile_amount, tile_array, periodic, width, height)
                 }
             }
         }
+        debugger
         return true;
     }
+    debugger
     let distribution = new Array(tiles_info.amount);
     let w = wave[argmin]["tiles"];
     for (let t = 0; t < tiles_info.amount; t++) {
         distribution[t] = w[t] ? tiles_info.weights[t] : 0;
         distribution[t] /= tiles_info.amount;
     }
+    // debugger
     let r = _NonZeroIndex(distribution);
     for (let t = 0; t < tiles_info.amount; t++) {
         if (w[t] != (t == r)) {
@@ -302,6 +321,7 @@ function Propagate(wave, tile_array, periodic, width, height, subset) {
     let DY = [0, 1, 0, -1];
     
     let tiles_info = subset["tiles"];
+    // debugger
     while(tile_array.length > 0) {
         let e1 = tile_array.pop(); // element 1
 
@@ -309,7 +329,7 @@ function Propagate(wave, tile_array, periodic, width, height, subset) {
         let tile_1 = e1[1];
         let x1 = index_1 % width;
         let y1 = Math.floor(index_1 / width);
-        
+        // debugger
         for (let d = 0; d < 4; d++) {
             let dx = DX[d]; 
             let dy = DY[d];

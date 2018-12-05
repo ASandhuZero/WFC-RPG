@@ -102,6 +102,12 @@ export class Controller {
         }
     }
 
+    checkModelOutput() {
+        if(this.model == undefined) {
+            
+        }
+    }
+
     // choose display type
     displayView() {
         switch(this.viewType){
