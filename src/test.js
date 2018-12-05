@@ -2,7 +2,7 @@ import {Controller} from './Controller/Controller'
 import * as test_json from "./testJSON.json!json"
 
 // Controller parameters: type, tileJSON, subset, newGame
-var wfcController = new Controller('Phaser',test_json, "item", false);
+var wfcController = new Controller('Phaser',test_json, "item", false, true);
 wfcController.displayView();
 
 var numButton = document.getElementById("numButton");
@@ -27,4 +27,15 @@ var updateButton = document.getElementById("updateButton");
 updateButton.addEventListener("click", function(){
     wfcController.getTilesUpdated();
     wfcController.updateTileMap();
+});
+
+var updateButton = document.getElementById("itemToggle");
+updateButton.addEventListener("click", function(){
+    if (wfcController.includeItem == true) {
+        wfcController.includeItem = false;
+    } else {
+        wfcController.includeItem = true;
+    }
+    wfcController.itemToggle();   
+    
 });

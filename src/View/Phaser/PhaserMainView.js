@@ -6,13 +6,14 @@ import {EditorView} from './PhaserEditorView'
  */
 
 export class MainState extends Phaser.State {
-    init(selectorY, tileSize, tileNum, tileMap, editor){
+    init(selectorY, tileSize, tileNum, tileMap, editor, includeItem){
         this.tileMap = tileMap;
         this.selectorY = selectorY;
         this.tileSize = tileSize;
         this.tileNum = tileNum;
         this.mapName = 'map';
         this.editor = editor;
+        this.includeItem = includeItem;
         // debugger
     }
 
@@ -21,6 +22,7 @@ export class MainState extends Phaser.State {
         this.game.load.tilemap(this.mapName, null, this.tileMap, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('Town_A', 'assets/tilesets/wolfsong/Town_A.png');
         this.game.load.image('car', 'assets/sprites/car.png');
+        this.game.load.image('ball', 'assets/sprites/blue_ball.png');
         // this.game.load.image(tileSet.name,tileSet.path);    //game.load.image('Town_A', 'assets/tilesets/wolfsong/Town_A.png'); 
         // this.game.load.tilemap(tileMap.name, null, tileMap.tilemap,Phaser.Tilemap.TILED_JSON);  //game.load.tilemap('testPCG', null, pcg_tilemap, Phaser.Tilemap.TILED_JSON);
     }
@@ -49,7 +51,9 @@ export class MainState extends Phaser.State {
         let items = this.game.add.group();
         items.enableBody = true;
         // Display objects using gid, x, and y position specified in TileMapModel JSON
-        this.map.createFromObjects('items', this.tileNum*this.tileNum+1, 'car', 0, true, false, items);
+        if(this.includeItem == true){
+            this.map.createFromObjects('items', this.tileNum*this.tileNum+1, 'ball', 0, true, false, items);
+        }
 
         // Create editor layer
         this.editor.Create(this.game, this.map, layer);

@@ -15,7 +15,7 @@ import {View} from '../View/View'
 
 export class Controller {
     // type = view type such as Phaser or Babylon
-    constructor(type, tileJSON, subset, newGame) {
+    constructor(type, tileJSON, subset, newGame, includeItem) {
         this.tileJSON = tileJSON;   // object of tiles and neighbors
         // this.tileConstraints = tileConstraints; // object of tiles and neighbors
         this.viewType = type;
@@ -25,12 +25,15 @@ export class Controller {
         this.model = new TileMapModel(this.view.tileSize, this.subset, this.view.tileNum, this.view.tileNum, this.tileJSON);  
         // console.log(this.model);
         this.newGame = newGame;
+        this.includeItem = includeItem;
         // this.updateTileMap();
     }
 
-    // getTileMap() {
-    //     return this.model.getTileMap;
-    // }
+    itemToggle() {
+        let phaserParam = this.getPhaserViewParam();
+        this.displayView = this.view.updatePhaserView(phaserParam);
+        return this.displayView;
+    }
 
     updateTileMap() {
         // console.log(this.model.tiles);
@@ -84,6 +87,7 @@ export class Controller {
             tileSize: this.view.tileSize,
             tileNum: this.view.tileNum,
             tileMap: this.model.tileMap,
+            includeItem: this.includeItem,
         }
         console.log(this.phaserViewParam);
         return this.phaserViewParam;
@@ -121,5 +125,6 @@ export class Controller {
                 this.view.displayBabylonView;
                 break;
         }
+        return null;
     }
 }

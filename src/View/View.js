@@ -13,6 +13,7 @@ export class View {
         this.getInputs();
         this.exportButton = document.getElementById("exportButton");
         this.numButton = document.getElementById("numButton");
+        // this.itemToggle = +document.getElementById("itemToggle").value;
     }
 
     getTileUpdated() {
