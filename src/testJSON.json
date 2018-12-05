@@ -35,9 +35,8 @@
         {
             "name":"No_items",
             "tiles_info" : [
-                {"name":"0", "symmetry":"X"},
-                {"name":"1", "symmetry":"X"},
-                {"name":"2", "symmetry":"X"}
+                {"name":"2", "symmetry":"T"},
+                {"name":"3", "symmetry":"T"}
             ],
             "items_info":[
                 {"name":"0", "weight":1},
@@ -45,7 +44,6 @@
             ],
             "neighbors":{
                 "tiles": [
-
                     ]},
             "rules":[
                 {

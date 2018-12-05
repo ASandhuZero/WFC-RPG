@@ -23,7 +23,7 @@ export class Controller {
         this.subset = subset;
         //TileMapModel parameters: int height, int width, {tile, neighbors}
         this.model = new TileMapModel(this.view.tileSize, this.subset, this.view.tileNum, this.view.tileNum, this.tileJSON);  
-        console.log(this.model);
+        // console.log(this.model);
         this.newGame = newGame;
         // this.updateTileMap();
     }
@@ -33,8 +33,9 @@ export class Controller {
     // }
 
     updateTileMap() {
-        console.log(this.model.tiles);
+        // console.log(this.model.tiles);
         let tiles = this.getTilesUpdated();
+        console.log(tiles);
         let sortedTiles = tiles.sort(function compare(a, b) {
             const indexA = a.index;
             const indexB = b.index;
@@ -92,8 +93,9 @@ export class Controller {
         switch(this.viewType){
             case 'Phaser':
                 this.view.getInputs();
-                this.model = new TileMapModel(this.subset, this.view.tileNum, this.view.tileNum, this.tileJSON);
+                this.model = new TileMapModel(this.view.tileSize, this.subset, this.view.tileNum, this.view.tileNum, this.tileJSON);
                 let phaserParam = this.getPhaserViewParam();
+                // console.log(this.model.tileMap)
                 this.displayView = this.view.updatePhaserView(phaserParam);
                 break;
             case 'Babylon':

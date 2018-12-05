@@ -40,21 +40,28 @@ export class TileMapModel {
         this.periodic = false;
         this.subset = subset;
         this.tileJSON = tileJSON;
+        this.tileCount = 128;
+        
         // this.tileConstraints = tileConstraints;
         this.constraints = null;
         // debugger
         this.tileMapArray = this.getWFCModel();
-        console.log(this.tiles);
         // this.tileArray = this.getTileMap();
         // this.map = this.tileMapArray.GenerateTileMap(this.height, 0);
         // debugger 
         this.tileMap = this.getTile2DJSON();
-        // this.tiles = this.getMap(0);
+        
+        this.tiles = this.getMap(0);
         // this.items = this.getMap(1);
         // this.item_objects = this.createItemObjects();
         // console.log(this.createItemObjects());
         console.log(this.tileMapArray);
     }
+
+    // getEditorHeight() {
+    //     let editorHeight = Math.ceil(this.getTile2DJSON().tilesets[0].tilecount/this.width);
+    //     return editorHeight;
+    // }
 
     getWFCModel() {
         this.model = WFC(this.periodic, this.height, this.width, this.tileJSON); 
@@ -111,7 +118,7 @@ export class TileMapModel {
 
         if (id >= this.width ){
             x = (id % this.width)*this.tilesize;
-            y = Math.floor(id / this.width)*this.tilesize;
+            y = (Math.floor(id / this.width))*this.tilesize;
         }
         return [x,y];
     }
@@ -119,32 +126,35 @@ export class TileMapModel {
     createItemObjects() {
         let itemsObjectArray = [];
         let j = 0;
-        let gid = this.tileMapArray.length;
+        let gid = this.tileMapArray.length+1;
         let items = this.getMap(1);
-        console.log(items);
+        let editorHeight = Math.ceil(this.tileCount/this.width)+1;
+        
         for (let i = 0; i < items.length; i++){
             
             if (items[i]>0){
                 let itemJSON = {
-                    "gid":gid+1,
+                    "gid":gid,
                     "id":j,
                     "name":this.subset,
                     "rotation":0,
                     "visible":true,
+                    "width": 0,
                     "x":this.calculateItemPosition(i)[0], //position x
-                    "y":this.calculateItemPosition(i)[1]
+                    "y":this.calculateItemPosition(i)[1]+(editorHeight*this.tilesize)
                 }
                 itemsObjectArray.push(itemJSON);
                 j++;
             }
         }
-        
+        // console.log(itemsObjectArray);
+        // console.log(editorHeight);
         return itemsObjectArray;
     }
 
     // Output: JSON file compatiblewith Tiled2D
     getTile2DJSON() {
-        console.log(this.getMap(0));
+        // console.log(this.getMap(0));
         let tile2DJSON = {
             "height":this.height,
             "infinite": false,
@@ -163,7 +173,7 @@ export class TileMapModel {
                 },
                 {
                     "draworder":"topdown",
-                    "height":this.tilesize,
+                    "height":this.height,
                     "name":"items",
                     "objects":this.createItemObjects(),
                     "opacity":1,
@@ -189,20 +199,19 @@ export class TileMapModel {
                     "margin":0,
                     "name":"Town_A",
                     "spacing":0,
-                    "tilecount":128,
+                    "tilecount":this.tileCount,
                     "tileheight":32,
                     "tilewidth":32
                 }, 
                 {
-                    "columns":8,
                     "firstgid":this.tileMapArray.length+1,
-                    "image":"../../assets/tilesets/wolfsong/Town_B.png",
-                    "imageheight":512,
-                    "imagewidth":256,
+                    "image":"../../assets/sprites/car.png",
+                    "imageheight":32,
+                    "imagewidth":32,
                     "margin":0,
-                    "name":"Town_B",
+                    "name":"car",
                     "spacing":0,
-                    "tilecount":128,
+                    "tilecount":1,
                     "tileheight":32,
                     "tilewidth":32
                    },
