@@ -20,9 +20,9 @@ export function WFC(periodic, width, height, tileset_info) {
 
     Clear(wave, tile_amount, subsets);
     while (result == null) {
-        debugger
+        // debugger
         result = Observe(wave, subset, tile_amount, tile_array, periodic, width, height);
-        debugger
+        // debugger
         if (result) {
             let tiles = subset["tiles"].names
             let items = subset["items"].names
@@ -30,7 +30,7 @@ export function WFC(periodic, width, height, tileset_info) {
             return GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height)
         }
         Propagate(wave, tile_array, periodic, width, height, subset);
-        debugger
+        // debugger
     }
     
 }
@@ -142,7 +142,7 @@ function GeneratePropagator(neighbors, tiles, items) {
     let left, right, L_ID, R_ID, L, R, D, U;
 
     let neighbor_tiles = neighbors.tiles;
-    debugger
+    // debugger
 
     let locality_propagator = new Array(4)
     let propagator = new Array(4);
@@ -295,10 +295,10 @@ function Observe(wave, subset, tile_amount, tile_array, periodic, width, height)
                 }
             }
         }
-        debugger
+        // debugger
         return true;
     }
-    debugger
+    // debugger
     let distribution = new Array(tiles_info.amount);
     let w = wave[argmin]["tiles"];
     for (let t = 0; t < tiles_info.amount; t++) {

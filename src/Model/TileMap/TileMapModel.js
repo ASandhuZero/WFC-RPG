@@ -47,11 +47,11 @@ export class TileMapModel {
         console.log(this.tiles);
         // this.tileArray = this.getTileMap();
         // this.map = this.tileMapArray.GenerateTileMap(this.height, 0);
-        debugger 
+        // debugger 
         this.tileMap = this.getTile2DJSON();
         // this.tiles = this.getMap(0);
-        this.items = this.getMap(1);
-        this.item_objects = this.createItemObjects();
+        // this.items = this.getMap(1);
+        // this.item_objects = this.createItemObjects();
         // console.log(this.createItemObjects());
         console.log(this.tileMapArray);
     }
@@ -107,11 +107,11 @@ export class TileMapModel {
     calculateItemPosition(id) {
         let x=id*this.tilesize;
         let y=0;
+        
 
         if (id >= this.width ){
             x = (id % this.width)*this.tilesize;
             y = Math.floor(id / this.width)*this.tilesize;
-            console.log([x,y]);
         }
         return [x,y];
     }
@@ -119,12 +119,14 @@ export class TileMapModel {
     createItemObjects() {
         let itemsObjectArray = [];
         let j = 0;
-        console.log(this.items);
-        for (let i = 0; i < this.items.length; i++){
+        let gid = this.tileMapArray.length;
+        let items = this.getMap(1);
+        console.log(items);
+        for (let i = 0; i < items.length; i++){
             
-            if (this.items[i]>0){
+            if (items[i]>0){
                 let itemJSON = {
-                    "gid":this.items[i],
+                    "gid":gid+1,
                     "id":j,
                     "name":this.subset,
                     "rotation":0,
@@ -158,7 +160,19 @@ export class TileMapModel {
                     "width":this.width,
                     "x":0,
                     "y":0
-                }],
+                },
+                {
+                    "draworder":"topdown",
+                    "height":this.tilesize,
+                    "name":"items",
+                    "objects":this.createItemObjects(),
+                    "opacity":1,
+                    "type":"objectgroup",
+                    "visible":true,
+                    "width":this.width,
+                    "x":0,
+                    "y":0
+                  }],
             "nextobjectid":1,
             "nextlayerid": 2,
             "orientation":"orthogonal",
@@ -179,6 +193,19 @@ export class TileMapModel {
                     "tileheight":32,
                     "tilewidth":32
                 }, 
+                {
+                    "columns":8,
+                    "firstgid":this.tileMapArray.length+1,
+                    "image":"../../assets/tilesets/wolfsong/Town_B.png",
+                    "imageheight":512,
+                    "imagewidth":256,
+                    "margin":0,
+                    "name":"Town_B",
+                    "spacing":0,
+                    "tilecount":128,
+                    "tileheight":32,
+                    "tilewidth":32
+                   },
             ],
             "tilewidth":32,
             "type":"map",

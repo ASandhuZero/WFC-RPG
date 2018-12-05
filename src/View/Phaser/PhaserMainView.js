@@ -44,6 +44,10 @@ export class MainState extends Phaser.State {
         // this.tileChanged = this.editor.GetChangedTilePair();
         // console.log(this.tileChanged);
         // console.log(typeof EditorView.Create(this.game, this.map, layer));
+
+        // add items
+        
+
         this.editor.Create(this.game, this.map, layer);
         this.game.scale.pageAlignHorizontally = true;
         this.game.scale.pageAlignVertically = true;
