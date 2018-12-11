@@ -79,7 +79,6 @@ export function GenerateRules(rules_info) {
                 "constraints" : constraints
         }
     }
-    debugger
     return rules
 }
 
