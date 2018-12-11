@@ -3,12 +3,12 @@ import * as Constraints from "./Constraints/Constraints"
 export function WFC(periodic, width, height, tileset_info) {
     let data = tileset_info["data"];
     let tile_data = GenerateTileData(data, width, height);
+    debugger
     let tile_amount = tile_data.tiles.amount;
     let item_amount = tile_data.items.amount;
     let wave = GenerateWave(tile_amount, item_amount, width, height);
     let tile_array = [];
     let result = null;
-
     Clear(wave, tile_amount, tile_data);
     while (result == null) {
         result = Observe(wave, tile_data, tile_amount, tile_array, periodic, width, height);
@@ -66,13 +66,6 @@ function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, he
                             }
                         }
                     }
-                        // if (tile_elem[t]) {
-                    //     for (let i = 0; i < tile_amount; i++) {
-                    //         if (item_elem[i]) {
-                    //             array.push(tiles[t] + ' ' + tiles[i]);
-                    //         } 
-                    //     }
-                    // }
                 }
             }
         } 
@@ -89,12 +82,14 @@ function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, he
 function GenerateTileData(data, width, height) {
     let tiles = Constraints.GenerateTiles(data["tiles_info"], width, height);
     let items = Constraints.GenerateItems(data["items_info"]);
+    let rules = Constraints.GenerateRules(data["rules_info"])
     let neighbors = data["neighbors"].length != 0 ? data["neighbors"] :
                     Constraints.GetNeighbors(tiles)
     let neighbor_propagator = GeneratePropagator(neighbors, tiles, items)
     let tile_data = {
         "tiles": tiles,
         "items": items,
+        "rules": rules,
         "neighbors": neighbors,
         "neighbor_propagator": neighbor_propagator
     }
