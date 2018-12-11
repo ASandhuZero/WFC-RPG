@@ -78,7 +78,7 @@ export function GenerateItems(item_info) {
         items["names"].push(item.name);
         items["weights"].push(item.weight || 1);
     }
-    items["item_amount"] = items["names"].length;
+    items["amount"] = items["names"].length;
     return items
 }
 

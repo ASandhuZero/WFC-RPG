@@ -1,53 +1,47 @@
 import * as Constraints from "./Constraints/Constraints"
 
 export function WFC(periodic, width, height, tileset_info) {
-    let subsets_info = tileset_info["subsets"];
-    let subsets = GenerateSubsets(subsets_info, width, height);
-    let tile_amount = MaxTiles(subsets);
-    let item_amount = MaxItems(subsets)
+    let data = tileset_info["data"];
+    let tile_data = GenerateTileData(data, width, height);
+    let tile_amount = tile_data.tiles.amount;
+    let item_amount = tile_data.items.amount;
     let wave = GenerateWave(tile_amount, item_amount, width, height);
-    let subset = subsets["No_items"]
     let tile_array = [];
     let result = null;
 
-    Clear(wave, tile_amount, subsets);
+    Clear(wave, tile_amount, tile_data);
     while (result == null) {
-        result = Observe(wave, subset, tile_amount, tile_array, periodic, width, height);
+        result = Observe(wave, tile_data, tile_amount, tile_array, periodic, width, height);
         if (result) {
-            let tiles = subset["tiles"].names
-            let items = subset["items"].names
-            debugger
+            let tiles = tile_data["tiles"].names
+            let items = tile_data["items"].names
             return GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height)
         }
-        Propagate(wave, tile_array, periodic, width, height, subset);
+        Propagate(wave, tile_array, periodic, width, height, tile_data);
     }
     
 }
-function Clear(wave, tile_amount, subsets) {
+function Clear(wave, tile_amount, tile_data) {
     let opposite = [2, 3, 0, 1];
-    let entries = Object.entries(subsets)
+    let tiles = tile_data.tiles;
     for (let i = 0; i < wave.length; i++) {
         for (let t = 0; t < tile_amount; t++) {
             wave[i]["tiles"][t] = true;
         }
     }
-    for (const [name, subset] of entries) {
-        let tiles_info = subset["tiles"]
-        for (let w = 0; w < wave.length; w++) {
-            for (let t = 0; t < tiles_info.amount; t++) {
-                for (let d = 0; d < 4; d++) {
-                    tiles_info.compatible[w][t][d] = subset.neighbor_propagator[opposite[d]][t].length; // compatible is the compatible tiles of t. NOT t itself. Which is why opposite is involved.
-                }
+    for (let w = 0; w < wave.length; w++) {
+        for (let t = 0; t < tile_amount; t++) {
+            for (let d = 0; d < 4; d++) {
+                tiles.compatible[w][t][d] = tile_data.neighbor_propagator[opposite[d]][t].length; // compatible is the compatible tiles of t. NOT t itself. Which is why opposite is involved.
             }
         }
-        for (let t = 0; t < wave.length; t++) {
-            tiles_info.sums_of_ones[t] = tiles_info.weights.length;
-            tiles_info.sums_of_weights[t] = tiles_info.summed_weights;
-            tiles_info.sums_of_log_weights[t] = tiles_info.summed_log_weights;
-            tiles_info.entropies[t] = tiles_info.starting_entropy;
-        }
     }
-
+    for (let t = 0; t < wave.length; t++) {
+        tiles.sums_of_ones[t] = tiles.weights.length;
+        tiles.sums_of_weights[t] = tiles.summed_weights;
+        tiles.sums_of_log_weights[t] = tiles.summed_log_weights;
+        tiles.entropies[t] = tiles.starting_entropy;
+    }
 }
 function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height) {
     let array = [];
@@ -83,32 +77,28 @@ function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, he
             }
         } 
     }
+    debugger
     return array;
 }
 /**
- * GenerateSubsets
- *  Takes subset_info and creates subsets based off info.
- * @param {array} subsets_info 
+ * GenerateTileData
+ *  Takes data and converts data into something that WFC can read.
+ * @param {array} data 
  * @returns {object} subsets
  */
-function GenerateSubsets(subsets_info, width, height) {
-    let subsets = {}
-    for (let i = 0; i < subsets_info.length; i++) {
-        let subset_info = subsets_info[i]
-        let tiles = Constraints.GenerateTiles(subset_info["tiles_info"], width, height);
-        let items = Constraints.GenerateItems(subset_info["items_info"]);
-        let neighbors = subset_info["neighbors"].length != 0 ? subset_info["neighbors"] :
-                        Constraints.GetNeighbors(tiles)
-        let neighbor_propagator = GeneratePropagator(neighbors, tiles, items)
-        let subset = {
-            "tiles": tiles,
-            "items": items,
-            "neighbors": neighbors,
-            "neighbor_propagator": neighbor_propagator
-        }
-        subsets[subset_info["name"]] = subset;
+function GenerateTileData(data, width, height) {
+    let tiles = Constraints.GenerateTiles(data["tiles_info"], width, height);
+    let items = Constraints.GenerateItems(data["items_info"]);
+    let neighbors = data["neighbors"].length != 0 ? data["neighbors"] :
+                    Constraints.GetNeighbors(tiles)
+    let neighbor_propagator = GeneratePropagator(neighbors, tiles, items)
+    let tile_data = {
+        "tiles": tiles,
+        "items": items,
+        "neighbors": neighbors,
+        "neighbor_propagator": neighbor_propagator
     }
-    return subsets;
+    return tile_data;
 }
 /**
  * GeneratePropagator
@@ -205,38 +195,11 @@ function GenerateWave(tile_amount, item_amount, width, height) {
     }
     return wave;
 }
-/**
- * MaxTiles
- * @param {object} subsets 
- * @returns tile_amount max amount of tiles from all subsets.
- */
-function MaxTiles(subsets) {    
-    let entries = Object.entries(subsets)
-    let tile_amount = 0;
-    for (const [name, info] of entries) {
-        let tiles_info = info["tiles"];
-        if (tiles_info.amount > tile_amount) {
-            tile_amount = tiles_info.amount;
-        }
-    }
-    return tile_amount;
-}
-function MaxItems(subsets) {
-    let entries = Object.entries(subsets)
-    let item_amount = 0;
-    for (const [name, info] of entries) {
-        let items_info = info["items"];
-        if (items_info.item_amount > item_amount) {
-            item_amount = items_info.item_amount;
-        }
-    }
-    return item_amount;
-}
-function Observe(wave, subset, tile_amount, tile_array, periodic, width, height) {
+function Observe(wave, tile_data, tile_amount, tile_array, periodic, width, height) {
     let noise, amount, entropy;
     let min = 1000;
     let argmin = -1;
-    let tiles_info = subset["tiles"];
+    let tiles_info = tile_data["tiles"];
     
     for (let i = 0; i < wave.length; i++) {
         if (OnBoundary(i % width, i / width, periodic, width, height)) {
@@ -279,17 +242,17 @@ function Observe(wave, subset, tile_amount, tile_array, periodic, width, height)
     for (let t = 0; t < tiles_info.amount; t++) {
         if (w[t] != (t == r)) {
             tile_array = BanTile(wave, tiles_info, argmin, t, tile_array);
-            let items_info = subset["items"];
+            let items_info = tile_data["items"];
             BanItem(wave, items_info, argmin, null, null)
         }
     }
     return null;
 }
-function Propagate(wave, tile_array, periodic, width, height, subset) {
+function Propagate(wave, tile_array, periodic, width, height, tile_data) {
     let DX = [-1, 0, 1, 0];
     let DY = [0, 1, 0, -1];
     
-    let tiles_info = subset["tiles"];
+    let tiles_info = tile_data["tiles"];
     while(tile_array.length > 0) {
         let e1 = tile_array.pop(); // element 1
 
@@ -321,7 +284,7 @@ function Propagate(wave, tile_array, periodic, width, height, subset) {
             }
 
             let index_2 = x2 + y2 * width;  // Item 2
-            let p = subset.neighbor_propagator[d][tile_1];
+            let p = tile_data.neighbor_propagator[d][tile_1];
             let compat = tiles_info.compatible[index_2];
             for (let l = 0; l < p.length; l++) {
                 let tile_2 = p[l] 
@@ -329,7 +292,7 @@ function Propagate(wave, tile_array, periodic, width, height, subset) {
                 comp[d] = comp[d] - 1;
                 if (comp[d] == 0) {
                     tile_array = BanTile(wave, tiles_info, index_2, tile_2, tile_array);
-                    let items_info = subset["items"];
+                    let items_info = tile_data["items"];
                     BanItem(wave, items_info, index_2, null, null)
                 }
             }
