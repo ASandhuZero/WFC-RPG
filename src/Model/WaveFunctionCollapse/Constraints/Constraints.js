@@ -28,22 +28,36 @@ export function GetNeighbors(tiles) {
     }
     return neighbors
 }
-export function GetItemRules(rules_info) {
+
+export function GenerateItems(item_info) {
+    let item;
+    let items = {
+        names: [],
+        weights: []
+    }
+    for (let i = 0; i < item_info.length; i++) {
+        item = item_info[i];
+        items["names"].push(item.name);
+        items["weights"].push(item.weight || 1);
+    }
+    items["amount"] = items["names"].length;
+    return items
+}
+
+export function GenerateRules(rules_info) {
     let rule, constraints_info, constraint, result;
     let constraints = {
         "LESS" : {},
         "GREATER" : {},
         "EQUALS" : {},
     }
-    let rules = {
-    }
+    let rules = {}
     for (let i = 0; i < rules_info.length; i++) {
         rule = rules_info[i];
         constraints_info = rule.constraints;
         for (let c = 0; c < constraints_info.length; c++) {
             constraint = constraints_info[c];
-            [constraint, result] = constraint.split(',')
-            constraint = constraint.split(' ')
+            constraint = constraint.split(',')
             if (constraint[0] == "<") {
                 constraints["LESS"][constraint[1]] = [
                     constraint[2],
@@ -65,21 +79,8 @@ export function GetItemRules(rules_info) {
                 "constraints" : constraints
         }
     }
+    debugger
     return rules
-}
-export function GenerateItems(item_info) {
-    let item;
-    let items = {
-        names: [],
-        weights: []
-    }
-    for (let i = 0; i < item_info.length; i++) {
-        item = item_info[i];
-        items["names"].push(item.name);
-        items["weights"].push(item.weight || 1);
-    }
-    items["item_amount"] = items["names"].length;
-    return items
 }
 
 export function GenerateTiles(tiles_info, width, height) {
