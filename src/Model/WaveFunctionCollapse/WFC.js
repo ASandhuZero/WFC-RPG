@@ -28,6 +28,7 @@ export function WFC(periodic, width, height, tileset_info) {
                 definite_state++;
             }
             Propagate_Wave_Elem(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator)
+            debugger
         }
         if (definite_state == data_to_observe.length) {
             let tiles = tile_data["tiles"].names
