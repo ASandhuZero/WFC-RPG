@@ -11,36 +11,33 @@ export function WFC(periodic, width, height, tileset_info) {
     let data_to_observe = ["tiles", "items"]
     let wave = GenerateWave(tile_amount, item_amount, width, height);
     
-    let tiles_to_remove = [];
+    // let tiles_to_remove = [];
     let result = null;
     let definite_state = 0;
     
     Clear(wave, tile_amount, tile_data);
     
+    let elems_to_remove_obj = {};
+    for (elem of data_to_observe) {
+        elems_to_remove_obj[elem] = []
+    }
     while (result == null) {
-        
-        // result = Observe(wave, tile_data, tile_amount, tiles_to_remove, periodic, width, height);
+        definite_state = 0; 
         for (elem of data_to_observe) {
+            let elems_to_remove = elems_to_remove_obj[elem];
             let elem_data = tile_data[elem]
-            let elems_to_remove = []
-            result = Observe_Wave_Elem(wave, elem_data, elem, elems_to_remove, periodic, width, height);
+            result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height);
             if (result) {
                 definite_state++;
             }
-            Propagate_Wave_Elem(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator)
-            debugger
+            Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator)
         }
         if (definite_state == data_to_observe.length) {
+            debugger
             let tiles = tile_data["tiles"].names
             let items = tile_data["items"].names
             return GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height)
         }
-        // if (result) {
-        //     let tiles = tile_data["tiles"].names
-        //     let items = tile_data["items"].names
-        //     return GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height)
-        // }
-        // Propagate(wave, tiles_to_remove, periodic, width, height, tile_data);
     }
     
 }
@@ -220,7 +217,7 @@ function GenerateWave(tile_amount, item_amount, width, height) {
     return wave;
 }
 
-function Observe_Wave_Elem(wave, elem_data, elem, elems_to_remove, periodic, width, height) {
+function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height) {
     let noise, entropy, possiblities;
     let min = 1000;
     let argmin = -1;
@@ -235,6 +232,7 @@ function Observe_Wave_Elem(wave, elem_data, elem, elems_to_remove, periodic, wid
             return false;
         }
         entropy = elem_data.entropies[i];
+        
         if (possiblities > 1 && entropy <= min) {
             // let noise = 0.000001 * this.random();
             noise = 0.000001;
@@ -245,7 +243,6 @@ function Observe_Wave_Elem(wave, elem_data, elem, elems_to_remove, periodic, wid
         }
     }
     if (argmin == -1) {
-        debugger //TODO: ENTROPY IS LOWER THAN WHAT IT SHOULD BE.
         return true;
     }
     let distribution = new Array(elem_data.amount);
@@ -256,7 +253,6 @@ function Observe_Wave_Elem(wave, elem_data, elem, elems_to_remove, periodic, wid
         distribution[t] /= elem_data.amount;
     }
     let r = _NonZeroIndex(distribution);
-    
     for (let t = 0; t < elem_data.amount; t++) {
         if (w[t] != (t == r)) {
             elems_to_remove = Ban(wave, elem_data, elem, argmin, t, elems_to_remove);
@@ -270,73 +266,7 @@ function Observe_Wave_Elem(wave, elem_data, elem, elems_to_remove, periodic, wid
     return null;
 }
 
-
-function Observe(wave, tile_data, tile_amount, tiles_to_remove, periodic, width, height) {
-    let noise, amount, entropy;
-    let min = 1000;
-    let argmin = -1;
-    let tiles_info = tile_data["tiles"];
-    let tile_chosen = -1;
-    
-    for (let i = 0; i < wave.length; i++) {
-        if (OnBoundary(i % width, i / width, periodic, width, height)) {
-            continue;
-        }
-        amount = tiles_info.possible_choices[i];
-        if (amount == 0) {
-            return false;
-        }
-        entropy = tiles_info.entropies[i];
-        if (amount > 1 && entropy <= min) {
-            // let noise = 0.000001 * this.random();
-            noise = 0.000001;
-            if (entropy + noise < min) {
-                min = entropy + noise;
-                argmin = i;
-            }
-        }
-    }
-    if (argmin == -1) {
-        // let observed = new Array(width * height);
-        // for (let i = 0; i < wave.length; i++) {
-        //     for (let t = 0; t < tile_amount; t++) {
-        //         let wave_tiles = wave[i]["tiles"]
-        //         if (wave_tiles[t]) {
-        //             observed[i] = t;
-        //             break;
-        //         }
-        //     }
-        // }
-        debugger
-        return true;
-    }
-    let distribution = new Array(tiles_info.amount);
-    let w = wave[argmin]["tiles"];
-
-    for (let t = 0; t < tiles_info.amount; t++) {
-        distribution[t] = w[t] ? tiles_info.weights[t] : 0;
-        distribution[t] /= tiles_info.amount;
-    }
-    let r = _NonZeroIndex(distribution);
-
-    for (let t = 0; t < tiles_info.amount; t++) {
-        if (w[t] != (t == r)) {
-            tiles_to_remove = BanTile(wave, tiles_info, argmin, t, tiles_to_remove);
-            let items_info = tile_data["items"];
-            
-            // thing_to_remove = Ban(wave, info, info_type, argmin, t, thing_to_remove);
-
-            // items_to_remove = BanItem(wave, items_info, argmin, null, null);
-            BanItem(wave, items_info, argmin, null, null);
-        } else {
-            tile_chosen = t;
-        }
-    }
-    console.log(tiles_info.names[tile_chosen])
-    return null;
-}
-
-function Propagate_Wave_Elem(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator) {
+function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator) {
     let DX = [-1, 0, 1, 0];
     let DY = [0, 1, 0, -1];
     if (elem_data.compatible == undefined) {
@@ -379,7 +309,7 @@ function Propagate_Wave_Elem(wave, elems_to_remove, periodic, width, height, ele
                 let comp = compat[tile_2];
                 comp[d] = comp[d] - 1;
                 if (comp[d] == 0) {
-                    elems_to_remove = Ban(wave, elem_data, elem,  index_2, tile_2, elems_to_remove);
+                    elems_to_remove = Ban(wave, elem_data, elem, index_2, tile_2, elems_to_remove);
                 }
             }
         }
@@ -387,104 +317,23 @@ function Propagate_Wave_Elem(wave, elems_to_remove, periodic, width, height, ele
     return elems_to_remove
 }
 
-function Propagate(wave, tile_array, periodic, width, height, tile_data) {
-    let DX = [-1, 0, 1, 0];
-    let DY = [0, 1, 0, -1];
-    
-    let tiles_info = tile_data["tiles"];
-    while(tile_array.length > 0) {
-        let e1 = tile_array.pop(); // element 1
-
-        let index_1 = e1[0]; // Item 1
-        let tile_1 = e1[1];
-        let x1 = index_1 % width;
-        let y1 = Math.floor(index_1 / width);
-        
-        for (let d = 0; d < 4; d++) {
-            let dx = DX[d]; 
-            let dy = DY[d];
-            let x2 = x1 + dx;
-            let y2 = y1 + dy;
-
-            if (OnBoundary(x2, y2, periodic, width, height)) {
-                continue;
-            }
-
-            if (x2 < 0) {
-                x2 += width;
-            } else if (x2 >= width) {
-                x2 -= width;
-            }
-
-            if (y2 < 0) {
-                y2 += height;
-            } else if (y2 >= height) {
-                y2 -= height;
-            }
-
-            let index_2 = x2 + y2 * width;  // Item 2
-            let p = tile_data.neighbor_propagator[d][tile_1];
-            let compat = tiles_info.compatible[index_2];
-            for (let l = 0; l < p.length; l++) {
-                let tile_2 = p[l] 
-                let comp = compat[tile_2];
-                comp[d] = comp[d] - 1;
-                if (comp[d] == 0) {
-                    tile_array = BanTile(wave, tiles_info, index_2, tile_2, tile_array);
-                    let items_info = tile_data["items"];
-                    BanItem(wave, items_info, index_2, null, null)
-                }
-            }
-        }
-    }
-    return tile_array
-}
-function BanTile(wave, tiles_info, elem, tile, tiles_to_remove) {
-    let tile_amount = tiles_info.amount;
-    let wave_tile_array = wave[elem]["tiles"];
-    for (let i = tile_amount; i < wave_tile_array.length; i++) {
-        wave_tile_array[i] = false;
-    }
-    wave_tile_array[tile] = false;
-    tiles_info.compatible[elem][tile] = [0,0,0,0];
-
-    tiles_to_remove.push([elem, tile]);
-    let sum = tiles_info.sums_of_weights[elem];
-    tiles_info.entropies[elem] += tiles_info.sums_of_log_weights[elem] / sum - Math.log(sum);
-
-    tiles_info.possible_choices[elem] -= 1;
-    tiles_info.sums_of_weights[elem] -= tiles_info.weights[tile];
-    tiles_info.sums_of_log_weights[elem] -= tiles_info.log_weights[tile];
-
-    sum = tiles_info.sums_of_weights[elem];
-    tiles_info.entropies[elem] -= tiles_info.sums_of_log_weights[elem] / sum - Math.log(sum);
-
-    return tiles_to_remove;
-}
-
-
-function Ban(wave, elem_data, elem, wave_elem, index, elems_to_remove) {
-    let amount = elem_data.amount;
-    let wave_tile_array = wave[wave_elem][elem];
-    for (let i = amount; i < wave_tile_array.length; i++) {
-        wave_tile_array[i] = false;
-    }
-    wave_tile_array[elem] = false;
+function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove) {
+    let wave_array = wave[wave_index][elem];
+    wave_array[wave_elem] = false;
     if (elem_data.compatible != undefined) {
-        elem_data.compatible[wave_elem][index] = [0,0,0,0];
+        elem_data.compatible[wave_index][wave_elem] = [0,0,0,0];
     }
 
-    elems_to_remove.push([wave_elem, index]);
-    let sum = elem_data.sums_of_weights[wave_elem];
-    elem_data.entropies[wave_elem] += elem_data.sums_of_log_weights[wave_elem] / sum - Math.log(sum);
+    elems_to_remove.push([wave_index, wave_elem]);
+    let sum = elem_data.sums_of_weights[wave_index];
+    elem_data.entropies[wave_index] += elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum);
 
-    elem_data.possible_choices[wave_elem] -= 1;
-    elem_data.sums_of_weights[wave_elem] -= elem_data.weights[elem];
-    elem_data.sums_of_log_weights[wave_elem] -= elem_data.log_weights[elem];
+    elem_data.possible_choices[wave_index] -= 1;
+    elem_data.sums_of_weights[wave_index] -= elem_data.weights[wave_elem];
+    elem_data.sums_of_log_weights[wave_index] -= elem_data.log_weights[wave_elem];
 
-    sum = elem_data.sums_of_weights[wave_elem];
-    elem_data.entropies[wave_elem] -= elem_data.sums_of_log_weights[wave_elem] / sum - Math.log(sum);
-
+    sum = elem_data.sums_of_weights[wave_index];
+    elem_data.entropies[wave_index] -= elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum);
     return elems_to_remove;
 }
 
