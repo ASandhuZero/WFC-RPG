@@ -26,21 +26,42 @@ export function GetNeighbors(tiles) {
             neighbors["tiles"].push({"left":tile_names[i], "right":tile_names[j]})
         }
     }
+    debugger
     return neighbors
 }
 
-export function GenerateItems(item_info) {
+export function GenerateItems(item_info, width, height) {
     let item;
     let items = {
         names: [],
-        weights: []
+        weights: [],
+        amount:0
     }
+    let log_weights;
+    let sum_of_weights = 0; 
+    let sum_of_log_weights = 0;
+
     for (let i = 0; i < item_info.length; i++) {
         item = item_info[i];
         items["names"].push(item.name);
         items["weights"].push(item.weight || 1);
+        items["amount"]++
     }
-    items["amount"] = items["names"].length;
+
+    log_weights = new Array(items.amount);
+    for (let i = 0; i < items.amount; i++) {
+        log_weights[i] = items.weights[i] * Math.log(items.weights[i]);
+        sum_of_weights += items.weights[i];
+        sum_of_log_weights += log_weights[i];
+    }
+    items["log_weights"] = log_weights;
+    items["sum_of_weights"] = sum_of_weights;
+    items["sum_of_log_weights"] = sum_of_log_weights;
+    items["starting_entropy"] = Math.log(sum_of_weights) - sum_of_log_weights / sum_of_weights;
+    items["possible_choices"] = new Array(width * height);
+    items["sums_of_weights"] = new Array(width * height);
+    items["sums_of_log_weights"] = new Array(width * height);
+    items["entropies"] = new Array(width * height);
     return items
 }
 
@@ -61,17 +82,20 @@ export function GenerateRules(rules_info) {
             if (constraint[0] == "<") {
                 constraints["LESS"][constraint[1]] = [
                     constraint[2],
-                    result
+                    constraint[3],
+                    constraint[4]
                 ]
             } else if (constraint[0] == ">") {
                 constraints["GREATER"][constraint[1]] = [
                     constraint[2],
-                    result
+                    constraint[3],
+                    constraint[4]
                 ]
             }  else if (constraint[0] == "=") {
                 constraints["EQUALS"][constraint[1]] = [
                     constraint[2],
-                    result
+                    constraint[3],
+                    constraint[4]
                 ]
             }
         }
@@ -84,8 +108,8 @@ export function GenerateRules(rules_info) {
 
 export function GenerateTiles(tiles_info, width, height) {
     let tile, tile_name, new_tile, compatible, log_weights;
-    let summed_weights = 0;
-    let summed_log_weights = 0;
+    let sum_of_weights = 0;
+    let sum_of_log_weights = 0;
     let tiles = {
         rotations: [],
         names: [],
@@ -164,15 +188,15 @@ export function GenerateTiles(tiles_info, width, height) {
     
     for (let t = 0; t < tiles.amount; t++) {
         log_weights[t] = tiles.weights[t] * Math.log(tiles.weights[t]);
-        summed_weights += tiles.weights[t];
-        summed_log_weights += log_weights[t];
+        sum_of_weights += tiles.weights[t];
+        sum_of_log_weights += log_weights[t];
     }
     tiles["compatible"] = compatible;
     tiles["log_weights"] = log_weights;
-    tiles["summed_weights"] = summed_weights;
-    tiles["summed_log_weights"] = summed_log_weights;
-    tiles["starting_entropy"] = Math.log(summed_weights) - summed_log_weights / summed_weights;
-    tiles["sums_of_ones"] = new Array(width * height);
+    tiles["sum_of_weights"] = sum_of_weights;
+    tiles["sum_of_log_weights"] = sum_of_log_weights;
+    tiles["starting_entropy"] = Math.log(sum_of_weights) - sum_of_log_weights / sum_of_weights;
+    tiles["possible_choices"] = new Array(width * height);
     tiles["sums_of_weights"] = new Array(width * height);
     tiles["sums_of_log_weights"] = new Array(width * height);
     tiles["entropies"] = new Array(width * height);
