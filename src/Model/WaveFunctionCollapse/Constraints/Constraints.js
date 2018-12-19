@@ -26,6 +26,7 @@ export function GetNeighbors(tiles) {
             neighbors["tiles"].push({"left":tile_names[i], "right":tile_names[j]})
         }
     }
+    debugger
     return neighbors
 }
 
