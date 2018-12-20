@@ -18,6 +18,7 @@ export function WFC(periodic, width, height, tileset_info) {
     Clear(wave, tile_amount, tile_data);
     
     let elems_to_remove_obj = {};
+    // debugger
     for (elem of data_to_observe) {
         elems_to_remove_obj[elem] = []
     }
@@ -25,8 +26,12 @@ export function WFC(periodic, width, height, tileset_info) {
         definite_state = 0; 
         for (elem of data_to_observe) {
             let elems_to_remove = elems_to_remove_obj[elem];
+            console.log("elements to remove")
+            console.log(elems_to_remove);
+            // debugger
             let elem_data = tile_data[elem]
             
+            // Observe element returns true (argmin == -1), false (possiblities == 0), or null
             result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height);
             if (result) {
                 definite_state++;
@@ -157,7 +162,7 @@ function GeneratePropagator(neighbors, tiles, items) {
         right = neighbor_pair.right
         L_ID = tiles["IDs"][left];
         R_ID = tiles["IDs"][right]
-        L = tiles["rotations"][L_ID];
+        L = tiles["rotations"][L_ID];   // uses tile id number
         R = tiles["rotations"][R_ID];
         D = tiles["rotations"][L[1]];
         U = tiles["rotations"][R[1]];
@@ -265,7 +270,7 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
             chosen_elem = t;
         }
     }
-    console.log(elem_data.names[chosen_elem])
+    // console.log(elem_data.names[chosen_elem])
     return null;
 }
 
@@ -313,11 +318,12 @@ function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, ne
                 comp[d] = comp[d] - 1;
                 if (comp[d] == 0) {
                     elems_to_remove = Ban(wave, elem_data, elem, index_2, tile_2, elems_to_remove);
-                    debugger
+                    // debugger
                 }
             }
         }
     }
+    console.log("finished propagation");
     return elems_to_remove
 }
 
@@ -325,13 +331,14 @@ function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove) {
     let wave_array = wave[wave_index][elem];
     wave_array[wave_elem] = false;
     if (elem_data.compatible != undefined) {
-        elem_data.compatible[wave_index][wave_elem] = [0,0,0,0];
+        elem_data.compatible[wave_index][wave_elem] = [0,0,0,0];    // element in array denotes number of compatible tiles
     }
 
     elems_to_remove.push([wave_index, wave_elem]);
     let sum = elem_data.sums_of_weights[wave_index];
     elem_data.entropies[wave_index] += elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum);
-
+    console.log("entropies add")
+    console.log(elem_data.entropies[wave_index]);
     elem_data.possible_choices[wave_index] -= 1;
     debugger
     elem_data.sums_of_weights[wave_index] -= elem_data.weights[wave_elem];
@@ -339,6 +346,8 @@ function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove) {
 
     sum = elem_data.sums_of_weights[wave_index];
     elem_data.entropies[wave_index] -= elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum);
+    console.log("entropies sub")
+    console.log(elem_data.entropies[wave_index]);
     return elems_to_remove;
 }
 function _NonZeroIndex(array) {
