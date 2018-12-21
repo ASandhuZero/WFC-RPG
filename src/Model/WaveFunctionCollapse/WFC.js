@@ -22,13 +22,16 @@ export function WFC(periodic, width, height, tileset_info) {
     for (elem of data_to_observe) {
         elems_to_remove_obj[elem] = []
     }
+    
     while (definite_state != data_to_observe.length) {
         definite_state = 0; 
         for (elem of data_to_observe) {
+            debugger
             let elems_to_remove = elems_to_remove_obj[elem];
+            console.log(elem);
             console.log("elements to remove")
             console.log(elems_to_remove);
-            // debugger
+            console.log(elems_to_remove_obj)
             let elem_data = tile_data[elem]
             
             // Observe element returns true (argmin == -1), false (possiblities == 0), or null
@@ -225,11 +228,16 @@ function GenerateWave(tile_amount, item_amount, width, height) {
 }
 
 function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height) {
+    console.log(elem);
+    console.log("elements to remove")
+    console.log(elems_to_remove);
+    // debugger
     let noise, entropy, possiblities;
     let min = 1000;
     let argmin = -1;
     let chosen_elem = -1;
     
+    // update min to reflect highest entropy and noise
     for (let i = 0; i < wave.length; i++) {
         if (OnBoundary(i % width, i / width, periodic, width, height)) {
             continue;
@@ -239,28 +247,38 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
             return false;
         }
         entropy = elem_data.entropies[i];
-        
+        // console.log("observed entropy")
+        // console.log(i)
+        // console.log(entropy);
+        // debugger
         if (possiblities > 1 && entropy <= min) {
             // let noise = 0.000001 * this.random();
             noise = 0.000001;
             if (entropy + noise < min) {
                 min = entropy + noise;
                 argmin = i;
-                debugger
+                // debugger
             }
         }
     }
     if (argmin == -1) {
         return true;
     }
+
+    // Creates distribution array that reflects the weight of each tile according to the number of tiles in an element of the wave
     let distribution = new Array(elem_data.amount);
     let w = wave[argmin][elem];
-    
     for (let t = 0; t < elem_data.amount; t++) {
         distribution[t] = w[t] ? elem_data.weights[t] : 0;
         distribution[t] /= elem_data.amount;
     }
+
+    // debugger
+    // PURPOSE?
     let r = _NonZeroIndex(distribution);
+
+    // Decides which tiles to ban
+
     for (let t = 0; t < elem_data.amount; t++) {
         if (w[t] != (t == r)) {
             elems_to_remove = Ban(wave, elem_data, elem, argmin, t, elems_to_remove);
@@ -270,18 +288,26 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
             chosen_elem = t;
         }
     }
+    console.log("elements to remove")
+    console.log(elems_to_remove);
     // console.log(elem_data.names[chosen_elem])
     return null;
 }
 
 function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator) {
+    console.log("elements to remove in propagation")
+    console.log(elems_to_remove)
+
+    debugger
     let DX = [-1, 0, 1, 0];
     let DY = [0, 1, 0, -1];
+    let remove = elems_to_remove;
     if (elem_data.compatible == undefined) {
         return [];
     }
+    // item elem_to_remove never reaches this while loop
     while(elems_to_remove.length > 0) {
-        let e1 = elems_to_remove.pop(); // element 1
+        let e1 = remove.pop(); // element 1
 
         let index_1 = e1[0]; // Item 1
         let tile_1 = e1[1];
@@ -297,6 +323,7 @@ function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, ne
             if (OnBoundary(x2, y2, periodic, width, height)) {
                 continue;
             }
+            
             if (x2 < 0) {
                 x2 += width;
             } else if (x2 >= width) {
@@ -312,42 +339,69 @@ function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, ne
             let index_2 = x2 + y2 * width;  // Item 2
             let p = neighbor_propagator[d][tile_1];
             let compat = elem_data.compatible[index_2];
+            // debugger
             for (let l = 0; l < p.length; l++) {
                 let tile_2 = p[l] 
                 let comp = compat[tile_2];
                 comp[d] = comp[d] - 1;
                 if (comp[d] == 0) {
-                    elems_to_remove = Ban(wave, elem_data, elem, index_2, tile_2, elems_to_remove);
                     // debugger
+                    console.log("propagate ban")
+                    // elems_to_remove = Ban(wave, elem_data, elem, index_2, tile_2, elems_to_remove);
+                    elems_to_remove = Ban(wave, elem_data, elem, index_2, tile_2, remove);
+                    // console.log(elems_to_remove)
                 }
             }
+            // debugger
         }
     }
     console.log("finished propagation");
     return elems_to_remove
 }
 
+/**
+ * Ban
+ *  Removes tiles from wave.
+ * @param {matrix} wave 
+ * @param {object} elem_data
+ * @param {int} wave_index : index of element in wave
+ * @param {int} wave_elem : index of tile within element
+ * @param {array} elems_to_remove 
+ * @returns {array} elements to remove in wave
+ */
 function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove) {
-    let wave_array = wave[wave_index][elem];
-    wave_array[wave_elem] = false;
+    let wave_array = wave[wave_index][elem];    // creates array of tiles in chosen element
+
+    // This is where Ban actually bans the undesired tile
+    wave_array[wave_elem] = false;  // set tile to false according to wave_elem passed in
+
+    // This is where Ban takes it a step further to get rid of the banned tile's number of compatible tiles
     if (elem_data.compatible != undefined) {
-        elem_data.compatible[wave_index][wave_elem] = [0,0,0,0];    // element in array denotes number of compatible tiles
+        // elem_data.compatible contains number of compatible tiles
+        elem_data.compatible[wave_index][wave_elem] = [0,0,0,0];    // set the false tile's corresponding set of compatible tiles to 0
     }
 
-    elems_to_remove.push([wave_index, wave_elem]);
-    let sum = elem_data.sums_of_weights[wave_index];
-    elem_data.entropies[wave_index] += elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum);
-    console.log("entropies add")
-    console.log(elem_data.entropies[wave_index]);
+    // Now it's time to actually set the banned tile up for removal 
+    elems_to_remove.push([wave_index, wave_elem]);  // add the false tile to elems_to_remove array
+
+    // Need to recalculate entropy for the element in the wave
+    let sum = elem_data.sums_of_weights[wave_index];    // get sum of weights for element with false tile
+    // debugger
+    // console.log(elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum));
+    elem_data.entropies[wave_index] += elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum); // recalculate entropy
+
+
+    // console.log("entropies add")
+    // console.log(elem_data.entropies[wave_index]);
     elem_data.possible_choices[wave_index] -= 1;
-    debugger
     elem_data.sums_of_weights[wave_index] -= elem_data.weights[wave_elem];
     elem_data.sums_of_log_weights[wave_index] -= elem_data.log_weights[wave_elem];
 
     sum = elem_data.sums_of_weights[wave_index];
     elem_data.entropies[wave_index] -= elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum);
-    console.log("entropies sub")
-    console.log(elem_data.entropies[wave_index]);
+    // console.log(elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum));
+    // console.log("entropies sub")
+    // console.log(elem_data.entropies);
     return elems_to_remove;
 }
 function _NonZeroIndex(array) {

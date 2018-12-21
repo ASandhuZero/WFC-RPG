@@ -185,11 +185,11 @@ export function GenerateTiles(tiles_info, width, height) {
         }
     }
 
-    
+    // used for calculating entropy
     for (let t = 0; t < tiles.amount; t++) {
-        log_weights[t] = tiles.weights[t] * Math.log(tiles.weights[t]);
-        sum_of_weights += tiles.weights[t];
-        sum_of_log_weights += log_weights[t];
+        log_weights[t] = tiles.weights[t] * Math.log(tiles.weights[t]);    // negative of shannon's entropy
+        sum_of_weights += tiles.weights[t]; // total weight for an element in wave array
+        sum_of_log_weights += log_weights[t];   // total entropy for an element in wave array
     }
     tiles["compatible"] = compatible;
     tiles["log_weights"] = log_weights;
