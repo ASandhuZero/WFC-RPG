@@ -384,7 +384,9 @@ function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove) {
     // Now it's time to actually set the banned tile up for removal 
     elems_to_remove.push([wave_index, wave_elem]);  // add the false tile to elems_to_remove array
 
-    // Need to recalculate entropy for the element in the wave
+    // Need to recalculate entropy for the element in the wave using Shannon Entropy?
+    // H(X) = - sum (p * log2[p])
+
     let sum = elem_data.sums_of_weights[wave_index];    // get sum of weights for element with false tile
     // debugger
     // console.log(elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum));
