@@ -120,8 +120,8 @@ export function GenerateTiles(tiles_info, width, height) {
     let cardinality = 1;
     let tile_ID = 0;
 
-    let rotation = function(x) { return x; }
-    let mirror = function(x) { return x; }
+    let rotation = function(x) { return x; }    // calculator rotation value to add to tile ID to get correct tile
+    let mirror = function(x) { return x; }  // calculator mirrored tile's value to get correct tile
     
     for (let i = 0; i < tiles_info.length; i++) {
         tile = tiles_info[i];
@@ -134,27 +134,28 @@ export function GenerateTiles(tiles_info, width, height) {
             rotation = function(x) { return (x + 1) % 4; }
             mirror = function(x) { return x % 2 == 0 ? x + 1: x - 1; }
             break;
-        case 'T':
+            case 'T':
             cardinality = 4;
             rotation = function(x) { return (x + 1) % 4; }
             mirror = function(x) { return x % 2 == 0 ? x : 4 - x; }
             break;
-        case 'I':
+            case 'I':
             cardinality = 2;
             rotation = function(x) { return 1 - x; }
             break;
-        case '\\':
+            case '\\':
             cardinality = 2;
             rotation = function(x) { return 1 - x; }
             mirror = function(x) { return 1 - x; }
             break;
-        default: // Tiles with no manually assigned symmetries will default to X sym.
+            default: // Tiles with no manually assigned symmetries will default to X sym.
             console.warn("symmetry for tile " + tile.name + "is not set! Setting symmetry to default symmetry of X. Please change symmetry.")
             break;
         }
         
         for (let c = 0; c < cardinality; c++) {
             tile_name = tile.name + ' ' + c.toString();
+            console.log(tile_name)
             new_tile = [
                 c + tile_ID,
                 rotation(c) + tile_ID,
@@ -165,6 +166,7 @@ export function GenerateTiles(tiles_info, width, height) {
                 mirror(rotation(rotation(c))) + tile_ID,
                 mirror(rotation(rotation(rotation(c)))) + tile_ID
             ]
+            // debugger
             tiles["names"].push(tile_name);
             tiles["rotations"].push(new_tile)
             tiles["weights"].push(tile.weight || 1);
@@ -173,7 +175,9 @@ export function GenerateTiles(tiles_info, width, height) {
         }
         tile_ID += cardinality;
     }
-    
+
+
+    // compatible tiles should be calculated according to neighbor constraints?
     compatible = new Array(tiles.amount);
     log_weights = new Array(tiles.amount);
 
@@ -187,7 +191,7 @@ export function GenerateTiles(tiles_info, width, height) {
 
     // used for calculating entropy
     for (let t = 0; t < tiles.amount; t++) {
-        log_weights[t] = tiles.weights[t] * Math.log(tiles.weights[t]);    // negative of shannon's entropy
+        log_weights[t] = (tiles.weights[t] * Math.log(tiles.weights[t]));    // negative of shannon's entropy
         sum_of_weights += tiles.weights[t]; // total weight for an element in wave array
         sum_of_log_weights += log_weights[t];   // total entropy for an element in wave array
     }

@@ -2,33 +2,32 @@
     "data": {
         "name": "main",
         "tiles_info": [
-            {"name":"0", "symmetry":"X", "weight":0.5},
-            {"name":"1", "symmetry":"X", "weight":0.4},
-            {"name":"2", "symmetry":"X", "weight":0.5},
-            {"name":"3", "symmetry":"X", "weight":0.7},
-            {"name":"4", "symmetry":"X", "weight":0.2},
-            {"name":"5", "symmetry":"X", "weight":0.9},
-            {"name":"6", "symmetry":"X", "weight":0.8},
-            {"name":"7", "symmetry":"X", "weight":1},
-            {"name":"8", "symmetry":"X", "weight":0.1},
-            {"name":"9", "symmetry":"X", "weight":0.6}
+            {"name":"31", "symmetry":"I", "weight":1},
+            {"name":"30", "symmetry":"L", "weight":0.01}
+            
         ],
         "items_info":[
-            {"name":"0", "weight":1},
-            {"name":"1"},
-            {"name":"2"}
+            {"name":"0", "weight":0.01}
         ],
         "neighbors":[
-            {"left":"0 0", "right":"1 0"},
-            {"left":"1 0", "right":"2 0"},
-            {"left":"2 0", "right":"3 0"},
-            {"left":"3 0", "right":"4 0"},
-            {"left":"4 0", "right":"5 0"},
-            {"left":"5 0", "right":"6 0"},
-            {"left":"6 0", "right":"7 0"},
-            {"left":"7 0", "right":"8 0"},
-            {"left":"8 0", "right":"9 0"},
-            {"left":"9 0", "right":"0 0"}
+            {"left":"31 0", "right":"31 0"},
+            {"left":"31 0", "right":"30 2"},
+            {"left":"31 0", "right":"30 3"},
+            {"left":"31 1", "right":"31 1"},
+            {"left":"31 1", "right":"30 0"},
+            {"left":"31 1", "right":"30 1"},
+            {"left":"30 0", "right":"31 0"},
+            {"left":"30 0", "right":"30 2"},
+            {"left":"30 0", "right":"30 3"},
+            {"left":"30 1", "right":"31 0"},
+            {"left":"30 1", "right":"30 2"},
+            {"left":"30 1", "right":"30 3"},
+            {"left":"30 2", "right":"31 1"},
+            {"left":"30 2", "right":"30 0"},
+            {"left":"30 2", "right":"30 1"},
+            {"left":"30 3", "right":"31 1"},
+            {"left":"30 3", "right":"30 0"},
+            {"left":"30 3", "right":"30 1"}
         ],
         "rules_info":[
             {

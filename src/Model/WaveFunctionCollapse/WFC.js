@@ -26,7 +26,7 @@ export function WFC(periodic, width, height, tileset_info) {
     while (definite_state != data_to_observe.length) {
         definite_state = 0; 
         for (elem of data_to_observe) {
-            debugger
+            // debugger
             let elems_to_remove = elems_to_remove_obj[elem];
             console.log(elem);
             console.log("elements to remove")
@@ -48,7 +48,7 @@ export function WFC(periodic, width, height, tileset_info) {
     let tiles = tile_data["tiles"].names
     let items = tile_data["items"].names
     //DONE
-    debugger
+    // debugger
     return GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height)
 }
 function Clear(wave, tile_amount, tile_data) {
@@ -60,6 +60,7 @@ function Clear(wave, tile_amount, tile_data) {
             wave[i]["tiles"][t] = true;
         }
     }
+    debugger
     for (let w = 0; w < wave.length; w++) {
         for (let t = 0; t < tile_amount; t++) {
             for (let d = 0; d < 4; d++) {
@@ -106,7 +107,7 @@ function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, he
             }
         } 
     }
-    debugger
+    // debugger
     return array;
 }
 /**
@@ -122,6 +123,7 @@ function GenerateTileData(data, width, height) {
     let neighbors = data["neighbors"].length != 0 ? data["neighbors"] :
                     Constraints.GetNeighbors(tiles)
     let neighbor_propagator = GeneratePropagator(neighbors, tiles, items)
+    debugger
     let tile_data = {
         "tiles": tiles,
         "items": items,
@@ -151,6 +153,9 @@ function GeneratePropagator(neighbors, tiles, items) {
     
     let tile_names = tiles["names"];
 
+    debugger
+    // creates locality_propagator and propagator
+    // array of 4 elements, each element is an array equal to the number of tiles
     for (let d = 0; d < 4; d++) { // d is for direction.
         locality_propagator[d] = new Array(tile_names.length); // all the tiles. We are reaching that superposition stuff
         propagator[d] = new Array(tile_names.length); // all the tiles. We are reaching that superposition stuff
@@ -160,17 +165,20 @@ function GeneratePropagator(neighbors, tiles, items) {
         }
     }
     for (let i = 0; i < neighbor_tiles.length; i++) {
+        // dissect neighbor constraints
         neighbor_pair = neighbor_tiles[i];
         left = neighbor_pair.left
         right = neighbor_pair.right
-        L_ID = tiles["IDs"][left];
-        R_ID = tiles["IDs"][right]
+        L_ID = tiles["IDs"][left];  // user defined rotation for left tile
+        R_ID = tiles["IDs"][right]  // user defined rotation for right tile
         L = tiles["rotations"][L_ID];   // uses tile id number
-        R = tiles["rotations"][R_ID];
+        R = tiles["rotations"][R_ID];   // array of tile id number according to its rotations
         D = tiles["rotations"][L[1]];
         U = tiles["rotations"][R[1]];
         
-        propagator[0][R[0]][L[0]] = true;
+        // determines which neighbor tiles can exist
+        // why these ones?
+        propagator[0][R[0]][L[0]] = true;   // propagator[R, U, L, D]
         propagator[0][R[6]][L[6]] = true;
         propagator[0][L[4]][R[4]] = true;
         propagator[0][L[2]][R[2]] = true;
@@ -186,6 +194,7 @@ function GeneratePropagator(neighbors, tiles, items) {
             propagator[3][t][t2] = propagator[1][t2][t];
         }
     }
+
     sparse_propagator = new Array(4);
     for (let d = 0; d < 4; d++) {
         sparse_propagator[d] = new Array(4);
@@ -274,11 +283,9 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
     }
 
     // debugger
-    // PURPOSE?
     let r = _NonZeroIndex(distribution);
 
     // Decides which tiles to ban
-
     for (let t = 0; t < elem_data.amount; t++) {
         if (w[t] != (t == r)) {
             elems_to_remove = Ban(wave, elem_data, elem, argmin, t, elems_to_remove);
@@ -290,6 +297,7 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
     }
     console.log("elements to remove")
     console.log(elems_to_remove);
+    debugger
     // console.log(elem_data.names[chosen_elem])
     return null;
 }
@@ -299,31 +307,32 @@ function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, ne
     console.log(elems_to_remove)
 
     debugger
-    let DX = [-1, 0, 1, 0];
-    let DY = [0, 1, 0, -1];
-    let remove = elems_to_remove;
+    let DX = [1, 0, -1, 0]; // [right, up, left, down]
+    let DY = [0, 1, 0, -1]; // [right, up, left, down]
     if (elem_data.compatible == undefined) {
         return [];
     }
     // item elem_to_remove never reaches this while loop
     while(elems_to_remove.length > 0) {
-        let e1 = remove.pop(); // element 1
+        let e1 = elems_to_remove.pop(); // element 1
 
-        let index_1 = e1[0]; // Item 1
-        let tile_1 = e1[1];
-        let x1 = index_1 % width;
-        let y1 = Math.floor(index_1 / width);
-        
+        let index_1 = e1[0]; // index of element to remove
+        let tile_1 = e1[1]; // tile within element to remove
+        let x1 = index_1 % width;   // calculates x position of tile in map
+        let y1 = Math.floor(index_1 / width);   // calculate y position of tile in map
+        debugger
         for (let d = 0; d < 4; d++) {
-            let dx = DX[d]; 
+            let dx = DX[d];
             let dy = DY[d];
-            let x2 = x1 + dx;
-            let y2 = y1 + dy;
+            let x2 = x1 + dx;   // x position of neighbor
+            let y2 = y1 + dy;   // y position of neighbor
 
+            // boundary check
             if (OnBoundary(x2, y2, periodic, width, height)) {
                 continue;
             }
             
+            // x position correction for index_2 calculation?
             if (x2 < 0) {
                 x2 += width;
             } else if (x2 >= width) {
@@ -336,20 +345,22 @@ function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, ne
                 y2 -= height;
             }
 
-            let index_2 = x2 + y2 * width;  // Item 2
-            let p = neighbor_propagator[d][tile_1];
-            let compat = elem_data.compatible[index_2];
-            // debugger
+            // 
+            let index_2 = x2 + y2 * width;  // Item 2 - calculates index of neighbor tile element within map
+            let p = neighbor_propagator[d][tile_1]; // an array of tiles to remove according to d
+            /* neighbor_propagator is a matrix
+             * each element corresponds to [right, up, left, down]
+             * each element is an array of all tiles
+             * each tile is an array of tile index to remove from wave 
+             * */
+            let compat = elem_data.compatible[index_2]; // a matrix of number of compatible tiles
+            
             for (let l = 0; l < p.length; l++) {
-                let tile_2 = p[l] 
-                let comp = compat[tile_2];
-                comp[d] = comp[d] - 1;
+                let tile_2 = p[l]   // position of neighbor tile to remove
+                let comp = compat[tile_2];  // array of number of compatible tiles with neighbor tile to be removed
+                comp[d] = comp[d] - 1;  // decrease number of compatible tiles according to d
                 if (comp[d] == 0) {
-                    // debugger
-                    console.log("propagate ban")
-                    // elems_to_remove = Ban(wave, elem_data, elem, index_2, tile_2, elems_to_remove);
-                    elems_to_remove = Ban(wave, elem_data, elem, index_2, tile_2, remove);
-                    // console.log(elems_to_remove)
+                    elems_to_remove = Ban(wave, elem_data, elem, index_2, tile_2, elems_to_remove);
                 }
             }
             // debugger
@@ -388,22 +399,13 @@ function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove) {
     // H(X) = - sum (p * log2[p])
 
     let sum = elem_data.sums_of_weights[wave_index];    // get sum of weights for element with false tile
-    // debugger
-    // console.log(elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum));
     elem_data.entropies[wave_index] += elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum); // recalculate entropy
-
-
-    // console.log("entropies add")
-    // console.log(elem_data.entropies[wave_index]);
     elem_data.possible_choices[wave_index] -= 1;
     elem_data.sums_of_weights[wave_index] -= elem_data.weights[wave_elem];
     elem_data.sums_of_log_weights[wave_index] -= elem_data.log_weights[wave_elem];
-
     sum = elem_data.sums_of_weights[wave_index];
     elem_data.entropies[wave_index] -= elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum);
-    // console.log(elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum));
-    // console.log("entropies sub")
-    // console.log(elem_data.entropies);
+
     return elems_to_remove;
 }
 function _NonZeroIndex(array) {
