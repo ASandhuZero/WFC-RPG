@@ -51,6 +51,15 @@ export function WFC(periodic, width, height, tileset_info) {
     // debugger
     return GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height)
 }
+/**
+ * Clear
+ * Will reset the wave to an unobserved state (as in all true).
+ * Reset the compatible tiles by going backward through the propgator data collection.
+ * Reset all entropies for all data that can be observed (tiles, items, etc)
+ * @param {matrix} wave 
+ * @param {int} tile_amount 
+ * @param {json} tile_data 
+ */
 function Clear(wave, tile_amount, tile_data) {
     let opposite = [2, 3, 0, 1];
     let tiles = tile_data.tiles;
