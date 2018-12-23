@@ -43,6 +43,7 @@ export function WFC(periodic, width, height, tileset_info) {
     let tiles = tile_data["tiles"].names
     let items = tile_data["items"].names
     //DONE
+    console.log(wave);
     //debugger
     return GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height)
 }
@@ -171,8 +172,6 @@ function GeneratePropagator(neighbors, tiles, items) {
         U = tiles["rotations"][R[1]];
         
         // determines which neighbor tiles can exist
-        // why these ones?
-        // debugger
         propagator[0][L[0]][R[0]] = true;   // propagator[R, U, L, D]
         propagator[0][L[6]][R[6]] = true;
         propagator[0][R[4]][L[4]] = true;

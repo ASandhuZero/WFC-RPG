@@ -127,31 +127,32 @@ export function GenerateTiles(tiles_info, width, height) {
         tile = tiles_info[i];
 
         switch(tile.symmetry) {
-        case 'X':
-            break;
-        case 'L':
-            cardinality = 4;
-            rotation = function(x) { return (x + 1) % 4; }
-            mirror = function(x) { return 3-x; }
-            break;
+            case 'X':
+                break;
+            case 'L':
+                cardinality = 4;
+                rotation = function(x) { return (x + 1) % 4; }
+                mirror = function(x) { return 3-x; }
+                break;
             case 'T':
-            cardinality = 4;
-            debugger
-            rotation = function(x) { return (x + 1) % 4; }
-            mirror = function(x) { return x % 2 == 0 ? 2-x : x; }
-            break;
+                cardinality = 4;
+                // debugger
+                rotation = function(x) { return (x + 1) % 4; }
+                mirror = function(x) { return x % 2 == 0 ? 2-x : x; }
+                break;
             case 'I':
-            cardinality = 2;
-            rotation = function(x) { return 1 - x; }
-            break;
+                cardinality = 2;
+                rotation = function(x) { return 1 - x; }
+                mirror = function(x) { return x }
+                break;
             case '\\':
-            cardinality = 2;
-            rotation = function(x) { return 1 - x; }
-            mirror = function(x) { return 1 - x; }
-            break;
+                cardinality = 2;
+                rotation = function(x) { return 1 - x; }
+                mirror = function(x) { return 1 - x; }
+                break;
             default: // Tiles with no manually assigned symmetries will default to X sym.
-            console.warn("symmetry for tile " + tile.name + "is not set! Setting symmetry to default symmetry of X. Please change symmetry.")
-            break;
+                console.warn("symmetry for tile " + tile.name + "is not set! Setting symmetry to default symmetry of X. Please change symmetry.")
+                break;
         }
         
         for (let c = 0; c < cardinality; c++) {
