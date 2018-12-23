@@ -7,13 +7,19 @@
             {"name":"2", "symmetry":"X"}
         ],
         "items_info":[
-            {"name":"0", "weight":1, "tag":["thing"], "needs": "item,1,x > 5,x < 7"}
+            {"name":"0", "weight":1, "tag":["thing"]}
         ],
         "neighbors":[
             {"left":"0 0","right":"1 0"},
             {"left":"1 0","right":"2 0"},
             {"left":"2 0","right":"0 0"}
         ],
-        "rules_info": []
+        "rules_info": {
+            "tiles" : {
+                "0": {
+                    "1" : {"distance": [5,6]}
+                }
+            }
+        }
     }
 }

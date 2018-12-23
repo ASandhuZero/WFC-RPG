@@ -254,17 +254,18 @@
             {"left":"84 3", "right":"84 2"},
             {"left":"84 3", "right":"84 3"}
         ],
-        "rules_info":[
-            {
-                "type" : "item",
-                "ID" : "1",
-                "modifier": "distance",
-                "constraints" : [
-                    "<,INT,5,ITEM,0",
-                    ">,INT,5,ITEM,2",
-                    "=,ITEM,2,END"
+        "rules_info": {
+            "tiles" : {
+                "81": [
+                    {"type": "tiles", "Name": "1", "distance": [5,6]}
+                ],
+                "82": [
+                    {"type": "tiles", "Name": "1", "distance": [5,6]}
+                ],
+                "83": [
+                    {"type": "tiles", "Name": "1", "distance": [5,6]}
                 ]
             }
-        ]
+        }
     }
 }

@@ -29,7 +29,7 @@ export function WFC(periodic, width, height, tileset_info) {
             let elem_data = tile_data[elem]
             
             // Observe element returns true (argmin == -1), false (possiblities == 0), or null
-            result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height);
+            result = Observe(wave, tile_data["rules"], elem_data, elem, elems_to_remove, periodic, width, height);
             if (result) {
                 definite_state++;
             }
@@ -259,7 +259,7 @@ function GenerateWave(tile_amount, item_amount, width, height) {
     return wave;
 }
 
-function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height) {
+function Observe(wave, rules, elem_data, elem, elems_to_remove, periodic, width, height) {
     let noise, entropy, possiblities;
     let min = 1000;
     let argmin = -1;
@@ -314,16 +314,58 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
             // tiles_to_remove = BanTile(wave, tiles_info, argmin, t, tiles_to_remove);
         } else {
             chosen_elem = t;
+            debugger
         }
-        if (rules[chosen_elem] == undefined) {
-            let elem_rules = rules[chosen_elem]
-            Force(wave, chosen_elem, chosen_elem);
-        } 
     }
+    if (rules[chosen_elem.toString()] != undefined) {
+        let elem_rules = rules[chosen_elem]
+        Force(wave, chosen_elem, elem_rules);
+        debugger
+    } 
     return null;
 }
 
 function Force(wave, chosen_elem, rules) {
+    /**
+     * Well howdy. Isn't it great seeing you here!
+     * So this is the force function and we kind of have to "force" it to work.
+     * haha.
+     * This is why I have no friends.
+     * Anyways the goal of this function will be to:
+     * 1. Take in rules based on the element chosen in Obsevre.
+     * 2. Then it will iterate over the rule(s) 
+     *  2a. (we do 2a here) It will then check to see type of rule (what kind of data it needs to force)
+     *      Such that if the type of the rule is tiles then it will use the tiles_data 
+     *      (you need to pass in the tile_data thing here which makes me 
+     *      think this might not be the best place for force... :srhugs)
+     *  2b. Force should then see what the binding constraints are. 
+     *      So right now it should only be distance. 
+     *      (make a conditional that legit goes rule["distance"] != undefined)
+     *  2c. At this point, Force should check to see if the distance is valid.
+     *      2c.. If it is then collapse that point with the elem.
+     * 
+     * BUGS TO DBUG:
+     *  First off this doesn't work I know, the reason why is because the rules_info
+     *  I made uses tile names and not the their generated indexes. 
+     *  So 83 doesn't actually map to 83 in our tile names
+     *  HAHAH GUESS WHAT THO? OUR ID IS ID'D TO THE ROTATIONS AS WELL.
+     *  So here comes big brain mode. We can either make the rules not care for rotation
+     *  and just apply it to all rotations 
+     *  (this means some manipulation of getting the rules to associate with the right tiles?)
+     *  (possibly doing something like "0" : [0,1,2,3] "the 0 being whatever tile name"
+     *  and the array being all the indexes that associate with 0. Like 0 0, 0 1, 0 2, 0 3)
+     *  And then we just group apply all the rules. Woohoo that should be a good jumping off point.
+     * 
+     * I honestly am dead tired while writing this so I probs forgot something. 
+     * Also to do the group thingy that I talk about just like 5 lines above, do it when
+     * when we are getting rotations and do something like tiles["unique_tiles"]["unique_tile"] = THE ARRAY OF NON-UNIQUE TILES
+     * So it should look something like  tiles["unique_tiles"][0] = [0,1,2,3] 
+     * (to get the number index you are going to have to pass in the tile_ID)
+     * WHERE THIS SHOULD BE: GenerateTiles in Constraints.js
+     * 
+     * Anyways that is what I got. Brain is off now. Good luck and speed demons are dreamin~
+     */
+    throw "READ THESE COMMENTS"
     console.log("this is the force funtion wooho.");
     debugger
 }

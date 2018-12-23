@@ -67,40 +67,12 @@ export function GenerateItems(item_info, width, height) {
 
 export function GenerateRules(rules_info) {
     let rule, constraints_info, constraint, result;
-    let constraints = {
-        "LESS" : {},
-        "GREATER" : {},
-        "EQUALS" : {},
-    }
     let rules = {}
-    for (let i = 0; i < rules_info.length; i++) {
-        rule = rules_info[i];
-        constraints_info = rule.constraints;
-        for (let c = 0; c < constraints_info.length; c++) {
-            constraint = constraints_info[c];
-            constraint = constraint.split(',')
-            if (constraint[0] == "<") {
-                constraints["LESS"][constraint[1]] = [
-                    constraint[2],
-                    constraint[3],
-                    constraint[4]
-                ]
-            } else if (constraint[0] == ">") {
-                constraints["GREATER"][constraint[1]] = [
-                    constraint[2],
-                    constraint[3],
-                    constraint[4]
-                ]
-            }  else if (constraint[0] == "=") {
-                constraints["EQUALS"][constraint[1]] = [
-                    constraint[2],
-                    constraint[3],
-                    constraint[4]
-                ]
-            }
-        }
-            rules[rule.ID] = {
-                "constraints" : constraints
+    for (let rule_type in rules_info) {
+        let rules = rules_info[rule_type]
+        for (let elem in rules) {
+            let elem_rules = rules[elem];
+            rules[elem] = elem_rules;
         }
     }
     return rules
