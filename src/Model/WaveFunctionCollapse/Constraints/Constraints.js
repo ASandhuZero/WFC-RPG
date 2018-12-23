@@ -131,8 +131,15 @@ export function GenerateTiles(tiles_info, width, height) {
             break;
         case 'L':
             cardinality = 4;
+            // rotation = function(x) { return (x + 1) % 4; }
+            // mirror = function(x) { return x % 2 == 0 ? x + 1: x - 1; }
             rotation = function(x) { return (x + 1) % 4; }
-            mirror = function(x) { return x % 2 == 0 ? x + 1: x - 1; }
+            mirror = function(x) { 
+                // console.log("mirror")
+                // console.log(3-x)
+                return 3-x; 
+                // return x % 2 == 0 ? x + 1: x - 1; 
+            }
             break;
             case 'T':
             cardinality = 4;
@@ -155,7 +162,7 @@ export function GenerateTiles(tiles_info, width, height) {
         
         for (let c = 0; c < cardinality; c++) {
             tile_name = tile.name + ' ' + c.toString();
-            console.log(tile_name)
+            // console.log(tile_name)
             new_tile = [
                 c + tile_ID,
                 rotation(c) + tile_ID,

@@ -28,10 +28,10 @@ export function WFC(periodic, width, height, tileset_info) {
         for (elem of data_to_observe) {
             // debugger
             let elems_to_remove = elems_to_remove_obj[elem];
-            console.log(elem);
-            console.log("elements to remove")
-            console.log(elems_to_remove);
-            console.log(elems_to_remove_obj)
+            // console.log(elem);
+            // console.log("elements to remove")
+            // console.log(elems_to_remove);
+            // console.log(elems_to_remove_obj)
             let elem_data = tile_data[elem]
             
             // Observe element returns true (argmin == -1), false (possiblities == 0), or null
@@ -123,7 +123,7 @@ function GenerateTileData(data, width, height) {
     let neighbors = data["neighbors"].length != 0 ? data["neighbors"] :
                     Constraints.GetNeighbors(tiles)
     let neighbor_propagator = GeneratePropagator(neighbors, tiles, items)
-    debugger
+    // debugger
     let tile_data = {
         "tiles": tiles,
         "items": items,
@@ -153,7 +153,7 @@ function GeneratePropagator(neighbors, tiles, items) {
     
     let tile_names = tiles["names"];
 
-    debugger
+    // debugger
     // creates locality_propagator and propagator
     // array of 4 elements, each element is an array equal to the number of tiles
     for (let d = 0; d < 4; d++) { // d is for direction.
@@ -178,15 +178,25 @@ function GeneratePropagator(neighbors, tiles, items) {
         
         // determines which neighbor tiles can exist
         // why these ones?
-        propagator[0][R[0]][L[0]] = true;   // propagator[R, U, L, D]
-        propagator[0][R[6]][L[6]] = true;
-        propagator[0][L[4]][R[4]] = true;
-        propagator[0][L[2]][R[2]] = true;
+        propagator[0][L[0]][R[0]] = true;   // propagator[R, U, L, D]
+        propagator[0][L[6]][R[6]] = true;
+        propagator[0][R[4]][L[4]] = true;
+        propagator[0][R[2]][L[2]] = true;
 
-        propagator[1][U[0]][D[0]] = true;
-        propagator[1][D[6]][U[6]] = true;
-        propagator[1][U[4]][D[4]] = true;
-        propagator[1][D[2]][U[2]] = true;
+        propagator[1][D[0]][U[0]] = true;
+        propagator[1][U[6]][D[6]] = true;
+        propagator[1][D[4]][U[4]] = true;
+        propagator[1][U[2]][D[2]] = true;
+
+        // propagator[0][R[0]][L[0]] = true;   // propagator[R, U, L, D]
+        // propagator[0][R[6]][L[6]] = true;
+        // propagator[0][L[4]][R[4]] = true;
+        // propagator[0][L[2]][R[2]] = true;
+
+        // propagator[1][U[0]][D[0]] = true;
+        // propagator[1][D[6]][U[6]] = true;
+        // propagator[1][U[4]][D[4]] = true;
+        // propagator[1][D[2]][U[2]] = true;
     }
     for (let t = 0; t < tile_names.length; t++) {
         for (let t2 = 0; t2 < tile_names.length; t2++) {
@@ -237,9 +247,9 @@ function GenerateWave(tile_amount, item_amount, width, height) {
 }
 
 function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height) {
-    console.log(elem);
-    console.log("elements to remove")
-    console.log(elems_to_remove);
+    // console.log(elem);
+    // console.log("elements to remove")
+    // console.log(elems_to_remove);
     // debugger
     let noise, entropy, possiblities;
     let min = 1000;
@@ -282,12 +292,20 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
         distribution[t] /= elem_data.amount;
     }
 
-    // debugger
+    debugger
+    // r randomly chooses a tile
     let r = _NonZeroIndex(distribution);
 
-    // Decides which tiles to ban
+    /**
+     * Decides which tiles to ban
+     * loop through number of tiles
+     * if counter is equal to randomly chosen tile AND wave already knows its false then ban the tile
+     */
     for (let t = 0; t < elem_data.amount; t++) {
         if (w[t] != (t == r)) {
+            // debugger
+            // argmin = wave index to remove
+            // t = tile index to remove
             elems_to_remove = Ban(wave, elem_data, elem, argmin, t, elems_to_remove);
             
             // tiles_to_remove = BanTile(wave, tiles_info, argmin, t, tiles_to_remove);
@@ -295,8 +313,8 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
             chosen_elem = t;
         }
     }
-    console.log("elements to remove")
-    console.log(elems_to_remove);
+    // console.log("elements to remove")
+    // console.log(elems_to_remove);
     debugger
     // console.log(elem_data.names[chosen_elem])
     return null;
@@ -308,7 +326,7 @@ function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, ne
 
     debugger
     let DX = [1, 0, -1, 0]; // [right, up, left, down]
-    let DY = [0, 1, 0, -1]; // [right, up, left, down]
+    let DY = [0, -1, 0, 1]; // [right, up, left, down]
     if (elem_data.compatible == undefined) {
         return [];
     }
@@ -320,7 +338,7 @@ function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, ne
         let tile_1 = e1[1]; // tile within element to remove
         let x1 = index_1 % width;   // calculates x position of tile in map
         let y1 = Math.floor(index_1 / width);   // calculate y position of tile in map
-        debugger
+        // debugger
         for (let d = 0; d < 4; d++) {
             let dx = DX[d];
             let dy = DY[d];
@@ -381,6 +399,7 @@ function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, ne
  * @returns {array} elements to remove in wave
  */
 function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove) {
+    // debugger
     let wave_array = wave[wave_index][elem];    // creates array of tiles in chosen element
 
     // This is where Ban actually bans the undesired tile
@@ -409,20 +428,19 @@ function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove) {
     return elems_to_remove;
 }
 function _NonZeroIndex(array) {
-    let index = Math.floor(Math.random()*array.length);
+    // debugger
+    let random = Math.random()*array.length;
+    // console.log(random);
+    // console.log(Math.floor(random));
+    let index = Math.floor(random);
     let elem = array[index];
     let zero_array = [];
     for (let i = 0; i < array.length; i++) {
-        if (elem == 0) {
-            zero_array.push(index);
-        }
-        if (zero_array.includes(index)) {
+        while(elem == 0) {
             index = Math.floor(Math.random()*array.length);
             elem = array[index];
         }
-        else {
-            return index;
-        }
+        return index;
     }
 }  
 function OnBoundary(x, y, periodic, width, height) {
