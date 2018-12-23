@@ -11,7 +11,6 @@ export function WFC(periodic, width, height, tileset_info) {
     let data_to_observe = ["tiles", "items"]
     let wave = GenerateWave(tile_amount, item_amount, width, height);
     
-    // let tiles_to_remove = [];
     let result = null;
     let definite_state = 0;
     
@@ -316,10 +315,18 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
         } else {
             chosen_elem = t;
         }
+        if (rules[chosen_elem] == undefined) {
+            let elem_rules = rules[chosen_elem]
+            Force(wave, chosen_elem, chosen_elem);
+        } 
     }
     return null;
 }
 
+function Force(wave, chosen_elem, rules) {
+    console.log("this is the force funtion wooho.");
+    debugger
+}
 function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator) {
     let DX = [1, 0, -1, 0]; // [right, up, left, down]
     let DY = [0, -1, 0, 1]; // [right, up, left, down]
