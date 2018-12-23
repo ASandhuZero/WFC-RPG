@@ -85,6 +85,17 @@ function Clear(wave, tile_amount, tile_data) {
         items.entropies[t] = items.starting_entropy;
     }
 }
+/**
+ * GnereateTileMap
+ * Uses wave booleans to create a new array from the data indexes.
+ * @param {matrix} wave 
+ * @param {int} tile_amount 
+ * @param {int} item_amount 
+ * @param {json} tiles 
+ * @param {json} items 
+ * @param {int} width 
+ * @param {int} height 
+ */
 function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height) {
     let array = [];
     for (let x = 0; x < width; x++) {
