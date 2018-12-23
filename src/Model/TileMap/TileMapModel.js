@@ -41,27 +41,12 @@ export class TileMapModel {
         this.subset = subset;
         this.tileJSON = tileJSON;
         this.tileCount = 128;
-        
-        // this.tileConstraints = tileConstraints;
         this.constraints = null;
-        // debugger
         this.tileMapArray = this.getWFCModel();
-        // this.tileArray = this.getTileMap();
-        // this.map = this.tileMapArray.GenerateTileMap(this.height, 0);
-        // debugger 
         this.tileMap = this.getTile2DJSON();
-        
         this.tiles = this.getMap(0);
-        // this.items = this.getMap(1);
-        // this.item_objects = this.createItemObjects();
-        // console.log(this.createItemObjects());
         console.log(this.tileMapArray);
     }
-
-    // getEditorHeight() {
-    //     let editorHeight = Math.ceil(this.getTile2DJSON().tilesets[0].tilecount/this.width);
-    //     return editorHeight;
-    // }
 
     getWFCModel() {
         this.model = WFC(this.periodic, this.height, this.width, this.tileJSON); 
@@ -71,7 +56,7 @@ export class TileMapModel {
     // Input: int a - 0 >> array of tiles; 1 >> array of items
     // Output: [tile, tile ...]
     getMap(a) {
-        // debugger
+
         var array = [];
         var elements, element, tile_number, rotation;
         switch(a) {
@@ -83,7 +68,6 @@ export class TileMapModel {
                 }
                 break;
             case 0:
-            debugger
                 for (let i = 0; i < this.tileMapArray.length; i++) {
                     elements = this.tileMapArray[i];
                     element = elements.split(/[ ]+/);
@@ -147,14 +131,11 @@ export class TileMapModel {
                 j++;
             }
         }
-        // console.log(itemsObjectArray);
-        // console.log(editorHeight);
         return itemsObjectArray;
     }
 
     // Output: JSON file compatiblewith Tiled2D
     getTile2DJSON() {
-        // console.log(this.getMap(0));
         let tile2DJSON = {
             "height":this.height,
             "infinite": false,

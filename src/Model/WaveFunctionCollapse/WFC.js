@@ -18,7 +18,7 @@ export function WFC(periodic, width, height, tileset_info) {
     Clear(wave, tile_amount, tile_data);
     
     let elems_to_remove_obj = {};
-    // debugger
+
     for (elem of data_to_observe) {
         elems_to_remove_obj[elem] = []
     }
@@ -26,12 +26,7 @@ export function WFC(periodic, width, height, tileset_info) {
     while (definite_state != data_to_observe.length) {
         definite_state = 0; 
         for (elem of data_to_observe) {
-            // debugger
             let elems_to_remove = elems_to_remove_obj[elem];
-            // console.log(elem);
-            // console.log("elements to remove")
-            // console.log(elems_to_remove);
-            // console.log(elems_to_remove_obj)
             let elem_data = tile_data[elem]
             
             // Observe element returns true (argmin == -1), false (possiblities == 0), or null
@@ -48,10 +43,7 @@ export function WFC(periodic, width, height, tileset_info) {
     let tiles = tile_data["tiles"].names
     let items = tile_data["items"].names
     //DONE
-    // debugger
-
-    console.log("wave")
-    console.log(wave)
+    //debugger
     return GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height)
 }
 function Clear(wave, tile_amount, tile_data) {
@@ -63,7 +55,7 @@ function Clear(wave, tile_amount, tile_data) {
             wave[i]["tiles"][t] = true;
         }
     }
-    // debugger
+
     for (let w = 0; w < wave.length; w++) {
         for (let t = 0; t < tile_amount; t++) {
             for (let d = 0; d < 4; d++) {
@@ -84,7 +76,6 @@ function Clear(wave, tile_amount, tile_data) {
     }
 }
 function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height) {
-    // debugger
     let array = [];
     for (let x = 0; x < width; x++) {
         for (let y = 0; y < height; y++) {
@@ -111,7 +102,7 @@ function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, he
             }
         } 
     }
-    // debugger
+
     return array;
 }
 /**
@@ -127,7 +118,7 @@ function GenerateTileData(data, width, height) {
     let neighbors = data["neighbors"].length != 0 ? data["neighbors"] :
                     Constraints.GetNeighbors(tiles)
     let neighbor_propagator = GeneratePropagator(neighbors, tiles, items)
-    // debugger
+
     let tile_data = {
         "tiles": tiles,
         "items": items,
@@ -157,7 +148,6 @@ function GeneratePropagator(neighbors, tiles, items) {
     
     let tile_names = tiles["names"];
 
-    // debugger
     // creates locality_propagator and propagator
     // array of 4 elements, each element is an array equal to the number of tiles
     for (let d = 0; d < 4; d++) { // d is for direction.
@@ -182,6 +172,7 @@ function GeneratePropagator(neighbors, tiles, items) {
         
         // determines which neighbor tiles can exist
         // why these ones?
+        // debugger
         propagator[0][L[0]][R[0]] = true;   // propagator[R, U, L, D]
         propagator[0][L[6]][R[6]] = true;
         propagator[0][R[4]][L[4]] = true;
@@ -251,10 +242,6 @@ function GenerateWave(tile_amount, item_amount, width, height) {
 }
 
 function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height) {
-    // console.log(elem);
-    // console.log("elements to remove")
-    // console.log(elems_to_remove);
-    // debugger
     let noise, entropy, possiblities;
     let min = 1000;
     let argmin = -1;
@@ -270,17 +257,12 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
             return false;
         }
         entropy = elem_data.entropies[i];
-        // console.log("observed entropy")
-        // console.log(i)
-        // console.log(entropy);
-        // debugger
         if (possiblities > 1 && entropy <= min) {
             // let noise = 0.000001 * this.random();
             noise = 0.000001;
             if (entropy + noise < min) {
                 min = entropy + noise;
                 argmin = i;
-                // debugger
             }
         }
     }
@@ -296,7 +278,7 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
         distribution[t] /= elem_data.amount;
     }
 
-    // debugger
+
     // r randomly chooses a tile
     let r = _NonZeroIndex(distribution);
 
@@ -307,7 +289,6 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
      */
     for (let t = 0; t < elem_data.amount; t++) {
         if (w[t] != (t == r)) {
-            // debugger
             // argmin = wave index to remove
             // t = tile index to remove
             elems_to_remove = Ban(wave, elem_data, elem, argmin, t, elems_to_remove);
@@ -317,18 +298,10 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
             chosen_elem = t;
         }
     }
-    // console.log("elements to remove")
-    // console.log(elems_to_remove);
-    // debugger
-    // console.log(elem_data.names[chosen_elem])
     return null;
 }
 
 function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator) {
-    // console.log("elements to remove in propagation")
-    // console.log(elems_to_remove)
-
-    // debugger
     let DX = [1, 0, -1, 0]; // [right, up, left, down]
     let DY = [0, -1, 0, 1]; // [right, up, left, down]
     if (elem_data.compatible == undefined) {
@@ -342,7 +315,7 @@ function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, ne
         let tile_1 = e1[1]; // tile within element to remove
         let x1 = index_1 % width;   // calculates x position of tile in map
         let y1 = Math.floor(index_1 / width);   // calculate y position of tile in map
-        // debugger
+
         for (let d = 0; d < 4; d++) {
             let dx = DX[d];
             let dy = DY[d];
@@ -385,10 +358,8 @@ function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, ne
                     elems_to_remove = Ban(wave, elem_data, elem, index_2, tile_2, elems_to_remove);
                 }
             }
-            // debugger
         }
     }
-    console.log("finished propagation");
     return elems_to_remove
 }
 
@@ -403,7 +374,6 @@ function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, ne
  * @returns {array} elements to remove in wave
  */
 function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove) {
-    // debugger
     let wave_array = wave[wave_index][elem];    // creates array of tiles in chosen element
 
     // This is where Ban actually bans the undesired tile
@@ -419,8 +389,6 @@ function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove) {
     elems_to_remove.push([wave_index, wave_elem]);  // add the false tile to elems_to_remove array
 
     // Need to recalculate entropy for the element in the wave using Shannon Entropy?
-    // H(X) = - sum (p * log2[p])
-
     let sum = elem_data.sums_of_weights[wave_index];    // get sum of weights for element with false tile
     elem_data.entropies[wave_index] += elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum); // recalculate entropy
     elem_data.possible_choices[wave_index] -= 1;
@@ -431,11 +399,13 @@ function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove) {
 
     return elems_to_remove;
 }
+
+/**
+ * Randomly chooses a tile from element that has entropy
+ * @param {array} array: wave element 
+ */
 function _NonZeroIndex(array) {
-    // debugger
     let random = Math.random()*array.length;
-    // console.log(random);
-    // console.log(Math.floor(random));
     let index = Math.floor(random);
     let elem = array[index];
     let zero_array = [];

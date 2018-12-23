@@ -131,20 +131,14 @@ export function GenerateTiles(tiles_info, width, height) {
             break;
         case 'L':
             cardinality = 4;
-            // rotation = function(x) { return (x + 1) % 4; }
-            // mirror = function(x) { return x % 2 == 0 ? x + 1: x - 1; }
             rotation = function(x) { return (x + 1) % 4; }
-            mirror = function(x) { 
-                // console.log("mirror")
-                // console.log(3-x)
-                return 3-x; 
-                // return x % 2 == 0 ? x + 1: x - 1; 
-            }
+            mirror = function(x) { return 3-x; }
             break;
             case 'T':
             cardinality = 4;
+            debugger
             rotation = function(x) { return (x + 1) % 4; }
-            mirror = function(x) { return x % 2 == 0 ? x : 4 - x; }
+            mirror = function(x) { return x % 2 == 0 ? 2-x : x; }
             break;
             case 'I':
             cardinality = 2;
