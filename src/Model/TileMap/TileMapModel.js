@@ -83,7 +83,7 @@ export class TileMapModel {
                 }
                 break;
             case 0:
-            // debugger
+            debugger
                 for (let i = 0; i < this.tileMapArray.length; i++) {
                     elements = this.tileMapArray[i];
                     element = elements.split(/[ ]+/);

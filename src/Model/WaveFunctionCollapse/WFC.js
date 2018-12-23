@@ -49,6 +49,9 @@ export function WFC(periodic, width, height, tileset_info) {
     let items = tile_data["items"].names
     //DONE
     // debugger
+
+    console.log("wave")
+    console.log(wave)
     return GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height)
 }
 function Clear(wave, tile_amount, tile_data) {
@@ -60,7 +63,7 @@ function Clear(wave, tile_amount, tile_data) {
             wave[i]["tiles"][t] = true;
         }
     }
-    debugger
+    // debugger
     for (let w = 0; w < wave.length; w++) {
         for (let t = 0; t < tile_amount; t++) {
             for (let d = 0; d < 4; d++) {
@@ -81,11 +84,12 @@ function Clear(wave, tile_amount, tile_data) {
     }
 }
 function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height) {
+    // debugger
     let array = [];
     for (let x = 0; x < width; x++) {
         for (let y = 0; y < height; y++) {
-            let tile_elem = wave[x + y * height]["tiles"];
-            let item_elem = wave[x + y * height]["items"];
+            let tile_elem = wave[y + x * height]["tiles"];
+            let item_elem = wave[y + x * height]["items"];
             let amount = 0;
             for (let i = 0; i < tile_elem.length; i++) {
                 if (tile_elem[i]) {
@@ -292,7 +296,7 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
         distribution[t] /= elem_data.amount;
     }
 
-    debugger
+    // debugger
     // r randomly chooses a tile
     let r = _NonZeroIndex(distribution);
 
@@ -315,16 +319,16 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
     }
     // console.log("elements to remove")
     // console.log(elems_to_remove);
-    debugger
+    // debugger
     // console.log(elem_data.names[chosen_elem])
     return null;
 }
 
 function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator) {
-    console.log("elements to remove in propagation")
-    console.log(elems_to_remove)
+    // console.log("elements to remove in propagation")
+    // console.log(elems_to_remove)
 
-    debugger
+    // debugger
     let DX = [1, 0, -1, 0]; // [right, up, left, down]
     let DY = [0, -1, 0, 1]; // [right, up, left, down]
     if (elem_data.compatible == undefined) {
