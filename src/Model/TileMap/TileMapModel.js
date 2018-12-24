@@ -33,7 +33,8 @@ import { WFC } from "../WaveFunctionCollapse/WFC";
 
 
 export class TileMapModel {
-    constructor (tilesize, subset,height, width, tileJSON) {
+    constructor (tilesize, subset,height, width, tileJSON, rule) {
+        this.rule = rule;
         this.tilesize = tilesize;
         this.height = height;
         this.width = width;
@@ -49,7 +50,7 @@ export class TileMapModel {
     }
 
     getWFCModel() {
-        this.model = WFC(this.periodic, this.height, this.width, this.tileJSON); 
+        this.model = WFC(this.periodic, this.height, this.width, this.tileJSON, this.rule); 
         return this.model;
     }
 
@@ -114,23 +115,28 @@ export class TileMapModel {
         let items = this.getMap(1);
         let editorHeight = Math.ceil(this.tileCount/this.width)+1;
         
-        for (let i = 0; i < items.length; i++){
-            
-            if (items[i]>0){
-                let itemJSON = {
-                    "gid":gid,
-                    "id":j,
-                    "name":this.subset,
-                    "rotation":0,
-                    "visible":true,
-                    "width": 0,
-                    "x":this.calculateItemPosition(i)[0], //position x
-                    "y":this.calculateItemPosition(i)[1]+(editorHeight*this.tilesize)
+        if(this.subset == 'item'){
+            for (let i = 0; i < items.length; i++){
+                
+                if (items[i]>0){
+                    let itemJSON = {
+                        "gid":gid,
+                        "id":j,
+                        "name":this.subset,
+                        "rotation":0,
+                        "visible":true,
+                        "width": 0,
+                        "x":this.calculateItemPosition(i)[0], //position x
+                        "y":this.calculateItemPosition(i)[1]+(editorHeight*this.tilesize)
+                    }
+                    itemsObjectArray.push(itemJSON);
+                    j++;
                 }
-                itemsObjectArray.push(itemJSON);
-                j++;
             }
+        } else {
+            throw 'No item subset given'
         }
+            
         return itemsObjectArray;
     }
 

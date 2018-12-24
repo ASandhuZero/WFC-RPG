@@ -2,14 +2,14 @@
     "data": {
         "name": "main",
         "tiles_info": [
-            {"name":"9", "symmetry":"X", "weight":5},
+            {"name":"9", "symmetry":"X", "weight":5, "type": "light"},
             {"name":"10", "symmetry":"X", "weight":1},
             {"name":"17", "symmetry":"X", "weight":5},
             {"name":"18", "symmetry":"X", "weight":5},
             {"name":"81", "symmetry":"T", "weight":1},
             {"name":"82", "symmetry":"I", "weight":5},
-            {"name":"83", "symmetry":"T", "weight":0.1},
-            {"name":"84", "symmetry":"T", "weight":1}
+            {"name":"83", "symmetry":"T", "weight":1},
+            {"name":"84", "symmetry":"T", "weight":0.001}
             
         ],
         "items_info":[
@@ -256,15 +256,24 @@
         ],
         "rules_info": {
             "tiles" : {
-                "81": [
-                    {"type": "light", "Name": "1", "distance": [5,6]}
-                ],
-                "82": [
-                    {"type": "light", "Name": "1", "distance": [5,6]}
-                ],
-                "83": [
-                    {"type": "light", "Name": "1", "distance": [5,6]}
-                ]
+                "81": {
+                    "dependency":{
+                        "distance": [0,2,0,2]
+                    }
+                },
+                "82": {
+                    "dependency":{
+                        "distance": [0,2,0,2]
+                    }
+                },
+                "83": {
+                    "dependency":{
+                        "distance": [0,2,0,2]
+                    }
+                }
+            },
+            "items": {
+
             }
         }
     }

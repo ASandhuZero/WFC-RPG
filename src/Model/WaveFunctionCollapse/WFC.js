@@ -1,6 +1,6 @@
 import * as Constraints from "./Constraints/Constraints"
 
-export function WFC(periodic, width, height, tileset_info) {
+export function WFC(periodic, width, height, tileset_info, chosen_rule) {
     let chosen_tile,chosen_name;
     let data = tileset_info["data"];
     
@@ -31,31 +31,27 @@ export function WFC(periodic, width, height, tileset_info) {
             let elem_data = tile_data[elem]
             
             // Observe element returns true (argmin == -1), false (possiblities == 0), or null
-            result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, null, false, init);
+            result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, null, false, null, init);
             init = false;
             // Converts index to name to match with rules
-            // debugger
             if (result === true) {
                 definite_state++;
             }
             else if (result === false) {
                 return [];
             } else {
+                debugger
                 chosen_tile = elem_data.names[result];
                 chosen_name = chosen_tile.split(/[ ]+/)[0];
                 // Enforce rules if needed
                 if (tile_data["rules"][elem][chosen_name] != undefined) {
                     let elem_rules = tile_data["rules"][elem][chosen_name];
                     // debugger
-                    Force(wave, result, elem_rules, elem, tile_data, elem_data, elems_to_remove, periodic, width, height, neighbor_propagator);
+                    Rules(wave, result, chosen_rule, elem_rules, elem, tile_data, elem_data, elems_to_remove, periodic, width, height, neighbor_propagator);
                 } 
             }
             
             // let chosen_name = 83;
-
-            
-
-            
             Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator)
         }
     }
@@ -270,11 +266,12 @@ function GenerateWave(tile_amount, item_amount, width, height) {
     return wave;
 }
 
-function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, chosen, forced, init) {
+function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, chosen_index, forced, forced_tile, init) {
     let noise, entropy, possiblities;
     let min = 1000;
     let argmin = -1;
     let chosen_elem = -1;
+    let r;
     
     // update min to reflect highest entropy and noise
     for (let i = 0; i < wave.length; i++) {
@@ -300,7 +297,7 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
     }
     // debugger
     if(forced == true) {
-        argmin = chosen;
+        argmin = chosen_index;
     }
     
     if(init == true) {
@@ -315,10 +312,17 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
         // distribution[t] /= elem_data.amount;
     }
 
-    // debugger
-    // r randomly chooses a tile using weighted selection
-    let r = _NonZeroIndex(distribution, elem_data.carray, elem_data.csumweight);
+    debugger
+    if(forced_tile != null){
+        r = elem_data.names.indexOf(forced_tile);
+    } else {
+        // r randomly chooses a tile by its index using weighted selection
+        r = _NonZeroIndex(distribution, elem_data.carray, elem_data.csumweight);
+    }
+    
 
+
+    
     /**
      * Decides which tiles to ban
      * loop through number of tiles
@@ -329,14 +333,10 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
             // argmin = wave index to remove
             // t = tile index to remove
             elems_to_remove = Ban(wave, elem_data, elem, argmin, t, elems_to_remove);
-            
-            // tiles_to_remove = BanTile(wave, tiles_info, argmin, t, tiles_to_remove);
-        } else {
-            chosen_elem = t;
-            // debugger
-        }
+        } 
     }
-    return chosen_elem;
+    // debugger
+    return r;
 }
 
 /**
@@ -347,7 +347,61 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
  */
 
 
-function Force(wave, chosen_index, elem_rules, elem_type, tile_data, elem_data, elems_to_remove, periodic, width, height, neighbor_propagator) {
+function Rules(wave, chosen_tile, chosen_rule, elem_rules, elem_type, tile_data, elem_data, elems_to_remove, periodic, width, height, neighbor_propagator) {
+    debugger
+    let x,y;
+    let xmin, xmax, ymin, ymax;
+    let chosen_index = elems_to_remove[0][0];
+    let depTile = null;
+    // let depTile = elem_rules["dependency"]["tile"]; // tile that is dependent on chosen tile
+    // let fmin = elem_rules["dependency"]["frequency"][0];
+    // let fmax = elem_rules["dependency"]["frequency"][1];
+    // let freq = Math.floor(Math.random()*(fmax-fmin+1)+fmin);    // calculate a random frequency according to range given in constraint
+    // let ftemp = 0;
+    console.log(chosen_index)
+    switch(chosen_rule){
+        case 'distance':
+            // calculate distance 
+            if(elem_rules["dependency"]["distance"] != undefined){
+                xmin = elem_rules["dependency"]["distance"][0];
+                xmax = elem_rules["dependency"]["distance"][1];
+                ymin = elem_rules["dependency"]["distance"][2];
+                ymax = elem_rules["dependency"]["distance"][3];
+            } else {
+                throw "no radius constraint given"
+            }
+
+            for(let i = (-1)*ymax; i <= ymax; i++){
+                for(let j = (-1)*xmax; j <= xmax; j++){
+                    if(Math.abs(j) <= xmin && Math.abs(i) <= ymin) continue;    // limitations
+
+                    let index = (chosen_index + (j))+(i*width); // calculate index to observe
+                    // debugger
+                    if(index < 0 || index > wave.length-1) continue;
+                    // if(ftemp > freq) { depTile = null};
+                    // ftemp++;             
+                    let result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, index, true, depTile, false);
+                    if (result === false) return [];
+                    Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator);
+                    
+                }
+                
+            }
+
+            break;
+        default:
+            break;
+    }
+
+    
+
+    console.log("this is the force funtion wooho.");
+    // debugger
+    return null;
+}
+
+function DistanceRule(wave, chosen_index, chosen_rule, elem_rules, elem_type, tile_data, elem_data, elems_to_remove, periodic, width, height, neighbor_propagator) {
+    debugger
     let x, y;
     // let definite_state = 0;
     // calculate area effected
@@ -382,6 +436,7 @@ function Force(wave, chosen_index, elem_rules, elem_type, tile_data, elem_data, 
     // debugger
     return null;
 }
+
 
 function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator) {
     let DX = [1, 0, -1, 0]; // [right, up, left, down]
