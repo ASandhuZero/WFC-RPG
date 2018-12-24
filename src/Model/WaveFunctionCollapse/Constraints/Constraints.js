@@ -66,14 +66,9 @@ export function GenerateItems(item_info, width, height) {
 }
 
 export function GenerateRules(rules_info) {
-    let rule, constraints_info, constraint, result;
-    let rules = {}
+    let rules = {};
     for (let rule_type in rules_info) {
-        let rules = rules_info[rule_type]
-        for (let elem in rules) {
-            let elem_rules = rules[elem];
-            rules[elem] = elem_rules;
-        }
+        rules[rule_type] = rules_info[rule_type]
     }
     return rules
 }

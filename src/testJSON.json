@@ -2,12 +2,12 @@
     "data": {
         "name": "main",
         "tiles_info": [
-            {"name":"9", "symmetry":"X", "weight":50},
-            {"name":"10", "symmetry":"X", "weight":100},
+            {"name":"9", "symmetry":"X", "weight":5},
+            {"name":"10", "symmetry":"X", "weight":1},
             {"name":"17", "symmetry":"X", "weight":5},
             {"name":"18", "symmetry":"X", "weight":5},
             {"name":"81", "symmetry":"T", "weight":1},
-            {"name":"82", "symmetry":"I", "weight":2},
+            {"name":"82", "symmetry":"I", "weight":5},
             {"name":"83", "symmetry":"T", "weight":0.1},
             {"name":"84", "symmetry":"T", "weight":1}
             
@@ -257,13 +257,13 @@
         "rules_info": {
             "tiles" : {
                 "81": [
-                    {"type": "tiles", "Name": "1", "distance": [5,6]}
+                    {"type": "light", "Name": "1", "distance": [5,6]}
                 ],
                 "82": [
-                    {"type": "tiles", "Name": "1", "distance": [5,6]}
+                    {"type": "light", "Name": "1", "distance": [5,6]}
                 ],
                 "83": [
-                    {"type": "tiles", "Name": "1", "distance": [5,6]}
+                    {"type": "light", "Name": "1", "distance": [5,6]}
                 ]
             }
         }
