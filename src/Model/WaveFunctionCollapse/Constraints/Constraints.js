@@ -107,7 +107,8 @@ export function GenerateRules(rules_info) {
 }
 
 export function GenerateTiles(tiles_info, width, height) {
-    let tile, tile_name, new_tile, compatible, log_weights;
+    let tile, tile_name, new_tile, compatible, log_weights, cumulative_weights;
+    let carray = [];
     let sum_of_weights = 0;
     let sum_of_log_weights = 0;
     let tiles = {
@@ -182,6 +183,8 @@ export function GenerateTiles(tiles_info, width, height) {
     // compatible tiles should be calculated according to neighbor constraints?
     compatible = new Array(tiles.amount);
     log_weights = new Array(tiles.amount);
+    cumulative_weights = tiles.weights.reduce(function(a,b,i){return carray[i]=a+b;},0);
+    // debugger
 
     for (let j = 0; j < width * height; j++) {
         compatible[j] = new Array(tiles.amount);
@@ -206,6 +209,8 @@ export function GenerateTiles(tiles_info, width, height) {
     tiles["sums_of_weights"] = new Array(width * height);
     tiles["sums_of_log_weights"] = new Array(width * height);
     tiles["entropies"] = new Array(width * height);
+    tiles["carray"] = carray;
+    tiles["csumweight"] = cumulative_weights;
 
     return tiles
 }

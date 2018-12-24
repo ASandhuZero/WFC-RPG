@@ -283,12 +283,17 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
     let w = wave[argmin][elem];
     for (let t = 0; t < elem_data.amount; t++) {
         distribution[t] = w[t] ? elem_data.weights[t] : 0;
-        distribution[t] /= elem_data.amount;
+        // distribution[t] /= elem_data.amount;
     }
 
-
+    // debugger
     // r randomly chooses a tile
-    let r = _NonZeroIndex(distribution);
+    let r = _NonZeroIndex(distribution, elem_data.carray, elem_data.csumweight);
+    while(distribution[r] == 0) {
+        console.log(distribution[r])
+        r = _NonZeroIndex(distribution, elem_data.carray, elem_data.csumweight);
+        console.log(r)
+    }
 
     /**
      * Decides which tiles to ban
@@ -409,21 +414,24 @@ function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove) {
 }
 
 /**
- * Randomly chooses a tile from element that has entropy
+ * Weighted choosing of tiles
  * @param {array} array: wave element 
  */
-function _NonZeroIndex(array) {
-    let random = Math.random()*array.length;
-    let index = Math.floor(random);
-    let elem = array[index];
-    let zero_array = [];
-    for (let i = 0; i < array.length; i++) {
-        while(elem == 0) {
-            index = Math.floor(Math.random()*array.length);
-            elem = array[index];
-        }
-        return index;
+function _NonZeroIndex(distribution, cweights, csumweight) {
+    let random = Math.random()*csumweight;
+    let choice = Math.floor(random);
+    let closest = cweights.reduce((prev, curr) => Math.abs(curr - choice) < Math.abs(prev - choice) ? curr : prev);
+    let index = cweights.indexOf(closest);
+    let elem = distribution[index];
+    while(elem == 0) {
+        choice = Math.floor(Math.random()*csumweight);
+        closest = cweights.reduce((prev, curr) => Math.abs(curr - choice) < Math.abs(prev - choice) ? curr : prev);
+        index = cweights.indexOf(closest);
+        elem = distribution[index];
     }
+    
+    return index;
+    
 }  
 function OnBoundary(x, y, periodic, width, height) {
     return !periodic && (x < 0 || y < 0 || x >= width || y >= height);
