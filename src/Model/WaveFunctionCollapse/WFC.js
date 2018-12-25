@@ -55,7 +55,7 @@ export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule)
                 if (tile_data["rules"][elem][chosen_name] != undefined) {
                     let elem_rules = tile_data["rules"][elem][chosen_name];
                     // debugger
-                    Rules(wave, result[0], result[1],tile_rule, item_rule, frequencies, elem_rules, elem, tile_data, elem_data, elems_to_remove, periodic, width, height, neighbor_propagator);
+                    frequencies = Rules(wave, result[0], result[1],tile_rule, item_rule, frequencies, elem_rules, elem, tile_data, elem_data, elems_to_remove, periodic, width, height, neighbor_propagator);
                 } 
             }
             
@@ -436,7 +436,7 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
 
     console.log("this is the force funtion wooho.");
     // debugger
-    return null;
+    return item_freq;
 }
 
 function DistanceRule() {
