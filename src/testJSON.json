@@ -9,12 +9,12 @@
             {"name":"81", "symmetry":"T", "weight":1},
             {"name":"82", "symmetry":"I", "weight":5},
             {"name":"83", "symmetry":"T", "weight":1},
-            {"name":"84", "symmetry":"T", "weight":0.001}
+            {"name":"84", "symmetry":"T", "weight":1}
             
         ],
         "items_info":[
-            {"name":"0", "weight":0},
-            {"name":"1", "weight":100}
+            {"name":"0", "weight":2},
+            {"name":"1", "weight":0.2}
         ],
         "neighbors":[
             {"left":"10 0", "right":"9 0"},

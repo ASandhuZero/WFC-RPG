@@ -40,7 +40,7 @@ export function WFC(periodic, width, height, tileset_info, chosen_rule) {
             else if (result === false) {
                 return [];
             } else {
-                debugger
+                // debugger
                 chosen_tile = elem_data.names[result];
                 chosen_name = chosen_tile.split(/[ ]+/)[0];
                 // Enforce rules if needed
@@ -317,6 +317,7 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
         r = elem_data.names.indexOf(forced_tile);
     } else {
         // r randomly chooses a tile by its index using weighted selection
+        debugger
         r = _NonZeroIndex(distribution, elem_data.carray, elem_data.csumweight);
     }
     
@@ -543,7 +544,7 @@ function BinarySearch(array, value, start, end) {
  * @param {array} array: wave element 
  */
 function _NonZeroIndex(distribution, cweights, csumweight) {
-    let random = Math.random()*csumweight;
+    let random = Math.random()*(csumweight+1);
     let choice = Math.floor(random);
     // binary search for first value that is larger than choice in cweights
     let tile_choice = BinarySearch(cweights, choice, 0, cweights.length);
