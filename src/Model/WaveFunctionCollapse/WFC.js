@@ -349,7 +349,8 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
 
 function Rules(wave, chosen_tile, chosen_rule, elem_rules, elem_type, tile_data, elem_data, elems_to_remove, periodic, width, height, neighbor_propagator) {
     debugger
-    let x,y;
+    let ctile;
+    let sorted_entropies;
     let xmin, xmax, ymin, ymax;
     let chosen_index = elems_to_remove[0][0];
     let depTile = null;
@@ -371,70 +372,55 @@ function Rules(wave, chosen_tile, chosen_rule, elem_rules, elem_type, tile_data,
                 throw "no radius constraint given"
             }
 
-            for(let i = (-1)*ymax; i <= ymax; i++){
-                for(let j = (-1)*xmax; j <= xmax; j++){
-                    if(Math.abs(j) <= xmin && Math.abs(i) <= ymin) continue;    // limitations
+            // get tile index of lowest entropy
+            sorted_entropies = GetEntropySort(xmin, xmax, ymin, ymax, wave.length, width, elem_data, chosen_index);
+            console.log(sorted_entropies);
+            
+            // uses sorted entropy to determine where the next 
 
-                    let index = (chosen_index + (j))+(i*width); // calculate index to observe
-                    // debugger
-                    if(index < 0 || index > wave.length-1) continue;
-                    // if(ftemp > freq) { depTile = null};
-                    // ftemp++;             
-                    let result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, index, true, depTile, false);
-                    if (result === false) return [];
-                    Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator);
-                    
-                }
+            while(sorted_entropies.length > 0){
                 
             }
-
+            for(let i = 0; i < sorted_entropies.length; i++){
+                ctile = sorted_entropies.shift();
+                let result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, chosen_index, true, depTile, false);
+                if (result === false) return [];
+                Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator);
+                sorted_entropies = GetEntropySort(xmin, xmax, ymin, ymax, wave.length, width, elem_data, chosen_tile);
+                console.log(sorted_entropies);
+            }
             break;
         default:
             break;
     }
 
-    
 
     console.log("this is the force funtion wooho.");
     // debugger
     return null;
 }
 
-function DistanceRule(wave, chosen_index, chosen_rule, elem_rules, elem_type, tile_data, elem_data, elems_to_remove, periodic, width, height, neighbor_propagator) {
+function GetEntropySort(xmin,xmax,ymin,ymax,length,width,elem_data,chosen_tile){
     debugger
-    let x, y;
-    // let definite_state = 0;
-    // calculate area effected
-    if(elem_rules[0]["distance"] != undefined){
-        x = Math.floor(elem_rules[0]["distance"][0]/2);
-        y = Math.floor(elem_rules[0]["distance"][1]/2);
-    } else {
-        throw "no distance constraint given"
-    }
-    
-    /**
-     * Distance [x,y] specifies the number of tiles x and y away from chosen tile
-     * Forces observation according to the distance away from chosen element and then propagate
-     */
-    for(let i = (-1)*y; i <= y; i++){
-        for(let j = (-1)*x; j <= x; j++){
-            let index = (chosen_index + (j))+(i*width);
-            // debugger
-            if(index < 0 || index > wave.length-1){
-                continue;
-            }
-            let result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, index, true);
-            if (result === false) {
-                return [];
-            }
-            Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator);
+    let index;
+    let indexes=[];
+    for(let i = (-1)*ymax; i <= ymax; i++){
+        for(let j = (-1)*xmax; j <= xmax; j++){
+            if(Math.abs(j) <= xmin && Math.abs(i) <= ymin) continue;    // limitations
+
+            index = (chosen_tile + (j))+(i*width); // calculate index to observe
+            if(index < 0 || index > length-1) continue;
+            indexes.push({
+                index: index,
+                entropy: elem_data.entropies[index]
+            });
         }
         
     }
-
-    console.log("this is the force funtion wooho.");
-    // debugger
-    return null;
+    var sortEnt = indexes.slice(0);
+    sortEnt.sort(function(a,b) { return a.entropy - b.entropy;});
+    let ordered_index = sortEnt.map(a => a.index);
+    return ordered_index;
 }
 
 
