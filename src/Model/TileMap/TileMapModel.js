@@ -33,8 +33,9 @@ import { WFC } from "../WaveFunctionCollapse/WFC";
 
 
 export class TileMapModel {
-    constructor (tilesize, subset,height, width, tileJSON, rule) {
-        this.rule = rule;
+    constructor (tilesize, subset,height, width, tileJSON, tile_rule, item_rule) {
+        this.tile_rule = tile_rule;
+        this.item_rule = item_rule;
         this.tilesize = tilesize;
         this.height = height;
         this.width = width;
@@ -45,12 +46,12 @@ export class TileMapModel {
         this.constraints = null;
         this.tileMapArray = this.getWFCModel();
         this.tileMap = this.getTile2DJSON();
-        this.tiles = this.getMap(0);
+        // this.tiles = this.getMap(0);
         console.log(this.tileMapArray);
     }
 
     getWFCModel() {
-        this.model = WFC(this.periodic, this.height, this.width, this.tileJSON, this.rule); 
+        this.model = WFC(this.periodic, this.height, this.width, this.tileJSON, this.tile_rule, this.item_rule); 
         return this.model;
     }
 

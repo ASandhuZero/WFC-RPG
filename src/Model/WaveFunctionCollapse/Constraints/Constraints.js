@@ -36,7 +36,8 @@ export function GenerateItems(item_info, width, height) {
     let items = {
         names: [],
         weights: [],
-        amount:0
+        amount:0,
+        frequencies: []
     }
     let log_weights;
     let sum_of_weights = 0; 
@@ -46,7 +47,8 @@ export function GenerateItems(item_info, width, height) {
         item = item_info[i];
         items["names"].push(item.name);
         items["weights"].push(item.weight || 1);
-        items["amount"]++
+        items["amount"]++;
+        items["frequencies"].push(item.frequency);
     }
 
     log_weights = new Array(items.amount);

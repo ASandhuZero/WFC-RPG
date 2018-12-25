@@ -15,15 +15,16 @@ import {View} from '../View/View'
 
 export class Controller {
     // type = view type such as Phaser or Babylon
-    constructor(type, tileJSON, subset, newGame, includeItem, rule) {
-        this.rule = rule;
+    constructor(type, tileJSON, subset, newGame, includeItem, tile_rule, item_rule) {
+        this.tile_rule = tile_rule;
+        this.item_rule = item_rule;
         this.tileJSON = tileJSON;   // object of tiles and neighbors
         // this.tileConstraints = tileConstraints; // object of tiles and neighbors
         this.viewType = type;
         this.view = new View();
         this.subset = subset;
         //TileMapModel parameters: int height, int width, {tile, neighbors}
-        this.model = new TileMapModel(this.view.tileSize, this.subset, this.view.tileNum, this.view.tileNum, this.tileJSON, this.rule);  
+        this.model = new TileMapModel(this.view.tileSize, this.subset, this.view.tileNum, this.view.tileNum, this.tileJSON, this.tile_rule, this.item_rule);  
         // console.log(this.model);
         this.newGame = newGame;
         this.includeItem = includeItem;
