@@ -403,7 +403,6 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
         case 'items':
             switch(item_rule){
                 case 'distance':
-                    // if(item_freq[chosen_tile] == 0){break;};
                     if(elem_rules[tile_rule] != undefined){
                         xmin = elem_rules[tile_rule][0];
                         xmax = elem_rules[tile_rule][1];
@@ -437,10 +436,6 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
     console.log("this is the force funtion wooho.");
     // debugger
     return item_freq;
-}
-
-function DistanceRule() {
-
 }
 
 function GetEntropySort(xmin,xmax,ymin,ymax,length,width,elem_data,chosen_tile){

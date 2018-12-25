@@ -33,7 +33,8 @@ import { WFC } from "../WaveFunctionCollapse/WFC";
 
 
 export class TileMapModel {
-    constructor (tilesize, subset,height, width, tileJSON, tile_rule, item_rule) {
+    constructor (tilesize, subset,height, width, tileJSON, tile_rule, item_rule, num_items) {
+        this.num_items = num_items;
         this.tile_rule = tile_rule;
         this.item_rule = item_rule;
         this.tilesize = tilesize;
@@ -112,14 +113,22 @@ export class TileMapModel {
     createItemObjects() {
         let itemsObjectArray = [];
         let j = 0;
-        let gid = this.tileMapArray.length+1;
+        let gid;
         let items = this.getMap(1);
+        let gids=[];
         let editorHeight = Math.ceil(this.tileCount/this.width)+1;
+        debugger
+        for(let i = 1;i <= this.num_items; i++){
+            gids[i] = this.tileMapArray.length+i;
+        }
         
         if(this.subset == 'item'){
             for (let i = 0; i < items.length; i++){
                 
                 if (items[i]>0){
+                    debugger 
+                    gid = gids[items[i]];
+
                     let itemJSON = {
                         "gid":gid,
                         "id":j,

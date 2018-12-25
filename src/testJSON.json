@@ -2,19 +2,18 @@
     "data": {
         "name": "main",
         "tiles_info": [
-            {"name":"9", "symmetry":"X", "weight":10, "type": "light"},
-            {"name":"10", "symmetry":"X", "weight":1},
-            {"name":"17", "symmetry":"X", "weight":5},
-            {"name":"18", "symmetry":"X", "weight":5},
-            {"name":"81", "symmetry":"T", "weight":1},
-            {"name":"82", "symmetry":"I", "weight":10},
-            {"name":"83", "symmetry":"T", "weight":1},
-            {"name":"84", "symmetry":"T", "weight":1}
-            
+            {"name":"9", "symmetry":"X", "weight":1, "type": "light"},
+            {"name":"10", "symmetry":"X", "weight":1, "type": "light"},
+            {"name":"17", "symmetry":"X", "weight":1, "type": "light"},
+            {"name":"18", "symmetry":"X", "weight":1, "type": "light"},
+            {"name":"81", "symmetry":"T", "weight":1, "type": "dark"},
+            {"name":"82", "symmetry":"I", "weight":1, "type": "dark"},
+            {"name":"83", "symmetry":"T", "weight":1, "type": "dark"},
+            {"name":"84", "symmetry":"T", "weight":1, "type": "dark"}
         ],
         "items_info":[
             {"name":"0", "weight": 1, "frequency": -1},
-            {"name":"1", "weight": 1, "frequency": 2, "dependency": "2"},
+            {"name":"1", "weight": 1, "frequency": 1, "dependency": "2"},
             {"name":"2", "weight": 1, "frequency": 1, "dependency": "1"}
         ],
         "neighbors":[

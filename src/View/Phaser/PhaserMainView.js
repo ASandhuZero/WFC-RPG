@@ -53,6 +53,9 @@ export class MainState extends Phaser.State {
         // Display objects using gid, x, and y position specified in TileMapModel JSON
         if(this.includeItem == true){
             this.map.createFromObjects('items', this.tileNum*this.tileNum+1, 'ball', 0, true, false, items);
+            this.map.createFromObjects('items', this.tileNum*this.tileNum+2, 'car', 0, true, false, items);
+            console.log('item tile name')
+            console.log(this.tileNum*this.tileNum+1)
         }
 
         // Create editor layer
