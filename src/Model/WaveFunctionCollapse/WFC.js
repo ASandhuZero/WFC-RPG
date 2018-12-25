@@ -312,7 +312,7 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
         // distribution[t] /= elem_data.amount;
     }
 
-    debugger
+    // debugger
     if(forced_tile != null){
         r = elem_data.names.indexOf(forced_tile);
     } else {
@@ -348,7 +348,7 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
 
 
 function Rules(wave, chosen_tile, chosen_rule, elem_rules, elem_type, tile_data, elem_data, elems_to_remove, periodic, width, height, neighbor_propagator) {
-    debugger
+    // debugger
     let ctile;
     let sorted_entropies;
     let xmin, xmax, ymin, ymax;
@@ -379,8 +379,15 @@ function Rules(wave, chosen_tile, chosen_rule, elem_rules, elem_type, tile_data,
             // uses sorted entropy to determine where the next 
 
             while(sorted_entropies.length > 0){
-                
+                ctile = sorted_entropies.shift();
+                let result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, chosen_index, true, depTile, false);
+                if (result === false) return [];
+                Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator);
+
             }
+
+
+
             for(let i = 0; i < sorted_entropies.length; i++){
                 ctile = sorted_entropies.shift();
                 let result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, chosen_index, true, depTile, false);
@@ -401,7 +408,7 @@ function Rules(wave, chosen_tile, chosen_rule, elem_rules, elem_type, tile_data,
 }
 
 function GetEntropySort(xmin,xmax,ymin,ymax,length,width,elem_data,chosen_tile){
-    debugger
+    // debugger
     let index;
     let indexes=[];
     for(let i = (-1)*ymax; i <= ymax; i++){
@@ -523,6 +530,14 @@ function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove) {
     return elems_to_remove;
 }
 
+function BinarySearch(array, value, start, end) {
+    const middle = Math.floor((start + end)/2);
+    if (value == array[middle] || (value < array[middle] && value > array[middle-1])) return array[middle];
+    if (end - 1 === start) return Math.abs(array[start] - value) > Math.abs(array[end] - value) ? array[end] : array[start]; 
+    if (value > array[middle]) return BinarySearch(array, value, middle, end);
+    if (value < array[middle]) return BinarySearch(array, value, start, middle);
+}
+
 /**
  * Weighted choosing of tiles
  * @param {array} array: wave element 
@@ -530,13 +545,14 @@ function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove) {
 function _NonZeroIndex(distribution, cweights, csumweight) {
     let random = Math.random()*csumweight;
     let choice = Math.floor(random);
-    let closest = cweights.reduce((prev, curr) => Math.abs(curr - choice) < Math.abs(prev - choice) ? curr : prev);
-    let index = cweights.indexOf(closest);
+    // binary search for first value that is larger than choice in cweights
+    let tile_choice = BinarySearch(cweights, choice, 0, cweights.length);
+    let index = cweights.indexOf(tile_choice);
     let elem = distribution[index];
     while(elem == 0) {
         choice = Math.floor(Math.random()*csumweight);
-        closest = cweights.reduce((prev, curr) => Math.abs(curr - choice) < Math.abs(prev - choice) ? curr : prev);
-        index = cweights.indexOf(closest);
+        tile_choice = BinarySearch(cweights, choice, 0, cweights.length);
+        index = cweights.indexOf(tile_choice);
         elem = distribution[index];
     }
     

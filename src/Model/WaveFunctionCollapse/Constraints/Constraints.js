@@ -26,12 +26,13 @@ export function GetNeighbors(tiles) {
             neighbors["tiles"].push({"left":tile_names[i], "right":tile_names[j]})
         }
     }
-    debugger
+    // debugger
     return neighbors
 }
 
 export function GenerateItems(item_info, width, height) {
-    let item;
+    let item, cumulative_weights;
+    let carray=[];
     let items = {
         names: [],
         weights: [],
@@ -49,6 +50,8 @@ export function GenerateItems(item_info, width, height) {
     }
 
     log_weights = new Array(items.amount);
+    // debugger
+    cumulative_weights = items.weights.reduce(function(a,b,i){return carray[i]=a+b;},0);
     for (let i = 0; i < items.amount; i++) {
         log_weights[i] = items.weights[i] * Math.log(items.weights[i]);
         sum_of_weights += items.weights[i];
@@ -62,6 +65,8 @@ export function GenerateItems(item_info, width, height) {
     items["sums_of_weights"] = new Array(width * height);
     items["sums_of_log_weights"] = new Array(width * height);
     items["entropies"] = new Array(width * height);
+    items["carray"] = carray;
+    items["csumweight"] = cumulative_weights;
     return items
 }
 

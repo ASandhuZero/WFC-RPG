@@ -13,7 +13,8 @@
             
         ],
         "items_info":[
-            {"name":"0", "weight":0.01}
+            {"name":"0", "weight":0},
+            {"name":"1", "weight":100}
         ],
         "neighbors":[
             {"left":"10 0", "right":"9 0"},
