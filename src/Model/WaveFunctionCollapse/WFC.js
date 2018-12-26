@@ -300,7 +300,7 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
         possiblities = elem_data.possible_choices[i];
         // console.log(possiblities)
         if (possiblities == 0) {
-            debugger
+            // debugger
             return false;
         }
         entropy = elem_data.entropies[i];
@@ -336,6 +336,15 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
     // debugger
     if(forced_tile != null){
         r = elem_data.names.indexOf(forced_tile);
+        elems_to_remove = [];
+        // remove tile from elems to remove if in there
+        for(let i = 0; i < elem_data.names.length;i++){
+            if ( r != i) {
+                // debugger
+                elems_to_remove[i] = [argmin, r];
+            }
+        }
+        
     } else {
         // r randomly chooses a tile by its index using weighted selection
         r = _NonZeroIndex(distribution, elem_data.carray, elem_data.csumweight);
@@ -419,8 +428,8 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
                         throw "no radius constraint given"
                     }
                     depTile = elem_rules["item"];
-                    chosen_index = 23;
-                    debugger
+                    // chosen_index = 23;
+                    // debugger
                     let collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, wave.length, width, height, elem_data, chosen_index);
                     let random = Math.floor(Math.random()*collapse_area.length);
                     console.log(chosen_index)

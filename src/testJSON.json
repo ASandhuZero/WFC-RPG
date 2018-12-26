@@ -259,28 +259,28 @@
             "tiles" : {
                 "81": {
                     "dependency":{
-                        "distance": [0,2,0,2]
+                        "distance": [1,2,1,2]
                     }
                 },
                 "82": {
                     "dependency":{
-                        "distance": [0,2,0,2]
+                        "distance": [1,2,1,2]
                     }
                 },
                 "83": {
                     "dependency":{
-                        "distance": [0,2,0,2]
+                        "distance": [1,2,1,2]
                     }
                 }
             },
             "items": {
                 "1": {
                     "item": "2",
-                    "distance":[0,2,0,2]
+                    "distance":[5,6,5,6]
                 },
                 "2": {
                     "item": "1",
-                    "distance":[0,2,0,2]
+                    "distance":[5,6,5,6]
                 }
             }
         }
