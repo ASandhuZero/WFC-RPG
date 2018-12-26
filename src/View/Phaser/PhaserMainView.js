@@ -23,6 +23,8 @@ export class MainState extends Phaser.State {
         this.game.load.image('Town_A', 'assets/tilesets/wolfsong/Town_A.png');
         this.game.load.image('car', 'assets/sprites/car.png');
         this.game.load.image('ball', 'assets/sprites/blue_ball.png');
+        this.game.load.image('key', 'assets/sprites/key.png');
+        this.game.load.image('chest', 'assets/sprites/chest.gif');
         // this.game.load.image(tileSet.name,tileSet.path);    //game.load.image('Town_A', 'assets/tilesets/wolfsong/Town_A.png'); 
         // this.game.load.tilemap(tileMap.name, null, tileMap.tilemap,Phaser.Tilemap.TILED_JSON);  //game.load.tilemap('testPCG', null, pcg_tilemap, Phaser.Tilemap.TILED_JSON);
     }
@@ -52,10 +54,8 @@ export class MainState extends Phaser.State {
         items.enableBody = true;
         // Display objects using gid, x, and y position specified in TileMapModel JSON
         if(this.includeItem == true){
-            this.map.createFromObjects('items', this.tileNum*this.tileNum+1, 'ball', 0, true, false, items);
-            this.map.createFromObjects('items', this.tileNum*this.tileNum+2, 'car', 0, true, false, items);
-            console.log('item tile name')
-            console.log(this.tileNum*this.tileNum+1)
+            this.map.createFromObjects('items', this.tileNum*this.tileNum+1, 'key', 0, true, false, items);
+            this.map.createFromObjects('items', this.tileNum*this.tileNum+2, 'chest', 0, true, false, items);
         }
 
         // Create editor layer

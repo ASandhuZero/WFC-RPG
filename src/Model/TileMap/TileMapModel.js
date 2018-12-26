@@ -53,6 +53,9 @@ export class TileMapModel {
 
     getWFCModel() {
         this.model = WFC(this.periodic, this.height, this.width, this.tileJSON, this.tile_rule, this.item_rule); 
+        // console.log(this.model);
+        if(this.model.length == 0) { debugger}
+        // debugger
         return this.model;
     }
 
@@ -117,7 +120,7 @@ export class TileMapModel {
         let items = this.getMap(1);
         let gids=[];
         let editorHeight = Math.ceil(this.tileCount/this.width)+1;
-        debugger
+        
         for(let i = 1;i <= this.num_items; i++){
             gids[i] = this.tileMapArray.length+i;
         }
@@ -126,7 +129,7 @@ export class TileMapModel {
             for (let i = 0; i < items.length; i++){
                 
                 if (items[i]>0){
-                    debugger 
+                    
                     gid = gids[items[i]];
 
                     let itemJSON = {

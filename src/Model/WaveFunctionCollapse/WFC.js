@@ -44,7 +44,9 @@ export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule)
             if (result === true) {
                 definite_state++;
             } else if (result === false) {
-                return [];
+                throw 'Oh Crap'
+                // console.log('crap')
+                // return [];
             } else {
                 chosen_tile = elem_data.names[result[0]];
                 // console.log(chosen_tile)
@@ -67,6 +69,8 @@ export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule)
     let items = tile_data["items"].names
     //DONE
     console.log(wave);
+
+    // debugger
     return GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height)
 }
 
@@ -294,7 +298,9 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
             continue;
         }
         possiblities = elem_data.possible_choices[i];
+        // console.log(possiblities)
         if (possiblities == 0) {
+            debugger
             return false;
         }
         entropy = elem_data.entropies[i];
@@ -350,7 +356,7 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
         if (w[t] != (t == r)) {
             // argmin = wave index to remove
             // t = tile index to remove
-            elems_to_remove = Ban(wave, elem_data, elem, argmin, t, elems_to_remove);
+            elems_to_remove = Ban(wave, elem_data, elem, argmin, t, elems_to_remove, 'observation');
         } 
     }
     // debugger
@@ -367,7 +373,7 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
     // if(elem_type === "items") {debugger}
     let ctile;
     let depTile = null;
-    let sorted_entropies;
+    let sorted_entropies, collapse_area;
     let xmin, xmax, ymin, ymax;
 
     switch(elem_type){
@@ -385,7 +391,8 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
                     }
 
                     // get tile index of lowest entropy
-                    sorted_entropies = GetEntropySort(xmin, xmax, ymin, ymax, wave.length, width, elem_data, chosen_index);
+                    collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, wave.length, width, elem_data, chosen_index);
+                    sorted_entropies = GetEntropySort(collapse_area, chosen_index);
                     
                     while(sorted_entropies.length > 0){
                         // debugger
@@ -411,15 +418,15 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
                     } else {
                         throw "no radius constraint given"
                     }
-                    // get item index of lowest entropy
-                    sorted_entropies = GetEntropySort(xmin, xmax, ymin, ymax, wave.length, width, elem_data, chosen_index);
-                    // console.log(sorted_entropies);
+                    depTile = elem_rules["item"];
+                    collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, wave.length, width, elem_data, chosen_index);
+                    let random = Math.floor(Math.random()*collapse_area.length);
                     
                     // debugger
-                    while(sorted_entropies.length > 0){
-                        ctile = sorted_entropies.shift();
+                    if(collapse_area.length > 0){
+                        ctile = collapse_area[random].index;
                         let result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, ctile, true, depTile, false);
-                        if (result === false) return [];
+                        if (result === false) {throw 'conflict'};
                         // Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator);
                         if(result[0] == chosen_tile) {item_freq[chosen_tile] -= 1;}
                     }
@@ -438,16 +445,17 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
     return item_freq;
 }
 
-function GetEntropySort(xmin,xmax,ymin,ymax,length,width,elem_data,chosen_tile){
-    // debugger
+function GetCollapseArea(xmin,xmax,ymin,ymax,length,width,elem_data,chosen_index) {
+    console.log(chosen_index)
     let index;
     let indexes=[];
+    chosen_index = 55;
     for(let i = (-1)*ymax; i <= ymax; i++){
         for(let j = (-1)*xmax; j <= xmax; j++){
-            if(Math.abs(j) < xmin && Math.abs(i) < ymin) continue;    // limitations
+            if(Math.abs(j) <= xmin && Math.abs(i) <= ymin) { continue; }    // limitations
+            index = (chosen_index + (j))+(i*width); // calculate index to observe
 
-            index = (chosen_tile + (j))+(i*width); // calculate index to observe
-            if(index < 0 || index > length-1) continue;
+            if(index < 0 || index > length-1 || index%width > (chosen_index%width)+xmax || index%width < (chosen_index%width) - xmax) { continue; }
             if(elem_data.entropies[index] > 0){
                 indexes.push({
                     index: index,
@@ -455,13 +463,20 @@ function GetEntropySort(xmin,xmax,ymin,ymax,length,width,elem_data,chosen_tile){
                 });
             }
         }
-        
     }
-    console.log(indexes)
+
+    return indexes;
+}
+
+function GetEntropySort(indexes, chosen_index){
+    // if(elem == 'items') {debugger}
+   
+    console.log(indexes);
+    console.log(chosen_index);
     var sortEnt = indexes.slice(0);
     sortEnt.sort(function(a,b) { return a.entropy - b.entropy;});
     let ordered_index = sortEnt.map(a => a.index);
-    console.log(ordered_index)
+    // console.log(ordered_index)
     return ordered_index;
 }
 
@@ -520,7 +535,7 @@ function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, ne
                 let comp = compat[tile_2];  // array of number of compatible tiles with neighbor tile to be removed
                 comp[d] = comp[d] - 1;  // decrease number of compatible tiles according to d
                 if (comp[d] == 0) {
-                    elems_to_remove = Ban(wave, elem_data, elem, index_2, tile_2, elems_to_remove);
+                    elems_to_remove = Ban(wave, elem_data, elem, index_2, tile_2, elems_to_remove, 'propagate');
                 }
             }
         }
@@ -539,7 +554,7 @@ function Propagate(wave, elems_to_remove, periodic, width, height, elem_data, ne
  * @param {array} elems_to_remove 
  * @returns {array} elements to remove in wave
  */
-function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove) {
+function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove, origin) {
     let wave_array = wave[wave_index][elem];    // creates array of tiles in chosen element
 
     // This is where Ban actually bans the undesired tile
@@ -554,13 +569,18 @@ function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove) {
     // Now it's time to actually set the banned tile up for removal 
     elems_to_remove.push([wave_index, wave_elem]);  // add the false tile to elems_to_remove array
 
-    // Need to recalculate entropy for the element in the wave using Shannon Entropy?
+    // Need to recalculate entropy for the element in the wave using Shannon Entropy
+    if(elem_data.sums_of_weights[wave_index] == elem_data.weights[wave_elem] || elem_data.entropies == NaN) { 
+        console.log('oh crap ' + origin + ' is causing issues'); 
+        console.log('so is: ' + elem)
+        throw 'conflict detected'
+    }
     let sum = elem_data.sums_of_weights[wave_index];    // get sum of weights for element with false tile
     elem_data.entropies[wave_index] += elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum); // recalculate entropy
-    elem_data.possible_choices[wave_index] -= 1;
-    elem_data.sums_of_weights[wave_index] -= elem_data.weights[wave_elem];
+    elem_data.possible_choices[wave_index] -= 1;    // decrease possible choices according to wave_index
+    elem_data.sums_of_weights[wave_index] -= elem_data.weights[wave_elem];  
     elem_data.sums_of_log_weights[wave_index] -= elem_data.log_weights[wave_elem];
-    sum = elem_data.sums_of_weights[wave_index];
+    sum = elem_data.sums_of_weights[wave_index];    // get sum of weights for element with false tile
     elem_data.entropies[wave_index] -= elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum);
 
     return elems_to_remove;
@@ -585,6 +605,7 @@ function _NonZeroIndex(distribution, cweights, csumweight) {
     let tile_choice = BinarySearch(cweights, choice, 0, cweights.length);
     let index = cweights.indexOf(tile_choice);
     let elem = distribution[index];
+    console.log(distribution);
     while(elem == 0) {
         choice = Math.floor(Math.random()*csumweight);
         tile_choice = BinarySearch(cweights, choice, 0, cweights.length);
