@@ -276,8 +276,11 @@
             "items": {
                 "1": {
                     "item": "2",
-                    "distance":[1,2,1,2],
-                    "frequency": 1
+                    "distance":[0,2,0,2]
+                },
+                "2": {
+                    "item": "1",
+                    "distance":[0,2,0,2]
                 }
             }
         }

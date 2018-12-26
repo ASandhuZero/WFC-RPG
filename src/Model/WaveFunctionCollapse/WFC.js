@@ -373,7 +373,7 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
     // if(elem_type === "items") {debugger}
     let ctile;
     let depTile = null;
-    let sorted_entropies, collapse_area;
+    let sorted_entropies;
     let xmin, xmax, ymin, ymax;
 
     switch(elem_type){
@@ -391,7 +391,7 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
                     }
 
                     // get tile index of lowest entropy
-                    collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, wave.length, width, elem_data, chosen_index);
+                    let collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, wave.length, width, height, elem_data, chosen_index);
                     sorted_entropies = GetEntropySort(collapse_area, chosen_index);
                     
                     while(sorted_entropies.length > 0){
@@ -419,16 +419,19 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
                         throw "no radius constraint given"
                     }
                     depTile = elem_rules["item"];
-                    collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, wave.length, width, elem_data, chosen_index);
+                    chosen_index = 23;
+                    debugger
+                    let collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, wave.length, width, height, elem_data, chosen_index);
                     let random = Math.floor(Math.random()*collapse_area.length);
+                    console.log(chosen_index)
+                    console.log(collapse_area)
                     
-                    // debugger
                     if(collapse_area.length > 0){
                         ctile = collapse_area[random].index;
                         let result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, ctile, true, depTile, false);
                         if (result === false) {throw 'conflict'};
                         // Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator);
-                        if(result[0] == chosen_tile) {item_freq[chosen_tile] -= 1;}
+                        // if(result[0] == chosen_tile) {item_freq[chosen_tile] -= 1;}
                     }
                 break;
                 default:
@@ -445,23 +448,30 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
     return item_freq;
 }
 
-function GetCollapseArea(xmin,xmax,ymin,ymax,length,width,elem_data,chosen_index) {
-    console.log(chosen_index)
+function GetCollapseArea(xmin,xmax,ymin,ymax,length,width,height,elem_data,chosen_index) {
     let index;
     let indexes=[];
-    chosen_index = 55;
+    let xcomp, ycomp;
+    let indexx,indexy;
     for(let i = (-1)*ymax; i <= ymax; i++){
+        indexy = Math.floor(chosen_index/width) + i;
+        if (indexy < 0 || indexy > height) { continue; }
         for(let j = (-1)*xmax; j <= xmax; j++){
-            if(Math.abs(j) <= xmin && Math.abs(i) <= ymin) { continue; }    // limitations
-            index = (chosen_index + (j))+(i*width); // calculate index to observe
+            indexx = chosen_index%width + j;
+            if(indexx < 0 || indexx > width) { continue; }
+            index = indexx+indexy*width; // calculate index to observe
+            xcomp = Math.abs((index%width) - (chosen_index%width));
+            ycomp = Math.abs(Math.floor(index/width) - Math.floor(chosen_index/width));
 
-            if(index < 0 || index > length-1 || index%width > (chosen_index%width)+xmax || index%width < (chosen_index%width) - xmax) { continue; }
+            if( (xcomp < xmin &&  ycomp < ymin) || xcomp > xmax || ycomp > ymax) { continue;}
+
             if(elem_data.entropies[index] > 0){
                 indexes.push({
                     index: index,
                     entropy: elem_data.entropies[index]
                 });
             }
+
         }
     }
 
@@ -470,13 +480,9 @@ function GetCollapseArea(xmin,xmax,ymin,ymax,length,width,elem_data,chosen_index
 
 function GetEntropySort(indexes, chosen_index){
     // if(elem == 'items') {debugger}
-   
-    console.log(indexes);
-    console.log(chosen_index);
     var sortEnt = indexes.slice(0);
     sortEnt.sort(function(a,b) { return a.entropy - b.entropy;});
     let ordered_index = sortEnt.map(a => a.index);
-    // console.log(ordered_index)
     return ordered_index;
 }
 
@@ -605,7 +611,6 @@ function _NonZeroIndex(distribution, cweights, csumweight) {
     let tile_choice = BinarySearch(cweights, choice, 0, cweights.length);
     let index = cweights.indexOf(tile_choice);
     let elem = distribution[index];
-    console.log(distribution);
     while(elem == 0) {
         choice = Math.floor(Math.random()*csumweight);
         tile_choice = BinarySearch(cweights, choice, 0, cweights.length);
