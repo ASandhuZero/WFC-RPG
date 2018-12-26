@@ -258,18 +258,24 @@
         "rules_info": {
             "tiles" : {
                 "81": {
-                    "dependency":{
+                    "strict":{
                         "distance": [1,2,1,2]
+                    },
+                    "prop": {
+                        "distance": [1,2,1,2],
+                        "type": "dark"
                     }
                 },
                 "82": {
-                    "dependency":{
-                        "distance": [1,2,1,2]
+                    "strict":{
+                        "distance": [1,2,1,2],
+                        "type": "dark"
                     }
                 },
                 "83": {
-                    "dependency":{
-                        "distance": [1,2,1,2]
+                    "strict":{
+                        "distance": [1,2,1,2],
+                        "type": "dark"
                     }
                 }
             },

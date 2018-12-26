@@ -388,19 +388,21 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
     switch(elem_type){
         case 'tiles':
             switch(tile_rule) {
-                case 'distance':
+                case 'strict':
+                    /** area collapse */
                     // calculate distance 
-                    if(elem_rules["dependency"][tile_rule] != undefined){
-                        xmin = elem_rules["dependency"][tile_rule][0];
-                        xmax = elem_rules["dependency"][tile_rule][1];
-                        ymin = elem_rules["dependency"][tile_rule][2];
-                        ymax = elem_rules["dependency"][tile_rule][3];
+                    debugger
+                    if(elem_rules[tile_rule]["distance"] != undefined){
+                        xmin = elem_rules[tile_rule]["distance"][0];
+                        xmax = elem_rules[tile_rule]["distance"][1];
+                        ymin = elem_rules[tile_rule]["distance"][2];
+                        ymax = elem_rules[tile_rule]["distance"][3];
                     } else {
-                        throw "no radius constraint given"
+                        throw "no distance constraint given"
                     }
 
                     // get tile index of lowest entropy
-                    let collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, wave.length, width, height, elem_data, chosen_index);
+                    let collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, width, height, elem_data, chosen_index);
                     sorted_entropies = GetEntropySort(collapse_area, chosen_index);
                     
                     while(sorted_entropies.length > 0){
@@ -412,6 +414,37 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
 
                     }
                 break;
+                case 'prop':
+                    /** area propagation */
+                    if(elem_rules[tile_rule]["distance"] != undefined){
+                        xmin = elem_rules[tile_rule]["distance"][0];
+                        xmax = elem_rules[tile_rule]["distance"][1];
+                        ymin = elem_rules[tile_rule]["distance"][2];
+                        ymax = elem_rules[tile_rule]["distance"][3];
+                    } else {
+                        throw "no distance constraint given"
+                    }
+                    // get tile index of lowest entropy
+                    let collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, width, height, elem_data, chosen_index);
+                    
+                    
+                    while(collapse_area.length > 0){
+                        ctile = collapse_area.shift();
+                        // create elems to remove according to tile type
+                        
+                        // WORK ON THIS PART
+
+                        for(let i = 0; i < elem_data.types[elem_rules[tile_rule]["type"]].length;i++){
+                            if ( r != i) {
+                                // debugger
+                                elems_to_remove[i] = [ctile, r];
+                            }
+                        }                        
+                    }
+                    Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator);
+
+
+                break;
                 default:
                 break;
             }
@@ -419,18 +452,17 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
         case 'items':
             switch(item_rule){
                 case 'distance':
-                    if(elem_rules[tile_rule] != undefined){
-                        xmin = elem_rules[tile_rule][0];
-                        xmax = elem_rules[tile_rule][1];
-                        ymin = elem_rules[tile_rule][2];
-                        ymax = elem_rules[tile_rule][3];
+                    if(elem_rules[item_rule] != undefined){
+                        xmin = elem_rules[item_rule][0];
+                        xmax = elem_rules[item_rule][1];
+                        ymin = elem_rules[item_rule][2];
+                        ymax = elem_rules[item_rule][3];
                     } else {
                         throw "no radius constraint given"
                     }
                     depTile = elem_rules["item"];
-                    // chosen_index = 23;
                     // debugger
-                    let collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, wave.length, width, height, elem_data, chosen_index);
+                    let collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, width, height, elem_data, chosen_index);
                     let random = Math.floor(Math.random()*collapse_area.length);
                     console.log(chosen_index)
                     console.log(collapse_area)
@@ -439,8 +471,6 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
                         ctile = collapse_area[random].index;
                         let result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, ctile, true, depTile, false);
                         if (result === false) {throw 'conflict'};
-                        // Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator);
-                        // if(result[0] == chosen_tile) {item_freq[chosen_tile] -= 1;}
                     }
                 break;
                 default:
@@ -457,7 +487,7 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
     return item_freq;
 }
 
-function GetCollapseArea(xmin,xmax,ymin,ymax,length,width,height,elem_data,chosen_index) {
+function GetCollapseArea(xmin,xmax,ymin,ymax,width,height,elem_data,chosen_index) {
     let index;
     let indexes=[];
     let xcomp, ycomp;
@@ -487,7 +517,7 @@ function GetCollapseArea(xmin,xmax,ymin,ymax,length,width,height,elem_data,chose
     return indexes;
 }
 
-function GetEntropySort(indexes, chosen_index){
+function GetEntropySort(indexes){
     // if(elem == 'items') {debugger}
     var sortEnt = indexes.slice(0);
     sortEnt.sort(function(a,b) { return a.entropy - b.entropy;});
