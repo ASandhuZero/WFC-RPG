@@ -384,6 +384,7 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
     let depTile = null;
     let sorted_entropies;
     let xmin, xmax, ymin, ymax;
+    let collapse_area;
 
     switch(elem_type){
         case 'tiles':
@@ -391,7 +392,7 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
                 case 'strict':
                     /** area collapse */
                     // calculate distance 
-                    debugger
+                    // debugger
                     if(elem_rules[tile_rule]["distance"] != undefined){
                         xmin = elem_rules[tile_rule]["distance"][0];
                         xmax = elem_rules[tile_rule]["distance"][1];
@@ -415,33 +416,33 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
                     }
                 break;
                 case 'prop':
-                    /** area propagation */
-                    if(elem_rules[tile_rule]["distance"] != undefined){
-                        xmin = elem_rules[tile_rule]["distance"][0];
-                        xmax = elem_rules[tile_rule]["distance"][1];
-                        ymin = elem_rules[tile_rule]["distance"][2];
-                        ymax = elem_rules[tile_rule]["distance"][3];
-                    } else {
-                        throw "no distance constraint given"
-                    }
-                    // get tile index of lowest entropy
-                    let collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, width, height, elem_data, chosen_index);
+                    // /** area propagation */
+                    // if(elem_rules[tile_rule]["distance"] != undefined){
+                    //     xmin = elem_rules[tile_rule]["distance"][0];
+                    //     xmax = elem_rules[tile_rule]["distance"][1];
+                    //     ymin = elem_rules[tile_rule]["distance"][2];
+                    //     ymax = elem_rules[tile_rule]["distance"][3];
+                    // } else {
+                    //     throw "no distance constraint given"
+                    // }
+                    // // get tile index of lowest entropy
+                    // collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, width, height, elem_data, chosen_index);
                     
                     
-                    while(collapse_area.length > 0){
-                        ctile = collapse_area.shift();
-                        // create elems to remove according to tile type
+                    // while(collapse_area.length > 0){
+                    //     ctile = collapse_area.shift();
+                    //     // create elems to remove according to tile type
                         
-                        // WORK ON THIS PART
+                    //     // WORK ON THIS PART
 
-                        for(let i = 0; i < elem_data.types[elem_rules[tile_rule]["type"]].length;i++){
-                            if ( r != i) {
-                                // debugger
-                                elems_to_remove[i] = [ctile, r];
-                            }
-                        }                        
-                    }
-                    Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator);
+                    //     for(let i = 0; i < elem_data.types[elem_rules[tile_rule]["type"]].length;i++){
+                    //         if ( r != i) {
+                    //             // debugger
+                    //             elems_to_remove[i] = [ctile, r];
+                    //         }
+                    //     }                        
+                    // }
+                    // Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator);
 
 
                 break;
@@ -462,7 +463,7 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
                     }
                     depTile = elem_rules["item"];
                     // debugger
-                    let collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, width, height, elem_data, chosen_index);
+                    collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, width, height, elem_data, chosen_index);
                     let random = Math.floor(Math.random()*collapse_area.length);
                     console.log(chosen_index)
                     console.log(collapse_area)
