@@ -16,7 +16,7 @@ export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule)
     let result = null;
     let definite_state = 0;
     let init = true;
-    let frequencies = tile_data['items']['frequencies'];
+    
     
     Clear(wave, tile_amount, tile_data);
     
@@ -38,30 +38,17 @@ export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule)
                 num_elem += 1;
             }
             // result returns [chosen tile, chosen index], true (argmin == -1), false (possiblities == 0), or null
-            result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, null, false, null, init);
+            result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, tile_data, tile_rule, item_rule, init);
                         
             // Converts index to name to match with rules
             if (result === true) {
                 definite_state++;
             } else if (result === false) {
-                throw 'Oh Crap'
+                // throw 'Oh Crap'
                 // console.log('crap')
-                // return [];
-            } else {
-                chosen_tile = elem_data.names[result[0]];
-                // console.log(chosen_tile)
-                // console.log(result[0])
-                // debugger
-                chosen_name = chosen_tile.split(/[ ]+/)[0];
-                // Enforce rules if needed
-                if (tile_data["rules"][elem][chosen_name] != undefined) {
-                    let elem_rules = tile_data["rules"][elem][chosen_name];
-                    // debugger
-                    frequencies = Rules(wave, result[0], result[1],tile_rule, item_rule, frequencies, elem_rules, elem, tile_data, elem_data, elems_to_remove, periodic, width, height, neighbor_propagator);
-                } 
-            }
+                return [];
+            } 
             
-            // let chosen_name = 83;
             Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator)
         }
     }
@@ -285,12 +272,13 @@ function GenerateWave(tile_amount, item_amount, width, height) {
     return wave;
 }
 
-function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, chosen_index, forced, forced_tile, init) {
+function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, tile_data, tile_rule, item_rule, init) {
     let noise, entropy, possiblities;
     let min = 1000;
-    let argmin = -1;
+    let argmin = -1;    // wave_element_index
     let chosen_elem = -1;
     let r;
+    let frequencies = tile_data['items']['frequencies'];
     
     // update min to reflect highest entropy and noise
     for (let i = 0; i < wave.length; i++) {
@@ -317,12 +305,10 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
         return true;
     }
     // debugger
-    if(forced == true) {
-        argmin = chosen_index;
-    }
     
     if(init == true) {
         argmin = Math.floor(Math.random()*wave.length);
+        init = false;
     }
 
     // Creates distribution array that reflects the weight of each tile according to the number of tiles in an element of the wave
@@ -333,66 +319,69 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
         // distribution[t] /= elem_data.amount;
     }
 
-    // debugger
-    if(forced_tile != null){
-        r = elem_data.names.indexOf(forced_tile);
-        elems_to_remove = [];
-        // remove tile from elems to remove if in there
-        for(let i = 0; i < elem_data.names.length;i++){
-            if ( r != i) {
-                // debugger
-                elems_to_remove[i] = [argmin, r];
-            }
-        }
-        
-    } else {
-        // r randomly chooses a tile by its index using weighted selection
-        r = _NonZeroIndex(distribution, elem_data.carray, elem_data.csumweight);
-    }
+    // {int} r: randomly choosen tile index using weighted selection
+    r = _NonZeroIndex(distribution, elem_data.carray, elem_data.csumweight);
 
+    // frequency adjustment
     if(elem == 'items' && elem_data.frequencies[r] == 0){ 
-        return [0, argmin];   // defaults to no tile
+        // defaults to no tile
+        return Ban(wave, elem_data, elem, argmin, r, elems_to_remove, 'frequency')
+
     } else if(elem == 'items' && elem_data.frequencies[r] > 0){
         elem_data.frequencies[r] -= 1;
-    }
+    }    
 
     /**
      * Decides which tiles to ban
      * loop through number of tiles
      * if counter is equal to randomly chosen tile AND wave already knows its false then ban the tile
      */
+    
     for (let t = 0; t < elem_data.amount; t++) {
+        
         if (w[t] != (t == r)) {
-            // argmin = wave index to remove
+            // argmin = wave element index to remove
             // t = tile index to remove
             elems_to_remove = Ban(wave, elem_data, elem, argmin, t, elems_to_remove, 'observation');
         } 
     }
+
+    let chosen_tile = elem_data.names[r];
+    let chosen_name = chosen_tile.split(/[ ]+/)[0];
+    if (tile_data["rules"][elem][chosen_name] != undefined) {
+        let elem_rules = tile_data["rules"][elem][chosen_name];
+        // debugger
+        Force(wave, r, argmin,tile_rule, item_rule, elem_rules, elem, tile_data, elem_data, elems_to_remove, periodic, width, height);
+    } 
+    
     // debugger
-    return [r,argmin];
+    return null;
 }
+
 
 /**
  * 
  * @param {matrix} wave 
- * @param {int} chosen_index : index of tile
+ * @param {int} r : tile index
+ * @param {int} argmin : wave element index
  * @param {object} rules : rules set by user constraint
  */
-function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq, elem_rules, elem_type, tile_data, elem_data, elems_to_remove, periodic, width, height, neighbor_propagator) {
+function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, tile_data, elem_data, elems_to_remove, periodic, width, height) {
     // if(elem_type === "items") {debugger}
-    let ctile;
-    let depTile = null;
+    let wave_elem;
     let sorted_entropies;
     let xmin, xmax, ymin, ymax;
-    let collapse_area;
+    let collapse_indexes;
+    let w;
 
     switch(elem_type){
         case 'tiles':
             switch(tile_rule) {
-                case 'strict':
+                case 'observe':
                     /** area collapse */
                     // calculate distance 
                     // debugger
+                    if(elem_rules[tile_rule] == undefined) {break;}
                     if(elem_rules[tile_rule]["distance"] != undefined){
                         xmin = elem_rules[tile_rule]["distance"][0];
                         xmax = elem_rules[tile_rule]["distance"][1];
@@ -401,50 +390,83 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
                     } else {
                         throw "no distance constraint given"
                     }
-
+                    // debugger
                     // get tile index of lowest entropy
-                    let collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, width, height, elem_data, chosen_index);
-                    sorted_entropies = GetEntropySort(collapse_area, chosen_index);
-                    
+                    collapse_indexes = GetCollapseArea(xmin, xmax, ymin, ymax, width, height, elem_data, argmin);
+                    sorted_entropies = GetEntropySort(collapse_indexes);
                     while(sorted_entropies.length > 0){
                         // debugger
-                        ctile = sorted_entropies.shift();
-                        let result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, ctile, true, depTile, false);
-                        if (result[0] === false) return [];
-                        Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator);
+                        argmin = sorted_entropies.shift();  // chosen wave element
+                        let distribution = new Array(elem_data.amount);
+                        w = wave[argmin][elem];
+                        for (let i = 0; i < elem_data.amount; i++) {
+                            distribution[i] = w[i] ? elem_data.weights[i] : 0;
+                            // distribution[t] /= elem_data.amount;
+                        }
+                        r = _NonZeroIndex(distribution, elem_data.carray, elem_data.csumweight);    // chosen tile index within wave element
+                        for (let t = 0; t < elem_data.amount; t++) {
+        
+                            if (w[t] != (t == r)) {
+                                // argmin = wave element index
+                                // t = tile index
+                                elems_to_remove = Ban(wave, elem_data, elem, argmin, t, elems_to_remove, 'tile force');
+                            } 
+                        }
+                        Propagate(wave, elems_to_remove, periodic, width, height, elem_data, tile_data['neighbor_propagator']);
+                    }
+                    
+                break;
+                case 'propagate':
+                    /** area propagation */
+                    // NOTE: adding tiles to the generative space is not implemented so this rule will not be able to produce results easily
+                    if(elem_rules[tile_rule] == undefined) {break;}
+                    if(elem_rules[tile_rule]["distance"] != undefined){
+                        xmin = elem_rules[tile_rule]["distance"][0];
+                        xmax = elem_rules[tile_rule]["distance"][1];
+                        ymin = elem_rules[tile_rule]["distance"][2];
+                        ymax = elem_rules[tile_rule]["distance"][3];
+                    } else {
+                        throw "no distance constraint given"
+                    }
+                    // get tile index of lowest entropy
+                    collapse_indexes = GetCollapseArea(xmin, xmax, ymin, ymax, width, height, elem_data, argmin);
+                    while(collapse_indexes.length > 0){
+                        let argminObj = collapse_indexes.shift();  // chosen wave element
+                        argmin = argminObj.index;
+                        w = wave[argmin][elem];
+                        for (let i = 0; i < elem_data.amount; i++) {
+                            if((elem_data.types[i] == elem_rules[tile_rule]['type']) == false) {
+                                elems_to_remove = Ban(wave, elem_data, elem, argmin, i, elems_to_remove, 'item force');;
+                            }
+                        }
 
+                        Propagate(wave, elems_to_remove, periodic, width, height, elem_data, tile_data['neighbor_propagator']);
                     }
                 break;
-                case 'prop':
-                    // /** area propagation */
-                    // if(elem_rules[tile_rule]["distance"] != undefined){
-                    //     xmin = elem_rules[tile_rule]["distance"][0];
-                    //     xmax = elem_rules[tile_rule]["distance"][1];
-                    //     ymin = elem_rules[tile_rule]["distance"][2];
-                    //     ymax = elem_rules[tile_rule]["distance"][3];
-                    // } else {
-                    //     throw "no distance constraint given"
-                    // }
-                    // // get tile index of lowest entropy
-                    // collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, width, height, elem_data, chosen_index);
+                case 'weight':
+                    // if(elem_rules[tile_rule] == undefined) {break;}
+                    let weight;
+                    let old_weight = elem_data.weights[r];
+                    let old_log = (elem_data.weights[r] * Math.log(elem_data.weights[r]));
+                    if(elem_rules[tile_rule] != undefined){
+                        weight = elem_rules[tile_rule];
+                    } else {
+                        throw "no weight constraint given"
+                    }
                     
-                    
-                    // while(collapse_area.length > 0){
-                    //     ctile = collapse_area.shift();
-                    //     // create elems to remove according to tile type
-                        
-                    //     // WORK ON THIS PART
-
-                    //     for(let i = 0; i < elem_data.types[elem_rules[tile_rule]["type"]].length;i++){
-                    //         if ( r != i) {
-                    //             // debugger
-                    //             elems_to_remove[i] = [ctile, r];
-                    //         }
-                    //     }                        
-                    // }
-                    // Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator);
-
-
+                    if((elem_data.weights[r]+weight) <= 0) {
+                        elem_data.weights[r] = Math.min(elem_data.weights);
+                    } else {
+                        elem_data.weights[r] += weight;
+                    }
+                    let log_weight = (elem_data.weights[r] * Math.log(elem_data.weights[r]));
+                    for(let i = 0; i < wave.length; i++) {
+                        elem_data.sums_of_weights[i] -= old_weight;
+                        elem_data.sums_of_weights[i] += elem_data.weights[r];
+                        elem_data.sums_of_log_weights[i] -= old_log;
+                        elem_data.sums_of_log_weights[i] += log_weight;
+                        elem_data.entropies[i] = elem_data.sums_of_log_weights[i] / elem_data.sums_of_weights[i] - Math.log(elem_data.sums_of_weights[i]); // recalculate entropy
+                    }
                 break;
                 default:
                 break;
@@ -459,20 +481,25 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
                         ymin = elem_rules[item_rule][2];
                         ymax = elem_rules[item_rule][3];
                     } else {
-                        throw "no radius constraint given"
+                        throw "no distance constraint given"
                     }
-                    depTile = elem_rules["item"];
-                    // debugger
-                    collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, width, height, elem_data, chosen_index);
+                    r = elem_rules["item"];
+                    collapse_area = GetCollapseArea(xmin, xmax, ymin, ymax, width, height, elem_data, argmin);
                     let random = Math.floor(Math.random()*collapse_area.length);
-                    console.log(chosen_index)
-                    console.log(collapse_area)
-                    
-                    if(collapse_area.length > 0){
-                        ctile = collapse_area[random].index;
-                        let result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, ctile, true, depTile, false);
-                        if (result === false) {throw 'conflict'};
+                    elems_to_remove = [];
+                    argmin = collapse_area[random].index;
+                    w = wave[argmin][elem];
+
+                    for (let t = 0; t < elem_data.amount; t++) {
+        
+                        if (w[t] != (t == r)) {
+                            // argmin = wave element index
+                            // t = tile index
+                            elems_to_remove = Ban(wave, elem_data, elem, argmin, t, elems_to_remove, 'item force');
+                        } 
                     }
+                    elem_data.frequencies[r] -= 1;
+
                 break;
                 default:
                 break;
@@ -485,7 +512,7 @@ function Rules(wave, chosen_tile, chosen_index, tile_rule, item_rule, item_freq,
 
     console.log("this is the force funtion wooho.");
     // debugger
-    return item_freq;
+    return null;
 }
 
 function GetCollapseArea(xmin,xmax,ymin,ymax,width,height,elem_data,chosen_index) {
@@ -493,6 +520,7 @@ function GetCollapseArea(xmin,xmax,ymin,ymax,width,height,elem_data,chosen_index
     let indexes=[];
     let xcomp, ycomp;
     let indexx,indexy;
+    let prev_index;
     for(let i = (-1)*ymax; i <= ymax; i++){
         indexy = Math.floor(chosen_index/width) + i;
         if (indexy < 0 || indexy > height) { continue; }
@@ -504,6 +532,7 @@ function GetCollapseArea(xmin,xmax,ymin,ymax,width,height,elem_data,chosen_index
             ycomp = Math.abs(Math.floor(index/width) - Math.floor(chosen_index/width));
 
             if( (xcomp < xmin &&  ycomp < ymin) || xcomp > xmax || ycomp > ymax) { continue;}
+            if( index == prev_index) { continue;}
 
             if(elem_data.entropies[index] > 0){
                 indexes.push({
@@ -511,7 +540,7 @@ function GetCollapseArea(xmin,xmax,ymin,ymax,width,height,elem_data,chosen_index
                     entropy: elem_data.entropies[index]
                 });
             }
-
+            prev_index = index;
         }
     }
 

@@ -257,26 +257,15 @@
         ],
         "rules_info": {
             "tiles" : {
-                "81": {
-                    "strict":{
+                "84": {
+                    "observe":{
                         "distance": [1,2,1,2]
                     },
-                    "prop": {
+                    "propagate": {
                         "distance": [1,2,1,2],
                         "type": "dark"
-                    }
-                },
-                "82": {
-                    "strict":{
-                        "distance": [1,2,1,2],
-                        "type": "dark"
-                    }
-                },
-                "83": {
-                    "strict":{
-                        "distance": [1,2,1,2],
-                        "type": "dark"
-                    }
+                    },
+                    "weight": 100
                 }
             },
             "items": {

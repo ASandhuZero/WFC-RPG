@@ -86,6 +86,7 @@ export function GenerateTiles(tiles_info, width, height) {
     let sum_of_weights = 0;
     let sum_of_log_weights = 0;
     let tiles = {
+        types: [],
         rotations: [],
         names: [],
         weights: [],
@@ -144,6 +145,7 @@ export function GenerateTiles(tiles_info, width, height) {
                 mirror(rotation(rotation(rotation(c)))) + tile_ID
             ]
             // debugger
+            tiles["types"].push(tile.type);
             tiles["names"].push(tile_name);
             tiles["rotations"].push(new_tile)
             tiles["weights"].push(tile.weight || 1);
