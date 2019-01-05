@@ -1,6 +1,8 @@
 import * as Constraints from "./Constraints/Constraints"
+var fs = require('fs');
 
 export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule) {
+    console.time('WFC');
     let chosen_tile,chosen_name;
     let data = tileset_info["data"];
     let num_elem = 0;
@@ -139,11 +141,13 @@ function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, he
         } 
     }
     // debugger
+    console.timeEnd('WFC');
     if(array.length != 0) {
         return array;
     } else {
         throw 'No Map Generated'
     }
+    
 }
 
 /**
