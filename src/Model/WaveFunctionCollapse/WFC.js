@@ -3,7 +3,6 @@ var fs = require('fs');
 
 export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule) {
     console.time('WFC');
-    let chosen_tile,chosen_name;
     let data = tileset_info["data"];
     let num_elem = 0;
     
@@ -372,6 +371,7 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
  */
 function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, tile_data, elem_data, elems_to_remove, periodic, width, height) {
     // if(elem_type === "items") {debugger}
+    console.time('Force');
     let wave_elem;
     let sorted_entropies;
     let xmin, xmax, ymin, ymax;
@@ -513,7 +513,7 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, til
             break;
     }
 
-
+    console.timeEnd('Force');
     console.log("this is the force funtion wooho.");
     // debugger
     return null;
@@ -694,6 +694,20 @@ function _NonZeroIndex(distribution, cweights, csumweight) {
     return index;
 
 }  
+/*
+function _NonZeroIndex(array) {
+    let random = Math.random()*array.length;
+    let index = Math.floor(random);
+    let elem = array[index];
+    let zero_array = [];
+    for (let i = 0; i < array.length; i++) {
+        while(elem == 0) {
+            index = Math.floor(Math.random()*array.length);
+            elem = array[index];
+        }
+        return index;
+    }
+}  */
 
 function OnBoundary(x, y, periodic, width, height) {
     return !periodic && (x < 0 || y < 0 || x >= width || y >= height);
