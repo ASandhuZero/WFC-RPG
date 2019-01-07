@@ -41,7 +41,7 @@ export class Controller {
     updateTileMap() {
         // console.log(this.model.tiles);
         let tiles = this.getTilesUpdated();
-        console.log(tiles);
+        // console.log(tiles);
         let sortedTiles = tiles.sort(function compare(a, b) {
             const indexA = a.index;
             const indexB = b.index;
@@ -92,7 +92,7 @@ export class Controller {
             tileMap: this.model.tileMap,
             includeItem: this.includeItem,
         }
-        console.log(this.phaserViewParam);
+        // console.log(this.phaserViewParam);
         return this.phaserViewParam;
     }
 

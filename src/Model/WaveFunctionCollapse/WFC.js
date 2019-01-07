@@ -56,7 +56,7 @@ export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule)
     let tiles = tile_data["tiles"].names
     let items = tile_data["items"].names
     //DONE
-    console.log(wave);
+    // console.log(wave);
 
     // debugger
     return GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height)
@@ -371,7 +371,7 @@ function Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height
  */
 function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, tile_data, elem_data, elems_to_remove, periodic, width, height) {
     // if(elem_type === "items") {debugger}
-    console.time('Force');
+    // console.time('Force');
     let wave_elem;
     let sorted_entropies;
     let xmin, xmax, ymin, ymax;
@@ -513,8 +513,8 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, til
             break;
     }
 
-    console.timeEnd('Force');
-    console.log("this is the force funtion wooho.");
+    // console.timeEnd('Force');
+    // console.log("this is the force funtion wooho.");
     // debugger
     return null;
 }
@@ -650,8 +650,8 @@ function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove, orig
 
     // Need to recalculate entropy for the element in the wave using Shannon Entropy
     if(elem_data.sums_of_weights[wave_index] == elem_data.weights[wave_elem] || elem_data.entropies == NaN) { 
-        console.log('oh crap ' + origin + ' is causing issues'); 
-        console.log('so is: ' + elem)
+        // console.log('oh crap ' + origin + ' is causing issues'); 
+        // console.log('so is: ' + elem)
         throw 'conflict detected'
     }
     let sum = elem_data.sums_of_weights[wave_index];    // get sum of weights for element with false tile

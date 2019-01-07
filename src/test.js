@@ -2,7 +2,7 @@ import {Controller} from './Controller/Controller'
 import * as test_json from "./testJSON.json!json"
 
 // Controller parameters: type, tileJSON, subset, newGame
-var wfcController = new Controller('Phaser',test_json, "item", false, true, null,'distance', 2);
+var wfcController = new Controller('Phaser',test_json, "item", false, true, null ,'distance', 2);
 wfcController.displayView();
 
 var numButton = document.getElementById("numButton");
@@ -21,6 +21,15 @@ exportButton.addEventListener("click", function(){
     a.href = URL.createObjectURL(file);
     a.download = 'testJson.json';
     a.click(); // wow what a terrible hack.
+});
+
+var testButton = document.getElementById("testRuns");
+testButton.addEventListener("click", function(){
+    console.log('Non-local Constraint');
+    for(let i = 0; i<50; i++) {
+        numButton.click();
+    }
+    console.log('done')
 });
 
 var updateButton = document.getElementById("updateButton");

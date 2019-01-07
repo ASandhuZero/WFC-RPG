@@ -48,7 +48,7 @@ export class TileMapModel {
         this.tileMapArray = this.getWFCModel();
         this.tileMap = this.getTile2DJSON();
         // this.tiles = this.getMap(0);
-        console.log(this.tileMapArray);
+        // console.log(this.tileMapArray);
     }
 
     getWFCModel() {

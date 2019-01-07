@@ -265,7 +265,7 @@
                         "distance": [1,2,1,2],
                         "type": "dark"
                     },
-                    "weight": 100
+                    "weight": 1000
                 }
             },
             "items": {
