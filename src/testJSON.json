@@ -13,8 +13,8 @@
         ],
         "items_info":[
             {"name":"0", "weight": 10, "frequency": -1},
-            {"name":"1", "weight": 1, "frequency": 1, "dependency": "2"},
-            {"name":"2", "weight": 1, "frequency": 1, "dependency": "1"}
+            {"name":"1", "weight": 1, "frequency": -1, "dependency": "2"},
+            {"name":"2", "weight": 1, "frequency": -1, "dependency": "1"}
         ],
         "neighbors":[
             {"left":"10 0", "right":"9 0"},
