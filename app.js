@@ -12,27 +12,27 @@ function createWindow () {
     return display.bounds.x !== 0 || display.bounds.y !== 0
   })
   if (externalDisplay) {
-    // Create the browser window.
-    mainWindow = new BrowserWindow({
-      x: externalDisplay.bounds.x + 50,
-      y: externalDisplay.bounds.y + 50,
-      fullscreen: true, 
-      fullscreenWindowTitle : true
-    })
-    // and load the index.html of the app.
-    mainWindow.loadFile('index.html')
-
-    // Open the DevTools.
-    mainWindow.webContents.openDevTools()
-
-    // Emitted when the window is closed.
-    mainWindow.on('closed', function () {
-      // Dereference the window object, usually you would store windows
-      // in an array if your app supports multi windows, this is the time
-      // when you should delete the corresponding element.
-      mainWindow = null
-    })
   }
+  // Create the browser window.
+  mainWindow = new BrowserWindow({
+    // x: externalDisplay.bounds.x + 50,
+    // y: externalDisplay.bounds.y + 50,
+    fullscreen: true, 
+    fullscreenWindowTitle : true
+  })
+  // and load the index.html of the app.
+  mainWindow.loadFile('index.html')
+
+  // Open the DevTools.
+  mainWindow.webContents.openDevTools()
+
+  // Emitted when the window is closed.
+  mainWindow.on('closed', function () {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    mainWindow = null
+  })
 }
 
 // This method will be called when Electron has finished
