@@ -17,8 +17,6 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     // x: externalDisplay.bounds.x + 50,
     // y: externalDisplay.bounds.y + 50,
-    fullscreen: true, 
-    fullscreenWindowTitle : true
   })
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
