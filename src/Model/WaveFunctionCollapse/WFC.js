@@ -2,7 +2,6 @@ import * as Constraints from "./Constraints/Constraints"
 var fs = require('fs');
 
 export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule) {
-    console.time('WFC');
     let data = tileset_info["data"];
     let num_elem = 0;
     
@@ -55,10 +54,6 @@ export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule)
     }
     let tiles = tile_data["tiles"].names
     let items = tile_data["items"].names
-    //DONE
-    // console.log(wave);
-
-    // debugger
     return GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height)
 }
 
@@ -650,8 +645,6 @@ function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove, orig
 
     // Need to recalculate entropy for the element in the wave using Shannon Entropy
     if(elem_data.sums_of_weights[wave_index] == elem_data.weights[wave_elem] || elem_data.entropies == NaN) { 
-        // console.log('oh crap ' + origin + ' is causing issues'); 
-        // console.log('so is: ' + elem)
         throw 'conflict detected'
     }
     let sum = elem_data.sums_of_weights[wave_index];    // get sum of weights for element with false tile
@@ -694,21 +687,6 @@ function _NonZeroIndex(distribution, cweights, csumweight) {
     return index;
 
 }  
-/*
-function _NonZeroIndex(array) {
-    let random = Math.random()*array.length;
-    let index = Math.floor(random);
-    let elem = array[index];
-    let zero_array = [];
-    for (let i = 0; i < array.length; i++) {
-        while(elem == 0) {
-            index = Math.floor(Math.random()*array.length);
-            elem = array[index];
-        }
-        return index;
-    }
-}  */
-
 function OnBoundary(x, y, periodic, width, height) {
     return !periodic && (x < 0 || y < 0 || x >= width || y >= height);
 }

@@ -4,25 +4,6 @@ import {Editor} from "Editor";
 import {WFC} from './Model/WaveFunctionCollapse/WFC'
 import * as tileset_info from "./Model/WaveFunctionCollapse/tile_info.json!json"
 
-
-// var jsA = []
-// var item_num = [0, 1, 2]
-// for (let i = 0; i < 100; i++) {
-//     for (let k = 0; k < 100; k++) {
-//         if (i == k) {
-//             continue
-//         }
-//         let item_s = item_num[Math.floor(Math.random() * item_num.length)].toString()
-//         let js = {
-//             "left" : i.toString() + " 0" + " " + item_s, "right": k.toString() + " 0" + " 0" 
-//         }
-//         jsA.push(js);
-//     }
-// }
-
-// console.log(JSON.stringify(jsA))
-
-// debugger
 var game = new Phaser.Game(512, 512, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 var editor;
 var tilemap = WFC(false, 16, 16, tileset_info);
