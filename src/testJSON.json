@@ -2,10 +2,10 @@
     "data": {
         "name": "main",
         "tiles_info": [
-            {"name":"9", "symmetry":"X", "weight":10, "type": "light"},
-            {"name":"10", "symmetry":"X", "weight":10, "type": "light"},
-            {"name":"17", "symmetry":"X", "weight":10, "type": "light"},
-            {"name":"18", "symmetry":"X", "weight":10, "type": "light"},
+            {"name":"9", "symmetry":"X", "weight":1, "type": "light"},
+            {"name":"10", "symmetry":"X", "weight":1, "type": "light"},
+            {"name":"17", "symmetry":"X", "weight":1, "type": "light"},
+            {"name":"18", "symmetry":"X", "weight":1, "type": "light"},
             {"name":"81", "symmetry":"T", "weight":1, "type": "dark"},
             {"name":"82", "symmetry":"I", "weight":1, "type": "dark"},
             {"name":"83", "symmetry":"T", "weight":1, "type": "dark"},

@@ -20,10 +20,10 @@ export class MainState extends Phaser.State {
     preload () {
 
         this.game.load.tilemap(this.mapName, null, this.tileMap, Phaser.Tilemap.TILED_JSON);
-        this.game.load.image('Town_A', 'assets/tilesets/wolfsong/Town_A.png');
+        this.game.load.image('Town_A', 'assets/tilesets/wolfsong/PaperStuff.png');
         this.game.load.image('car', 'assets/sprites/car.png');
         this.game.load.image('ball', 'assets/sprites/blue_ball.png');
-        this.game.load.image('key', 'assets/sprites/key.png');
+        this.game.load.image('key', 'assets/sprites/blue_ball.png');
         this.game.load.image('chest', 'assets/sprites/chest.gif');
         // this.game.load.image(tileSet.name,tileSet.path);    //game.load.image('Town_A', 'assets/tilesets/wolfsong/Town_A.png'); 
         // this.game.load.tilemap(tileMap.name, null, tileMap.tilemap,Phaser.Tilemap.TILED_JSON);  //game.load.tilemap('testPCG', null, pcg_tilemap, Phaser.Tilemap.TILED_JSON);
