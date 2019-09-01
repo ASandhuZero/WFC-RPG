@@ -14,7 +14,7 @@ System.config({
 
   map: {
     "Editor": "src/Editor/Editor",
-    "WFC": "src/Model/WaveFunctionCollapse/WFC",
+    "WFC": "src/WaveFunctionCollapse/WFC",
     "babel": "npm:babel-core@5.8.38",
     "babel-runtime": "npm:babel-runtime@5.8.38",
     "core-js": "npm:core-js@1.2.7",

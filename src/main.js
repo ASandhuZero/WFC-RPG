@@ -1,8 +1,8 @@
 import * as Phaser from 'phaser'
 import * as spriteAssetKey from 'assets/spriteAssetKey.json!json';
 import {Editor} from "Editor";
-import {WFC} from './Model/WaveFunctionCollapse/WFC'
-import * as tileset_info from "./Model/WaveFunctionCollapse/tile_info.json!json"
+import {WFC} from './WaveFunctionCollapse/WFC'
+import * as tileset_info from "./WaveFunctionCollapse/tile_info.json!json"
 
 var game = new Phaser.Game(512, 512, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 var editor;

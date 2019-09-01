@@ -1,6 +1,6 @@
-import {TileMapModel} from '../Model/TileMap/TileMapModel'
+import {TileMapModel} from './TileMap/TileMapModel'
 // import {PhaserMainView} from 'phaserMainView'
-import {View} from '../View/View'
+import {View} from './View'
 // import {Model} from 'WFCModel'
 /**
  * Gets tile set, user constraints, and user config from view.

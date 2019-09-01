@@ -1,4 +1,4 @@
-import {Controller} from './Controller/Controller'
+import {Controller} from './Controller'
 import * as test_json from "./testJSON.json!json"
 
 // Controller parameters: type, tileJSON, subset, newGame
