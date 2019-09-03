@@ -1,5 +1,4 @@
 import * as Constraints from "./Constraints/Constraints"
-var fs = require('fs');
 
 export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule) {
     let data = tileset_info["data"];
