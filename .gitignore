@@ -2,7 +2,8 @@
 # Created by https://www.gitignore.io/api/node,jspm,osx,windows,linux
 
 ### build files ###
-
+build.js
+build.js.map
 
 ### jspm ###
 jspm_packages
