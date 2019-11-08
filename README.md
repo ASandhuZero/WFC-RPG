@@ -1,4 +1,10 @@
-Run: browser-sync
+# WFC-UCDavis
+This project is focused on recreating and extending [WaveFunctionCollapse](https://github.com/mxgmn/WaveFunctionCollapse).
+
+## How to run
+In order to run this project, all necessary packages need to be installed.
+
+Afterwards, run browser-sync and it should start in a new browser.
 
 
 ## Necessary Packages
