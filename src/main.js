@@ -1,6 +1,5 @@
 import * as Phaser from 'phaser'
 import * as spriteAssetKey from 'assets/spriteAssetKey.json!json';
-import {Editor} from "Editor";
 import {WFC} from './WaveFunctionCollapse/WFC'
 import * as tileset_info from "./WaveFunctionCollapse/tile_info.json!json"
 
@@ -13,12 +12,9 @@ var j = 0;
 var k = 0;
 
 debugger
-editor = new Editor();
 function preload () {
-//   editor.Preload(game);
-  //Testing
-    game.load.image('lil', 'assets/Lil_Prom.png')
-    // game.load.image('maleSpriteSheet', 'assets/sprites/Male_SpriteSheet.png');
+
+    //Testing
     game.load.image('maleSpriteSheet', 'assets/sprites/Male_SpriteSheet.png');
     game.load.image('testSpriteSheet', 'assets/sprites/test.png');
 
@@ -36,25 +32,10 @@ function preload () {
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
     
     //Tilemaps
-    // game.load.image('RPGTown32x32', '/assets/tilesets/RPGTown32x32.png');
+    // game.load.image('RPGTown33x32', '/assets/tilesets/RPGTown32x32.png');
     game.load.image('Town_A', 'assets/tilesets/wolfsong/Town_A.png');
-    game.load.image('Town_B', 'assets/tilesets/wolfsong/Town_B.png');
-    game.load.image('City_A', 'assets/tilesets/wolfsong/City_A.png');
-    game.load.image('City_B', 'assets/tilesets/wolfsong/City_B.png');
-    game.load.image('Interior_A', 'assets/tilesets/wolfsong/Interior_A.png');
-    game.load.image('Interior_B', 'assets/tilesets/wolfsong/Interior_B.png');
-    game.load.image('FF_Set_1', 'assets/tilesets/wolfsong/FF_Set_1.png');
-    game.load.image('Streets01b', 'assets/tilesets/wolfsong/Streets01b.png');
-    game.load.image('BlackForest_A', 'assets/tilesets/wolfsong/BlackForest_A.png');
-    game.load.image('Forests_B', 'assets/tilesets/wolfsong/Forests_B.png');
 
     game.load.tilemap('testPCG', null, pcg_tilemap, Phaser.Tilemap.TILED_JSON)
-    // game.load.tilemap('turnipFarm', 'assets/tilemaps/turnipFarm.json', null, Phaser.Tilemap.TILED_JSON)
-    // game.load.tilemap('turniptown', 'assets/tilemaps/turniptown.json', null, Phaser.Tilemap.TILED_JSON)
-    // game.load.tilemap('turniptown2', 'assets/tilemaps/turniptown2.json', null, Phaser.Tilemap.TILED_JSON)
-    // game.load.tilemap('town', 'assets/tilemaps/town.json', null, Phaser.Tilemap.TILED_JSON)
-    // game.load.tilemap('pubInterior', 'assets/tilemaps/pubInterior.json', null, Phaser.Tilemap.TILED_JSON)
-    // game.load.tilemap('shopInterior', 'assets/tilemaps/shopInterior.json', null, Phaser.Tilemap.TILED_JSON)
 
     //UI
     game.load.image('testDialogueBox', 'assets/sprites/ui/testDialogueBox.png')
@@ -73,22 +54,10 @@ function create () {
     layer.position.setTo(0, selectorY*tileSize);
 
     // Creates editor selection
-    editor.Create(game, map, layer);
     game.scale.pageAlignHorizontally = true;
     game.scale.pageAlignVertically = true;
     game.scale.refresh();
 
-    // map.addTilesetImage('Town_A', 'Town_A')
-    // map.addTilesetImage('Town_B', 'Town_B')
-    // map.addTilesetImage('City_A', 'City_A')
-    // map.addTilesetImage('City_B', 'City_B')
-    // map.addTilesetImage('Interior_A', 'Interior_A')
-    // map.addTilesetImage('Interior_B', 'Interior_B')
-    // map.addTilesetImage('FF_Set_1', 'FF_Set_1')
-    // map.addTilesetImage('Streets01b', 'Streets01b')
-    // map.addTilesetImage('BlackForest_A', 'BlackForest_A')
-    // map.addTilesetImage('Forests_B', 'Forests_B')
-    
     layer.resizeWorld();
     // console.log(map, pcg_tilemap);
 }
