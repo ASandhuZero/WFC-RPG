@@ -14,4 +14,4 @@ Afterwards, run browser-sync and it should start in a new browser.
 `npm install jspm -g`
 `jspm install`
 `jspm update`
-4. <a href="https://electronjs.org/docs/tutorial/installation">electronjs</a>
+4. <a href="https://electronjs.org/docs/tutorial/installation">electronjs</a> (optional)
