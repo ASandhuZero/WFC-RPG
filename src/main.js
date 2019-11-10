@@ -4,14 +4,8 @@ import {WFC} from './WaveFunctionCollapse/WFC'
 import * as tileset_info from "./WaveFunctionCollapse/tile_info.json!json"
 
 var game = new Phaser.Game(512, 512, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-var editor;
 var tilemap = WFC(false, 16, 16, tileset_info);
-console.log(tilemap)
-var i = 0;
-var j = 0;
-var k = 0;
 
-debugger
 function preload () {
 
     //Testing
@@ -67,7 +61,6 @@ function update() {
     console.log(game.keyboard.lastKey);
     
 
-    // editor.Update(game);
 }
 
 

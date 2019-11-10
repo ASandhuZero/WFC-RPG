@@ -1,13 +1,5 @@
 import { WFC } from "../WaveFunctionCollapse/WFC";
-// import { SimpleTiledModel } from "../WaveFunctionCollapse/SimpleTiledModel";
 
-/**
- * Creates tile map JSON for Tile2D
- */
-
-// var model = new WFC(false, tileNum, tileNum, test_json);
-
-// model parameter is an object 
 /**
  * ----- WFC OUTPUT ------------
  * {

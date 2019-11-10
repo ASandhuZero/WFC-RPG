@@ -9,7 +9,7 @@ export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule)
     let tile_amount = tile_data.tiles.amount;
     let item_amount = tile_data.items.amount;
 
-    let data_to_observe = ["tiles", "items"]
+    let observables = ["tiles", "items"]
     let wave = GenerateWave(tile_amount, item_amount, width, height);
     
     let result = null;
@@ -17,21 +17,19 @@ export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule)
     let init = true;
     
     
-    Clear(wave, tile_amount, tile_data);
-    
-    let elems_to_remove_obj = {};
+    Clear(wave, tile_amount, tile_data); 
+    let remove_observables = {};
 
-    for (elem of data_to_observe) {
-        elems_to_remove_obj[elem] = []
+    for (elem of observables) {
+        remove_observables[elem] = []
     }
     
-    while (definite_state != data_to_observe.length) {
+    while (definite_state != observables.length) {
         definite_state = 0; 
-        for (elem of data_to_observe) {
-            let elems_to_remove = elems_to_remove_obj[elem];
+        for (elem of observables) {
+            let elems_to_remove = remove_observables[elem];
             let elem_data = tile_data[elem]
-            // if(elem=='items') {debugger}
-            if(num_elem == data_to_observe.length){
+            if(num_elem == observables.length){
                 init = false;
             } else {
                 num_elem += 1;
@@ -507,9 +505,6 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, til
             break;
     }
 
-    // console.timeEnd('Force');
-    // console.log("this is the force funtion wooho.");
-    // debugger
     return null;
 }
 
