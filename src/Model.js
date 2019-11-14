@@ -1,4 +1,4 @@
-import { WFC } from "../WaveFunctionCollapse/WFC";
+import { WFC } from "./WaveFunctionCollapse/WFC";
 
 /**
  * ----- WFC OUTPUT ------------
@@ -24,7 +24,7 @@ import { WFC } from "../WaveFunctionCollapse/WFC";
  */
 
 
-export class TileMapModel {
+export class Model {
     constructor (tilesize, subset,height, width, tileJSON, tile_rule, item_rule, num_items) {
         this.num_items = num_items;
         this.tile_rule = tile_rule;

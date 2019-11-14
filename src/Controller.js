@@ -1,4 +1,4 @@
-import {TileMapModel} from './TileMap/TileMapModel'
+import {Model} from './Model'
 // import {PhaserMainView} from 'phaserMainView'
 import {View} from './View'
 // import {Model} from 'WFCModel'
@@ -25,7 +25,7 @@ export class Controller {
         this.view = new View();
         this.subset = info_json.subset;
         //TileMapModel parameters: int height, int width, {tile, neighbors}
-        this.model = new TileMapModel(this.view.tileSize, this.subset, this.view.tileNum, this.view.tileNum, this.tileJSON, this.tile_rule, this.item_rule, this.num_items);  
+        this.model = new Model(this.view.tileSize, this.subset, this.view.tileNum, this.view.tileNum, this.tileJSON, this.tile_rule, this.item_rule, this.num_items);  
         // console.log(this.model);
         this.newGame = info_json.newGame;
         this.includeItem = info_json.includeItem;
@@ -100,7 +100,7 @@ export class Controller {
         switch(this.viewType){
             case 'Phaser':
                 this.view.getInputs();
-                this.model = new TileMapModel(this.view.tileSize, this.subset, this.view.tileNum, this.view.tileNum, this.tileJSON, this.tile_rule, this.item_rule, this.num_items);
+                this.model = new Model(this.view.tileSize, this.subset, this.view.tileNum, this.view.tileNum, this.tileJSON, this.tile_rule, this.item_rule, this.num_items);
                 let phaserParam = this.getPhaserViewParam();
                 // console.log(this.model.tileMap)
                 this.displayView = this.view.updatePhaserView(phaserParam);
