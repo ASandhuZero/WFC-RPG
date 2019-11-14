@@ -1,0 +1,2 @@
+Make README.md more extensive with how to install based on system.
+Actually get main.js to properly hook into the index.html.
