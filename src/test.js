@@ -2,7 +2,19 @@ import {Controller} from './Controller'
 import * as test_json from "./testJSON.json!json"
 
 // Controller parameters: type, tileJSON, subset, newGame
-var wfcController = new Controller('Phaser',test_json, "item", false, true, null ,null, 2);
+var controller_info = {
+    engine : "Phaser",
+    tileJSON : test_json,
+    subset : "item",
+    includeItem : true,
+    rule_flags : {
+        tiles : true,
+        items : null,
+        num : 2
+    },
+    newGame : false
+}
+var wfcController = new Controller(controller_info);
 wfcController.displayView();
 
 var numButton = document.getElementById("numButton");

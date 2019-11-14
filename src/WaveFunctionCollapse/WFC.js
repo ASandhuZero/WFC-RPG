@@ -1,10 +1,14 @@
 import * as Constraints from "./Constraints/Constraints"
 
 export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule) {
+    debugger
+    //TODO: THERE IS SOME NIGHTMARES RIGHT HERE THAT NEED TO BE WORKED THROUGH.
+    //      AS IN THE TILE_RULE AND ITEM_RULE ARE UNDEFINED I THINK AND THAT IS WHAT IS CAUSING
+    //      THE BLANK SCREEN. FIX THIS.
     let data = tileset_info["data"];
     let num_elem = 0;
     
-    let tile_data = GenerateTileData(data, width, height);
+    let tile_data = GenerateTileData(data, width, height); 
     let neighbor_propagator = tile_data["neighbor_propagator"]; //TODO: this is dumb
     let tile_amount = tile_data.tiles.amount;
     let item_amount = tile_data.items.amount;
