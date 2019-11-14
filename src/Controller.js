@@ -1,7 +1,5 @@
 import {Model} from './Model'
-// import {PhaserMainView} from 'phaserMainView'
 import {View} from './View'
-// import {Model} from 'WFCModel'
 /**
  * Gets tile set, user constraints, and user config from view.
  * @class 
@@ -10,25 +8,28 @@ import {View} from './View'
  */
 
 // Intakes JSON file
-
 // this is where all the decision on what to put give to the view are located
 
 export class Controller {
     // type = view type such as Phaser or Babylon
-    constructor(info_json) {
-        this.num_items = info_json.num_items
-        this.tile_rule = info_json.tile_rule;
-        this.item_rule = info_json.item_rule;
-        this.tileJSON = info_json.tileJSON;   // object of tiles and neighbors
+    constructor(model_data) {
+        this.num_items = model_data.num_items
+        this.tile_rule = model_data.tile_rule;
+        this.item_rule = model_data.item_rule;
+        this.tileJSON = model_data.tileJSON;   // object of tiles and neighbors
         // this.tileConstraints = tileConstraints; // object of tiles and neighbors
-        this.viewType = info_json.type;
+        this.viewType = model_data.type;
         this.view = new View();
-        this.subset = info_json.subset;
+        var view_data = {
+            tileSize : this.view.tileSize,
+            tileNum : this.view.tileNum
+        }
+        this.subset = model_data.subset;
         //TileMapModel parameters: int height, int width, {tile, neighbors}
-        this.model = new Model(this.view.tileSize, this.subset, this.view.tileNum, this.view.tileNum, this.tileJSON, this.tile_rule, this.item_rule, this.num_items);  
-        // console.log(this.model);
-        this.newGame = info_json.newGame;
-        this.includeItem = info_json.includeItem;
+        // this.model = new Model(this.view.tileSize, this.subset, this.view.tileNum, this.view.tileNum, this.tileJSON, this.tile_rule, this.item_rule, this.num_items);  
+        this.model = new Model(view_data, model_data);  
+        this.newGame = model_data.newGame;
+        this.includeItem = model_data.includeItem;
         // this.updateTileMap();
     }
 
