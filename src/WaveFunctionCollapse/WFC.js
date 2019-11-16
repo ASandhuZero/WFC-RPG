@@ -1,7 +1,6 @@
 import * as Constraints from "./Constraints/Constraints"
 
 export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule) {
-    debugger
     //TODO: THERE IS SOME NIGHTMARES RIGHT HERE THAT NEED TO BE WORKED THROUGH.
     //      AS IN THE TILE_RULE AND ITEM_RULE ARE UNDEFINED I THINK AND THAT IS WHAT IS CAUSING
     //      THE BLANK SCREEN. FIX THIS.
