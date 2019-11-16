@@ -28,8 +28,8 @@ export class Model {
     // constructor (tilesize, subset,height, width, tileJSON, tile_rule, item_rule, num_items) {
     constructor (view_data, model_data) {
         this.num_items = model_data.num_items;
-        this.tile_rule = tile_rule;
-        this.item_rule = item_rule;
+        this.tile_rule = model_data.rule_flags.tiles;
+        this.item_rule = model_data.rule_flags.items;
         this.tilesize = view_data.tilesize;
         this.height = view_data.tileNum;
         this.width = view_data.tileNum;
