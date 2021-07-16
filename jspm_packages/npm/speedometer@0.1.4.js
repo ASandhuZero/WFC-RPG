@@ -1,0 +1,1 @@
+module.exports = require("npm:speedometer@0.1.4/index");

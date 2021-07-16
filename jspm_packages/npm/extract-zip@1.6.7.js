@@ -1,0 +1,1 @@
+module.exports = require("npm:extract-zip@1.6.7/index.js");

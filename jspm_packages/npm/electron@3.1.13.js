@@ -1,0 +1,1 @@
+module.exports = require("npm:electron@3.1.13/index.js");

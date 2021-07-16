@@ -1,0 +1,1 @@
+module.exports = require("npm:asynckit@0.4.0/index.js");

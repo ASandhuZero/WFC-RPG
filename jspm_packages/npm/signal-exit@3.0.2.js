@@ -1,0 +1,1 @@
+module.exports = require("npm:signal-exit@3.0.2/index.js");

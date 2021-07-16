@@ -1,0 +1,1 @@
+module.exports = require("npm:uri-js@4.2.2/dist/es5/uri.all.js");

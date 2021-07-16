@@ -2,8 +2,8 @@ import * as Constraints from "./Constraints/Constraints"
 
 export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule) {
     //TODO: THERE IS SOME NIGHTMARES RIGHT HERE THAT NEED TO BE WORKED THROUGH.
-    //      AS IN THE TILE_RULE AND ITEM_RULE ARE UNDEFINED I THINK AND THAT IS WHAT IS CAUSING
-    //      THE BLANK SCREEN. FIX THIS.
+    //      AS IN THE TILE_RULE AND ITEM_RULE ARE UNDEFINED I THINK AND THAT IS 
+    //      WHAT IS CAUSING THE BLANK SCREEN. FIX THIS.
     let data = tileset_info["data"];
     let num_elem = 0;
     
@@ -38,7 +38,8 @@ export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule)
                 num_elem += 1;
             }
             // result returns [chosen tile, chosen index], true (argmin == -1), false (possiblities == 0), or null
-            result = Observe(wave, elem_data, elem, elems_to_remove, periodic, width, height, tile_data, tile_rule, item_rule, init);
+            result = Observe(wave, elem_data, elem, elems_to_remove, periodic, 
+                width, height, tile_data, tile_rule, item_rule, init);
                         
             // Converts index to name to match with rules
             if (result === true) {
@@ -49,12 +50,14 @@ export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule)
                 return [];
             } 
             
-            Propagate(wave, elems_to_remove, periodic, width, height, elem_data, neighbor_propagator)
+            Propagate(wave, elems_to_remove, periodic, width, height, elem_data,
+                neighbor_propagator)
         }
     }
     let tiles = tile_data["tiles"].names
     let items = tile_data["items"].names
-    return GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, height)
+    return GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width,
+        height)
 }
 
 /**
@@ -79,7 +82,9 @@ function Clear(wave, tile_amount, tile_data) {
     for (let w = 0; w < wave.length; w++) {
         for (let t = 0; t < tile_amount; t++) {
             for (let d = 0; d < 4; d++) {
-                tiles.compatible[w][t][d] = tile_data.neighbor_propagator[opposite[d]][t].length; // compatible is the compatible tiles of t. NOT t itself. Which is why opposite is involved.
+                // TODO: 
+                tiles.compatible[w][t][d] = 
+                    tile_data.neighbor_propagator[opposite[d]][t].length; // compatible is the compatible tiles of t. NOT t itself. Which is why opposite is involved.
             }
         }
     }
@@ -141,6 +146,15 @@ function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, width, he
     } else {
         throw 'No Map Generated'
     }
+    
+}
+
+
+/**
+ * GenerateNeighbors
+ * @returns {object} neighbor constraints
+ */
+function GenerateNeighbors() {
     
 }
 

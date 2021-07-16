@@ -1,0 +1,6 @@
+MultipleErrors: C:/Users/Work/AppData/Local/.jspm/packages/npm/punycode@2.1.1/punycode.es6.js:440:1: Unexpected reserved word export
+C:/Users/Work/AppData/Local/.jspm/packages/npm/punycode@2.1.1/punycode.es6.js:440:8: Semi-colon expected
+C:/Users/Work/AppData/Local/.jspm/packages/npm/punycode@2.1.1/punycode.es6.js:441:1: Unexpected reserved word export
+C:/Users/Work/AppData/Local/.jspm/packages/npm/punycode@2.1.1/punycode.es6.js:441:8: Semi-colon expected
+C:/Users/Work/AppData/Local/.jspm/packages/npm/punycode@2.1.1/punycode.es6.js:441:8: Unexpected reserved word default
+C:/Users/Work/AppData/Local/.jspm/packages/npm/punycode@2.1.1/punycode.es6.js:441:16: Semi-colon expected

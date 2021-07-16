@@ -1,0 +1,33 @@
+{
+    "data": {
+        "tiles_info": [
+            {"name":"6", "symmetry":"X", "weight":1},
+            {"name":"7", "symmetry":"T", "weight":1},
+            {"name":"8", "symmetry":"\\", "weight":1},
+            {"name":"9", "symmetry":"I", "weight":1},
+            {"name":"16", "symmetry":"L", "weight":1 }
+
+        ],
+        "items_info":[
+            {"name":"0", "weight": 3, "frequency": -1},
+            {"name":"1", "weight": 1, "frequency": -1, "dependency": "3"},
+            {"name":"3", "weight": 1, "frequency": -1, "dependency": "1"}
+        ],
+        "neighbors":[
+        ],
+        "rules_info": {
+            "tiles" : {
+            },
+            "items": {
+                "1": {
+                    "item": "3",
+                    "distance":[10,6,10,6]
+                },
+                "3": {
+                    "item": "1",
+                    "distance":[10,6,10,6]
+                }
+            }
+        }
+    }
+}

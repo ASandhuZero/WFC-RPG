@@ -1,99 +1,219 @@
-import * as Phaser from 'phaser'
-import * as spriteAssetKey from 'assets/spriteAssetKey.json!json';
-import {WFC} from './WaveFunctionCollapse/WFC'
-import * as tileset_info from "./WaveFunctionCollapse/tile_info.json!json"
+//TODO: REMOVED TILE COUNT, CURRENTLY HARDCODING TILE COUNT TO 128. FIX THIS 
+//      LATER. ALSO THERE IS A BUNCH OF HARDCODED VALUES WITHIN THE TILED 
+//      DATA. MIGHT BE WORTH TO SEE HOW MAKE IT MORE DYNAMIC. IF NEED BE.
+//   ALSO LOL, ADD BACK IN THE ITEM FUNCTIONALITY WITHIN THE TILED DATA.
+import { WFC } from "./WaveFunctionCollapse/WaveFunctionCollapse";
+import * as testjson from "./UNITTEST.json!json";
+import evaluateHorrorPotential from "./Evals/TilemapEvaluation";
+import { detectJumpscares } from "./Evals/FeatureDetection";
 
-var game = new Phaser.Game(512, 512, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-var tilemap = WFC(false, 16, 16, tileset_info);
+// This is the lifted WFC running code. Placing it here to know what I need
+//      For the function call.
+// this.model = WFC(this.periodic, this.height, this.width, this.tileJSON, 
+//     this.tile_rule, this.item_rule); 
 
-function preload () {
 
-    //Testing
-    game.load.image('maleSpriteSheet', 'assets/sprites/Male_SpriteSheet.png');
-    game.load.image('testSpriteSheet', 'assets/sprites/test.png');
+const height = 10;
+const width = 10;
+let tile_rules = {}
+let item_rules = {}
+let tilemap_data = {
+    h : height,
+    w : width,
+    tile_rules : tile_rules,
+    item_rules : item_rules,
+    tileset_info : testjson
+}
+let wfc = WFC(0, tilemap_data); 
 
-    //Shaders
-    game.load.shader('TileMapFrag', 'assets/shaders/TileMap.frag');
-    game.load.shader('TileMapVert', 'assets/shaders/TileMap.vert');
-    game.load.shader('TestUV', 'assets/shaders/TestUV.frag');
-
-    //Character sprites
-    game.load.image('player', 'assets/sprites/PlayerSample.png')
-    game.load.image('NPC', 'assets/sprites/PlayerSample2.png')
-
-    //Assorted sprites
-    game.load.image('door', 'assets/sprites/door.png')
-    game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
-    
-    //Tilemaps
-    // game.load.image('RPGTown33x32', '/assets/tilesets/RPGTown32x32.png');
-    game.load.image('Town_A', 'assets/tilesets/wolfsong/Town_A.png');
-
-    game.load.tilemap('testPCG', null, pcg_tilemap, Phaser.Tilemap.TILED_JSON)
-
-    //UI
-    game.load.image('testDialogueBox', 'assets/sprites/ui/testDialogueBox.png')
-    game.load.spritesheet('button', 'assets/buttons/button_sprite_sheet.png', 193, 71)
-
+// PAIN EXISTS HERE. FIGURE OUT A BETTER WAY TO DO MAPPINGS LIKE THIS
+// TODO: PLEASE GOD HELP ME
+let feature_mapping = {
+    6 : ["LV"],
+    7 : ["T"], 
+    8 : ["T"],
+    9 : ["T"],
+    16 : ["LV", "T"]
 }
 
-function create () {
-    game.stage.backgroundColor = '#ccc';
-    let map = game.add.tilemap('testPCG');
-    map.addTilesetImage(map.tilesets[0].name, map.tilesets[0].name);
-
-    let layer = map.createLayer(0);
-    layer.fixedToCamera = false;
-    // move layer in y direction to make room for selector
-    layer.position.setTo(0, selectorY*tileSize);
-
-    // Creates editor selection
-    game.scale.pageAlignHorizontally = true;
-    game.scale.pageAlignVertically = true;
-    game.scale.refresh();
-
-    layer.resizeWorld();
-    // console.log(map, pcg_tilemap);
-}
-
-function update() {
-    // TODO: add player movement mechanics
-    console.log(game.keyboard.lastKey);
-    
-
-}
-
-
-// look at this lovely hack
-function handler() {
-    // recreate game when button clicked
-
-    if(game) {
-        game.destroy();
-        game = null;
-
-        WFCTest = new WFC(false, tileNum, tileNum, test_json);
-        pcg_tilemap = WFCTest.getTiled2dmap();
-        selectorY = Math.ceil(pcg_tilemap.tilesets[0].tilecount/pcg_tilemap.height);    // number of rows of tiles
-        worldWidth = tileSize * tileNum;   // x size of world (pixels)
-        worldLength = tileSize * (tileNum+selectorY);     // y size of world (pixels)
-
-        game = new Phaser.Game({
-            width:          worldWidth, 
-            height:         worldLength,
-            renderer:       Phaser.AUTO,
-            parent:         "",
-            enableDebug:    false,
-            state:          {
-                    preload:        preload,
-                    create:         create,
-                    update:         update
-            },
-        });
-        console.log(typeof map);
-        editor = new Editor(tileNum, tileSize, selectorY);
-        create();
-    } else {
-        console.log('no game')
+// YEPT THIS IS BAD CODE. STRUCTURAL CODE RIGHT HERE THT NEEDS TO BE REFACTORED TODO:
+let feature_map = Array.from(Array(width), () => new Array(height));
+let col = 0;
+for (let i = 0; i < width; i++) {
+    for (let j = 0; j < height; j++) {
+        let tile = wfc[0][j+(i*10)].split(" ");
+        let tile_name = tile[0]; // This is the tile name. Honestly this is more broken then a college student trying to get a job.
+        let tile_feature = feature_mapping[tile_name];
+        feature_map[i][j] = tile_feature;
     }
+}
+//TODO: Yeah so the above code is horrible. Either flatten everything down to
+//      an array. OR just turn everything into a matrix.
+let features = detectJumpscares(feature_map, 10, 10);
+console.log(features);
+let tilemapEval = evaluateHorrorPotential(features, 10, 10, "slasher");
+console.log(tilemapEval);
+//TODO: wfc returns back two different things, right now I should focus on 
+//      consolidating it over to one output. Probably the more structured of 
+//      the two.
+let mapData = GetMap(wfc[0], 1);
+let tiledData = getTile2DJSON(mapData, height, width, wfc.length);
+
+function GetMap(wfc, a) {
+
+    var array = [];
+    var elements, element, tile_number, rotation;
+    switch(a) {
+        case 1:
+            for (let i = 0; i < wfc.length; i++){
+                elements = wfc[i];
+                element = elements.split(/[ ]+/);
+                array.push(element[0]);
+            }
+            break;
+        case 0:
+            for (let i = 0; i < wfc.length; i++) {
+                elements = wfc[i];
+                element = elements.split(/[ ]+/);
+                tile_number = parseInt(element[a]);
+                rotation = element[a+1];
+                switch (rotation) {
+                    case '3':
+                    array.push(tile_number + 0xA0000000);
+                        break;
+                    case '2':
+                    array.push(tile_number + 0xC0000000);
+                        break;
+                    case '1':
+                    array.push(tile_number + 0x60000000);
+                        break;
+                    case '0':
+                    array.push(tile_number);
+                        break;
+                    default:
+                    array.push(tile_number);
+                        break;
+                }
+            }
+    }
+    return array;
+}
+
+function getTile2DJSON(mapData, height, width, wfc_length) {
+    let tile2DJSON = {
+        "height":height,
+        "infinite": false,
+        "layers":[
+            {
+                "id": 1,
+                "data": mapData,
+                "height":height,
+                "name":"Map",
+                "opacity":1,
+                "type":"tilelayer",
+                "visible":true,
+                "width":width,
+                "x":0,
+                "y":0
+            },
+            {
+                "draworder":"topdown",
+                "height":height,
+                "name":"items",
+                // "objects":this.createItemObjects(),
+                "objects":{},
+                "opacity":1,
+                "type":"objectgroup",
+                "visible":true,
+                "width":width,
+                "x":0,
+                "y":0
+            }],
+        "nextobjectid":1,
+        "nextlayerid": 2,
+        "orientation":"orthogonal",
+        "renderorder":"right-down",
+        "tiledversion":"1.2",
+        "tileheight":16,
+        "tilesets":[
+            {
+                "columns":8,
+                "firstgid":1,
+                "image":"../../assets/tilesets/wolfsong/Town_A.png",
+                "imageheight":512,
+                "imagewidth":256,
+                "margin":0,
+                "name":"Town_A",
+                "spacing":0,
+                //"tilecount":this.tileCount,
+                "tilecount":128,
+                "tileheight":32,
+                "tilewidth":32
+            }, 
+            {
+                "firstgid":wfc_length+1,
+                "image":"../../assets/sprites/car.png",
+                "imageheight":32,
+                "imagewidth":32,
+                "margin":0,
+                "name":"car",
+                "spacing":0,
+                "tilecount":1,
+                "tileheight":32,
+                "tilewidth":32
+            },
+        ],
+        "tilewidth":32,
+        "type":"map",
+        "version":1.2,
+        "width":width
+    }
+    return tile2DJSON; 
+}
+
+// CANVAS CODE TODO: BREAK THIS OUT INTO ITS OWN JS FILE IF WORK.
+const canvas = document.getElementById('test-canvas');
+const ctx = canvas.getContext('2d');
+
+
+const tileAtlas = new Image();
+tileAtlas.src = './assets/tilesets/graveyard.png';
+tileAtlas.onload = draw;
+
+let tileSize = 16;
+let tileOutputSize = 4; // can set to 1 for 32px or higher
+let updatedTileSize = tileSize * tileOutputSize;
+
+let atlasCol = 10;
+let atlasRow = 8;
+let mapCols = 10;
+let mapRows = 10;
+let mapHeight = mapRows * tileSize;
+let mapWidth = mapCols * tileSize
+let level1Map = mapData
+let mapIndex = 0;
+let sourceX = 0;
+let sourceY = 0;
+
+
+
+function draw() {
+    canvas.width = mapWidth * updatedTileSize;
+    canvas.height = mapHeight * updatedTileSize;
+    for (let col = 0; col < mapHeight; col += tileSize) {
+        for (let row = 0; row < mapWidth; row += tileSize) {
+            let tileVal = level1Map[mapIndex];
+            if(tileVal !=0) {
+                tileVal -= 1;
+                sourceY = Math.floor(tileVal/atlasCol) * tileSize;
+                sourceX = (tileVal % atlasCol) * tileSize;
+                ctx.drawImage(tileAtlas, sourceX, sourceY, tileSize,
+                    tileSize, row * tileOutputSize, col * tileOutputSize,
+                    updatedTileSize, updatedTileSize);
+
+            }
+            mapIndex ++;
+        }
+    }
+    
 }

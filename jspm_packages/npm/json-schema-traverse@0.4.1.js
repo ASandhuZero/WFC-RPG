@@ -1,0 +1,1 @@
+module.exports = require("npm:json-schema-traverse@0.4.1/index.js");

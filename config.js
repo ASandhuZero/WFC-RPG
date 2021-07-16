@@ -23,7 +23,6 @@ System.config({
     "image": "github:systemjs/plugin-image@0.1.0",
     "jquery": "npm:jquery@2.2.4",
     "json": "github:systemjs/plugin-json@0.3.0",
-    "phaser": "github:photonstorm/phaser@2.6.2",
     "systemjs/plugin-image": "github:systemjs/plugin-image@0.1.0",
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.5.0"

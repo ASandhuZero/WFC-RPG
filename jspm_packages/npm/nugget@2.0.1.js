@@ -1,0 +1,1 @@
+module.exports = require("npm:nugget@2.0.1/index.js");

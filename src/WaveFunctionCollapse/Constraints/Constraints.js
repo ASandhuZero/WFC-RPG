@@ -23,10 +23,10 @@ export function GetNeighbors(tiles) {
             if (i == j) {
                 continue;
             }
-            neighbors["tiles"].push({"left":tile_names[i], "right":tile_names[j]})
+            neighbors["tiles"].push({"left":tile_names[i], 
+                "right":tile_names[j]});
         }
     }
-    // debugger
     return neighbors
 }
 
@@ -112,7 +112,6 @@ export function GenerateTiles(tiles_info, width, height) {
                 break;
             case 'T':
                 cardinality = 4;
-                // debugger
                 rotation = function(x) { return (x + 1) % 4; }
                 mirror = function(x) { return x % 2 == 0 ? 2-x : x; }
                 break;
@@ -133,7 +132,6 @@ export function GenerateTiles(tiles_info, width, height) {
         
         for (let c = 0; c < cardinality; c++) {
             tile_name = tile.name + ' ' + c.toString();
-            // console.log(tile_name)
             new_tile = [
                 c + tile_ID,
                 rotation(c) + tile_ID,
@@ -144,7 +142,6 @@ export function GenerateTiles(tiles_info, width, height) {
                 mirror(rotation(rotation(c))) + tile_ID,
                 mirror(rotation(rotation(rotation(c)))) + tile_ID
             ]
-            // debugger
             tiles["types"].push(tile.type);
             tiles["names"].push(tile_name);
             tiles["rotations"].push(new_tile)

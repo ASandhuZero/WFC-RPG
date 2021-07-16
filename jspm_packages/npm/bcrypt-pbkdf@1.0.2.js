@@ -1,0 +1,1 @@
+module.exports = require("npm:bcrypt-pbkdf@1.0.2/index.js");

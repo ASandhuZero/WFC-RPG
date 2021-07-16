@@ -1,0 +1,1 @@
+module.exports = require("npm:strip-json-comments@2.0.1/index");

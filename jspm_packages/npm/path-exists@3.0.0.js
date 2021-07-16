@@ -1,0 +1,1 @@
+module.exports = require("npm:path-exists@3.0.0/index");

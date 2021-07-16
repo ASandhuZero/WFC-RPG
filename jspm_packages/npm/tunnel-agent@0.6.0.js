@@ -1,0 +1,1 @@
+module.exports = require("npm:tunnel-agent@0.6.0/index.js");

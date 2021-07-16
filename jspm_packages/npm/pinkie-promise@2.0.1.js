@@ -1,0 +1,1 @@
+module.exports = require("npm:pinkie-promise@2.0.1/index");

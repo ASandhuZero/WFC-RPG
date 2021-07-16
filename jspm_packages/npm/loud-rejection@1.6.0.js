@@ -1,0 +1,1 @@
+module.exports = require("npm:loud-rejection@1.6.0/index");

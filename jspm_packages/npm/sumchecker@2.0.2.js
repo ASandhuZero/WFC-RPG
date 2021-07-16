@@ -1,0 +1,1 @@
+module.exports = require("npm:sumchecker@2.0.2/index.js");

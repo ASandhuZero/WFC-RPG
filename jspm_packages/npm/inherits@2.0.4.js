@@ -1,0 +1,1 @@
+module.exports = require("npm:inherits@2.0.4/inherits_browser.js");

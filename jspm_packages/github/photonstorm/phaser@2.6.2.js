@@ -1,0 +1,1 @@
+module.exports = require("github:photonstorm/phaser@2.6.2/build/phaser.js");

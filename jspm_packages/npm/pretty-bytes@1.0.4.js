@@ -1,0 +1,1 @@
+module.exports = require("npm:pretty-bytes@1.0.4/pretty-bytes.js");

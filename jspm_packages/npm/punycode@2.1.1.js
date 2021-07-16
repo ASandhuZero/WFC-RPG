@@ -1,0 +1,1 @@
+module.exports = require("npm:punycode@2.1.1/punycode.js");
