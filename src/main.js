@@ -172,6 +172,8 @@ function getTile2DJSON(mapData, height, width, wfc_length) {
 }
 
 // CANVAS CODE TODO: BREAK THIS OUT INTO ITS OWN JS FILE IF WORK.
+// Also, got this from this helpful link https://medium.com/geekculture/make-your-own-tile-map-with-vanilla-javascript-a627de67b7d9 
+// Good good stuff.
 const canvas = document.getElementById('test-canvas');
 const ctx = canvas.getContext('2d');
 
