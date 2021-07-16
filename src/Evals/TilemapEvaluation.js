@@ -54,18 +54,18 @@ function evaluateHorrorPotential(input, numRows, numCols, subgenre)
     let breadthReqMet = true;
     let oversaturatedTags = [];
 
-    for (f in frequencies)
+    for (let i = 0; i < frequencies.length; i++)
     {
-        let currentTagUsage = f / size;
+        let currentTagUsage = frequencies[i] / size;
         spaceUsage.push(currentTagUsage);
-        if (f === 0)
+        if (frequencies[i] === 0)
         {
             breadthReqMet = false;
-            unusedTags.push(indexOf(f));
+            unusedTags.push(i);
         }
         if (currentTagUsage > 0.8)
         {
-            oversaturatedTags.push(indexOf(f));
+            oversaturatedTags.push(i);
         }
     }
 
