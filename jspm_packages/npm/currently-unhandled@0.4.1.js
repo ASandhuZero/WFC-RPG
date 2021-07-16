@@ -1,1 +1,0 @@
-module.exports = require("npm:currently-unhandled@0.4.1/index");

@@ -1,1 +1,0 @@
-module.exports = require("npm:uuid@3.3.3/index");

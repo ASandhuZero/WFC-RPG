@@ -1,1 +1,0 @@
-module.exports = require("npm:env-paths@1.0.0/index");

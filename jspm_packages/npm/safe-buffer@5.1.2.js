@@ -1,1 +1,0 @@
-module.exports = require("npm:safe-buffer@5.1.2/index.js");

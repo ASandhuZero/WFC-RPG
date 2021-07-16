@@ -1,1 +1,0 @@
-module.exports = require("npm:ms@2.1.2/index");

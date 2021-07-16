@@ -1,1 +1,0 @@
-module.exports = require("npm:asn1@0.2.4/lib/index.js");

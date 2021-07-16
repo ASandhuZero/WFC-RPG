@@ -1,1 +1,0 @@
-module.exports = require("npm:create-ecdh@4.0.3/browser.js");

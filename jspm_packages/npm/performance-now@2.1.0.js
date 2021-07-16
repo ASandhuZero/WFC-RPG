@@ -1,1 +1,0 @@
-module.exports = require("npm:performance-now@2.1.0/lib/performance-now.js");

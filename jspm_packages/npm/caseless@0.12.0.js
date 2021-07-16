@@ -1,1 +1,0 @@
-module.exports = require("npm:caseless@0.12.0/index.js");

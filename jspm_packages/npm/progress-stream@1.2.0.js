@@ -1,1 +1,0 @@
-module.exports = require("npm:progress-stream@1.2.0/index.js");

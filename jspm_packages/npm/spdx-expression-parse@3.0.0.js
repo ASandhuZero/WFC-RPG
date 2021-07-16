@@ -1,1 +1,0 @@
-module.exports = require("npm:spdx-expression-parse@3.0.0/index");

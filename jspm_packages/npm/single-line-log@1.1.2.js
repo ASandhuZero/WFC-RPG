@@ -1,1 +1,0 @@
-module.exports = require("npm:single-line-log@1.1.2/index");

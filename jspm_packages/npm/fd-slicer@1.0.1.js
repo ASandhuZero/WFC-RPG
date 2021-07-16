@@ -1,1 +1,0 @@
-module.exports = require("npm:fd-slicer@1.0.1/index.js");

@@ -1,1 +1,0 @@
-module.exports = require("npm:browserify-cipher@1.0.1/browser.js");

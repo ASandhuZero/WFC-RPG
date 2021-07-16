@@ -1,1 +1,0 @@
-module.exports = require("npm:psl@1.3.1/index.js");

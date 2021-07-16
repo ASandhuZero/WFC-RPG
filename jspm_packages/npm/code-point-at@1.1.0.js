@@ -1,1 +1,0 @@
-module.exports = require("npm:code-point-at@1.1.0/index");

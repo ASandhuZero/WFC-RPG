@@ -1,1 +1,0 @@
-module.exports = require("npm:electron-download@4.1.1/lib/index.js");

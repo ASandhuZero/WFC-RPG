@@ -1,1 +1,0 @@
-module.exports = require("npm:path-parse@1.0.6/index.js");

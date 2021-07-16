@@ -1,1 +1,0 @@
-module.exports = require("npm:minimalistic-crypto-utils@1.0.1/lib/utils.js");
