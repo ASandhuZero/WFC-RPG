@@ -6,6 +6,7 @@ import { WFC } from "./WaveFunctionCollapse/WaveFunctionCollapse";
 import * as testjson from "./UNITTEST.json!json";
 import evaluateHorrorPotential from "./Evals/TilemapEvaluation";
 import { detectJumpscares } from "./Evals/FeatureDetection";
+import { generateHeatmap } from "./Evals/Visualization";
 
 // This is the lifted WFC running code. Placing it here to know what I need
 //      For the function call.
@@ -47,10 +48,13 @@ for (let i = 0; i < width; i++) {
         feature_map[i][j] = tile_feature;
     }
 }
+console.log(feature_map);
 //TODO: Yeah so the above code is horrible. Either flatten everything down to
 //      an array. OR just turn everything into a matrix.
 let features = detectJumpscares(feature_map, 10, 10);
 console.log(features);
+let heatmap = generateHeatmap(features, 10, 10, "JS");
+console.log(heatmap.output);
 let tilemapEval = evaluateHorrorPotential(features, 10, 10, "slasher");
 console.log(tilemapEval);
 //TODO: wfc returns back two different things, right now I should focus on 
@@ -212,7 +216,12 @@ function draw() {
                 ctx.drawImage(tileAtlas, sourceX, sourceY, tileSize,
                     tileSize, row * tileOutputSize, col * tileOutputSize,
                     updatedTileSize, updatedTileSize);
-
+                // TODO: Please figure out a standard for matrix (row by column or column by row), for the love of GOD.
+                let srgb = heatmap.output[col / 16][row / 16].srgb;
+                ctx.fillStyle = 'rgba(' + 255 * srgb.red + ', ' +
+                255 * srgb.green + ', ' + 255 * srgb.blue + ', 0.5)';
+                ctx.fillRect(row * tileOutputSize, col * tileOutputSize,
+                    updatedTileSize, updatedTileSize);
             }
             mapIndex ++;
         }

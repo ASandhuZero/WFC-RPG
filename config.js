@@ -14,9 +14,11 @@ System.config({
 
   map: {
     "Editor": "src/Editor/Editor",
+    "Visualization": "src/Evals/Visualization",
     "WFC": "src/WaveFunctionCollapse/WFC",
     "babel": "npm:babel-core@5.8.38",
     "babel-runtime": "npm:babel-runtime@5.8.38",
+    "colorjs.io": "npm:colorjs.io@0.0.3",
     "core-js": "npm:core-js@1.2.7",
     "css": "github:systemjs/plugin-css@0.1.37",
     "electron": "npm:electron@3.1.13",
@@ -28,7 +30,7 @@ System.config({
       "assert": "npm:assert@1.5.0"
     },
     "github:jspm/nodelibs-buffer@0.1.1": {
-      "buffer": "npm:buffer@5.4.2"
+      "buffer": "npm:buffer@5.7.1"
     },
     "github:jspm/nodelibs-constants@0.1.0": {
       "constants-browserify": "npm:constants-browserify@0.0.1"
@@ -98,6 +100,11 @@ System.config({
     },
     "github:jspm/nodelibs-zlib@0.1.0": {
       "browserify-zlib": "npm:browserify-zlib@0.1.4"
+    },
+    "npm:acorn@7.4.1": {
+      "fs": "github:jspm/nodelibs-fs@0.1.2",
+      "path": "github:jspm/nodelibs-path@0.1.0",
+      "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:ajv@6.10.2": {
       "fast-deep-equal": "npm:fast-deep-equal@2.0.1",
@@ -219,9 +226,9 @@ System.config({
       "buffer": "github:jspm/nodelibs-buffer@0.1.1",
       "systemjs-json": "github:systemjs/plugin-json@0.1.2"
     },
-    "npm:buffer@5.4.2": {
-      "base64-js": "npm:base64-js@1.3.1",
-      "ieee754": "npm:ieee754@1.1.13"
+    "npm:buffer@5.7.1": {
+      "base64-js": "npm:base64-js@1.5.1",
+      "ieee754": "npm:ieee754@1.2.1"
     },
     "npm:camelcase-keys@2.1.0": {
       "camelcase": "npm:camelcase@2.1.1",
@@ -233,6 +240,9 @@ System.config({
       "safe-buffer": "npm:safe-buffer@5.1.2",
       "stream": "github:jspm/nodelibs-stream@0.1.0",
       "string_decoder": "github:jspm/nodelibs-string_decoder@0.1.0"
+    },
+    "npm:colorjs.io@0.0.3": {
+      "acorn": "npm:acorn@7.4.1"
     },
     "npm:combined-stream@1.0.8": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.1",

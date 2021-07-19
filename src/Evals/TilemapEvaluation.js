@@ -1,12 +1,14 @@
 // A class containing methods and objects for use in evaluating the narrative potential of a given tilemap.
 
 // Horror evaluation tool.
-// Input: a 2D array whose elements are strings (metadata/higher order features of tiles); numRows - an int, number of rows; numCols - an int, number of columns;
+// Input: input - a 2D array whose elements are strings (metadata/higher order features of tiles); numRows - an int, number of rows; numCols - an int, number of columns;
 //   subgenre - a string denoting what configuration of weights should be considered in scoring
 // Output: a Score object
 // Metadata being used in scoring: AC (ambient creep), JS (jumpscare potential), TaR (tension and release), I (isolation), LV (low visibility)
 function evaluateHorrorPotential(input, numRows, numCols, subgenre)
 {
+    // Constant array of metatags to use. The order here is used throughout this file.
+    let metatags = ["AC", "JS", "TaR", "I", "LV"];
     // Set up data structures for basic statistics about the map (size of map and frequency of tile tags).
     let size = numRows * numCols;
     let frequencies = [0, 0, 0, 0, 0];
@@ -61,11 +63,11 @@ function evaluateHorrorPotential(input, numRows, numCols, subgenre)
         if (frequencies[i] === 0)
         {
             breadthReqMet = false;
-            unusedTags.push(i);
+            unusedTags.push(metatags[i]);
         }
         if (currentTagUsage > 0.8)
         {
-            oversaturatedTags.push(i);
+            oversaturatedTags.push(metatags[i]);
         }
     }
 
