@@ -67,7 +67,6 @@ let tilemapEval = evaluateHorrorPotential(features, 10, 10, "slasher");
 //      consolidating it over to one output. Probably the more structured of 
 //      the two.
 let mapData = GetMap(wfc[0], 1);
-let tiledData = getTile2DJSON(mapData, height, width, wfc.length);
 
 function GetMap(wfc, a) {
 
