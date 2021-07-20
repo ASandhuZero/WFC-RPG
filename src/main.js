@@ -123,7 +123,7 @@ let tileSize = 16;
 let tileOutputSize = 4; // can set to 1 for 32px or higher
 let updatedTileSize = tileSize * tileOutputSize;
 
-let atlasCol = 10;
+let atlasCol = 9;
 let atlasRow = 8;
 let mapCols = 10;
 let mapRows = 10;
@@ -140,8 +140,8 @@ function draw() {
 }
 
 function DrawTileMap() {
-    canvas.width = mapWidth * updatedTileSize;
-    canvas.height = mapHeight * updatedTileSize;
+    canvas.width = mapWidth * tileOutputSize;
+    canvas.height = mapHeight * tileOutputSize;
     let destinationX = 0;
     let destinationY = 0;
     let tile = {};
@@ -180,7 +180,13 @@ function DrawTileMap() {
                     tileSize, destinationX, destinationY,
                     updatedTileSize, updatedTileSize);
                 ctx.setTransform(1, 0, 0, 1, 0, 0);
-
+                // DEBUGGING CODE FOR TILE NAME TODO: REMOVE AT SOME POINT.
+                ctx.font = '24px serif';
+                ctx.fillStyle = "#ff0000";
+                ctx.fillText(tile.name, 
+                    ((row * tileOutputSize-10) + (updatedTileSize/2)),
+                    ((col * tileOutputSize) + (updatedTileSize/2)));
+                // THE ABOVE IS CODE TO REMOVE.
                 // TODO: Please figure out a standard for matrix (row by column or column by row), for the love of GOD.
                 // let srgb = heatmap.output[col / 16][row / 16].srgb;
                 // ctx.fillStyle = 'rgba(' + 255 * srgb.red + ', ' +
