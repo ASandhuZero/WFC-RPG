@@ -174,9 +174,10 @@ function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, w, h) {
                         for (let i = 0; i < item_amount; i++) {
                             if (item_elem[i]) {
                                 array.push(tiles[t] + ' ' + items[i]);
+                                let split = tiles[t].split(/[ ]+/);
                                 let tile = {
-                                    tile : tiles[t][0],
-                                    rotation : tiles[t][2]
+                                    name : split[0],
+                                    rotation : split[1]
                                 }
                                 generated_tilemap.tiles.push(tile);
                                 generated_tilemap.items.push(items[i]);

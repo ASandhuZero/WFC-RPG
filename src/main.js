@@ -26,7 +26,6 @@ let tilemap_data = {
     tileset_info : testjson
 }
 let wfc = WFC(0, tilemap_data); 
-
 // PAIN EXISTS HERE. FIGURE OUT A BETTER WAY TO DO MAPPINGS LIKE THIS
 // TODO: PLEASE GOD HELP ME
 let feature_mapping = {
@@ -51,23 +50,23 @@ for (let i = 0; i < width; i++) {
 console.log(feature_map);
 //TODO: Yeah so the above code is horrible. Either flatten everything down to
 //      an array. OR just turn everything into a matrix.
-let features = detectFeatures(feature_map, 10, 10);
+// let features = detectFeatures(feature_map, 10, 10);
 // console.log(features.ac);
 // console.log(features.lv);
 // console.log(features.js);
 // console.log(features.iso);
-let heatmaps = generateHeatmaps(features, 10, 10);
+// let heatmaps = generateHeatmaps(features, 10, 10);
 // console.log(heatmaps.ac);
 // console.log(heatmaps.lv);
 // console.log(heatmaps.js);
 // console.log(heatmaps.iso);
-let tilemapEval = evaluateHorrorPotential(features, 10, 10, "slasher");
+// let tilemapEval = evaluateHorrorPotential(features, 10, 10, "slasher");
 // console.log(tilemapEval);
 //TODO: wfc returns back two different things, right now I should focus on 
 //      consolidating it over to one output. Probably the more structured of 
 //      the two.
 let mapData = GetMap(wfc[0], 1);
-
+console.log("mapData",mapData)
 function GetMap(wfc, a) {
 
     var array = [];
@@ -117,6 +116,7 @@ const ctx = canvas.getContext('2d');
 
 const tileAtlas = new Image();
 tileAtlas.src = './assets/tilesets/graveyard.png';
+
 tileAtlas.onload = draw;
 
 let tileSize = 16;
@@ -129,26 +129,58 @@ let mapCols = 10;
 let mapRows = 10;
 let mapHeight = mapRows * tileSize;
 let mapWidth = mapCols * tileSize
-let level1Map = mapData
+let levelMap = wfc[1].tiles;
 let mapIndex = 0;
 let sourceX = 0;
 let sourceY = 0;
 
 
-
 function draw() {
+    DrawTileMap();
+}
+
+function DrawTileMap() {
     canvas.width = mapWidth * updatedTileSize;
     canvas.height = mapHeight * updatedTileSize;
+    let destinationX = 0;
+    let destinationY = 0;
+    let tile = {};
+    let tileVal = "";
+    let tileRot = "";
     for (let col = 0; col < mapHeight; col += tileSize) {
         for (let row = 0; row < mapWidth; row += tileSize) {
-            let tileVal = level1Map[mapIndex];
+            tile = levelMap[mapIndex];
+            tileVal = tile.name;
+            tileRot = tile.rotation;
+            rotation = (90 * tileRot)* Math.PI / 180;
             if(tileVal !=0) {
                 tileVal -= 1;
-                sourceY = Math.floor(tileVal/atlasCol) * tileSize;
                 sourceX = (tileVal % atlasCol) * tileSize;
+                sourceY = Math.floor(tileVal/atlasCol) * tileSize;
+                destinationX = row * tileOutputSize;
+                destinationY = col * tileOutputSize;
+                // Rotates canvsas. Rotating at the location of the tile. 
+                // And then trasnlating the rotation back to the (0,0)
+                ctx.translate(destinationX, destinationY);
+                ctx.rotate(rotation);
+                ctx.translate(-(destinationX), -(destinationY));
+                // Adjusting rotation offset. ctx.rotate does not rotate at 
+                // center, but at the top-left corner of the image. Hence the
+                // offseting.
+                if (tileRot === "1") {
+                    destinationY = destinationY - updatedTileSize;
+                } else if (tileRot === "2") {
+                    destinationY = destinationY - updatedTileSize;
+                    destinationX = destinationX - updatedTileSize;
+                } else if (tileRot === "3") {
+                    destinationX = destinationX - updatedTileSize;
+                }
+
                 ctx.drawImage(tileAtlas, sourceX, sourceY, tileSize,
-                    tileSize, row * tileOutputSize, col * tileOutputSize,
+                    tileSize, destinationX, destinationY,
                     updatedTileSize, updatedTileSize);
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+
                 // TODO: Please figure out a standard for matrix (row by column or column by row), for the love of GOD.
                 // let srgb = heatmap.output[col / 16][row / 16].srgb;
                 // ctx.fillStyle = 'rgba(' + 255 * srgb.red + ', ' +
@@ -159,5 +191,4 @@ function draw() {
             mapIndex ++;
         }
     }
-    
 }
