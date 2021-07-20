@@ -104,6 +104,8 @@ export function GenerateTiles(tiles_info, width, height) {
 
         switch(tile.symmetry) {
             case 'X':
+                rotation = function(x) { return x; }
+                mirror = function(x) { return x; }
                 break;
             case 'L':
                 cardinality = 4;
