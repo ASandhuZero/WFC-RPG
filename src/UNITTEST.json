@@ -14,9 +14,25 @@
             {"name": "12", "symmetry": "X", "weight":1},
             {"name": "13", "symmetry": "X", "weight":1},
             {"name": "14", "symmetry": "X", "weight":1},
-            {"name": "15", "symmetry": "", "weight":1},
-            {"name":"16", "symmetry":"L", "weight":1}
-
+            {"name": "15", "symmetry": "X", "weight":1},
+            {"name":"16", "symmetry":"X", "weight":1},
+            {"name":"17", "symmetry":"X", "weight":1},
+            {"name":"18", "symmetry":"X", "weight":1},
+            {"name":"19", "symmetry":"X", "weight":1},
+            {"name":"20", "symmetry":"X", "weight":1},
+            {"name":"21", "symmetry":"X", "weight":1},
+            {"name":"22", "symmetry":"X", "weight":1},
+            {"name":"24", "symmetry":"X", "weight":1},
+            {"name":"25", "symmetry":"X", "weight":1},
+            {"name":"26", "symmetry":"X", "weight":1},
+            {"name":"27", "symmetry":"X", "weight":1},
+            {"name":"28", "symmetry":"X", "weight":1},
+            {"name":"29", "symmetry":"X", "weight":1},
+            {"name":"30", "symmetry":"X", "weight":1},
+            {"name":"31", "symmetry":"X", "weight":1},
+            {"name":"37", "symmetry":"X", "weight":1},
+            {"name":"38", "symmetry":"X", "weight":1},
+            {"name":"39", "symmetry":"X", "weight":1}
         ],
         "items_info":[
             {"name":"0", "weight": 3, "frequency": -1},
