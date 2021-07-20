@@ -25,7 +25,21 @@ let tilemap_data = {
     item_rules : item_rules,
     tileset_info : testjson
 }
-let wfc = WFC(0, tilemap_data); 
+// TODO: ... what can I say. This is bad... and maybe needs something else in
+//      in here.
+let wfc = undefined
+let loop_count = 0;
+while (wfc === undefined && loop_count < 100) {
+    console.log("in loop");
+    try {
+        wfc = WFC(0, tilemap_data); 
+        console.log(wfc);
+    } catch (error) {
+        console.log(error);
+        wfc = undefined;
+    }
+    loop_count++;
+}
 // PAIN EXISTS HERE. FIGURE OUT A BETTER WAY TO DO MAPPINGS LIKE THIS
 // TODO: PLEASE GOD HELP ME
 let feature_mapping = {

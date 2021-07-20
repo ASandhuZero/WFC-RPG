@@ -231,10 +231,13 @@ function GeneratePropagator(neighbors, tiles, items) {
         neighbor_pair = neighbor_tiles[i];
         left = neighbor_pair.left
         right = neighbor_pair.right
-        L_ID = tiles.IDs.left;  // user defined rotation for left tile
-        R_ID = tiles.IDs.right;  // user defined rotation for right tile
-        L = tiles.rotations.L_ID;   // uses tile id number
-        R = tiles.rotations.R_ID;   // array of tile id number according to its rotations
+        L_ID = tiles.IDs[left];  // user defined rotation for left tile
+        R_ID = tiles.IDs[right];  // user defined rotation for right tile
+        L = tiles.rotations[L_ID];   // uses tile id number
+        R = tiles.rotations[R_ID];   // array of tile id number according to its rotations
+        if (R === undefined) {
+            debugger;
+        }
         D = tiles.rotations[L[1]];
         U = tiles.rotations[R[1]];
         
