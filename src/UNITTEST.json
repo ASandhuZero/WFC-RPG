@@ -59,7 +59,6 @@
             {"left":"1 0", "right":"20 0"},
             {"left":"1 0", "right":"21 0"},
             {"left":"1 0", "right":"22 0"},
-            {"left":"1 0", "right":"24 0"},
             {"left":"1 0", "right":"25 0"},
             {"left":"1 0", "right":"26 0"},
             {"left":"1 0", "right":"27 0"},
@@ -70,10 +69,8 @@
             {"left":"1 0", "right":"37 0"},
             {"left":"1 0", "right":"38 0"},
             {"left":"1 0", "right":"39 0"},
-            {"left":"2 0", "right":"1 0"},
-            {"left":"3 0", "right":"1 0"},
-            {"left":"4 0", "right":"1 0"}
-
+            {"left":"15 0", "right":"24 0"},
+            {"left":"6 0", "right":"15 0"}
         ],
         "rules_info": {
             "tiles" : {
