@@ -1,10 +1,20 @@
 {
     "data": {
         "tiles_info": [
+            {"name": "1", "symmetry": "T", "weight":1},
+            {"name": "2", "symmetry": "T", "weight":1},
+            {"name": "3", "symmetry": "T", "weight":1},
+            {"name": "4", "symmetry": "T", "weight":1},
             {"name":"6", "symmetry":"X", "weight":1},
             {"name":"7", "symmetry":"T", "weight":1},
             {"name":"8", "symmetry":"\\", "weight":1},
             {"name":"9", "symmetry":"I", "weight":1},
+            {"name": "10", "symmetry": "X", "weight":1},
+            {"name": "11", "symmetry": "X", "weight":1},
+            {"name": "12", "symmetry": "X", "weight":1},
+            {"name": "13", "symmetry": "X", "weight":1},
+            {"name": "14", "symmetry": "X", "weight":1},
+            {"name": "15", "symmetry": "", "weight":1},
             {"name":"16", "symmetry":"L", "weight":1}
 
         ],
