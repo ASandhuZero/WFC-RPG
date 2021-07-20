@@ -29,11 +29,38 @@ let wfc = WFC(0, tilemap_data);
 // PAIN EXISTS HERE. FIGURE OUT A BETTER WAY TO DO MAPPINGS LIKE THIS
 // TODO: PLEASE GOD HELP ME
 let feature_mapping = {
-    6 : ["LV"],
+    1 : ["T"],
+    2 : ["T"],
+    3 : ["T"],
+    4 : ["T"],
+    6 : ["T"],
     7 : ["T"], 
-    8 : ["AC, T"],
+    8 : ["T"],
     9 : ["T"],
-    16 : ["AC", "LV", "T"]
+    10 : ["AC, LV"],
+    11 : ["AC, LV"],
+    12 : ["AC, LV"],
+    13 : ["AC, LV"],
+    14 : ["AC, LV"],
+    15 : ["T"],
+    16 : ["T"],
+    17 : ["T"],
+    18 : ["T"],
+    19 : ["AC, LV"],
+    20 : ["AC, LV"],
+    21 : ["AC, LV"],
+    22 : ["AC, LV"],
+    24 : ["T"],
+    25 : ["T"],
+    26 : ["T"],
+    27 : ["T"],
+    28 : ["AC, T"],
+    29 : ["AC, T"],
+    30 : ["AC, T"],
+    31 : ["AC, T"],
+    37 : [],
+    38 : [],
+    39 : []
 }
 
 // YEPT THIS IS BAD CODE. STRUCTURAL CODE RIGHT HERE THT NEEDS TO BE REFACTORED TODO:
