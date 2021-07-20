@@ -11,7 +11,17 @@ window.Color = window.Color || Color;
 // Re-export
 export default Color;
 
-// A function used to generate visualizations (heatmaps) of features detected from a given tilemap.
+// A function used to generate visualizations (heatmaps) of features from a Features object.
+export function generateHeatmaps(input, numRows, numCols)
+{
+    let ac = generateHeatmap(input.ac, numRows, numCols, "AC");
+    let js = generateHeatmap(input.js, numRows, numCols, "JS");
+    let tar = null;
+    let iso = generateHeatmap(input.iso, numRows, numCols, "I");
+    let lv = generateHeatmap(input.lv, numRows, numCols, "LV");
+    let heatmaps = new Heatmaps(ac, js, tar, iso, lv);
+    return heatmaps;
+}
 
 // Heatmap generation.
 // Input: input - a 2D array whose elements are strings (metadata/higher order features of tiles); metatag - a string denoting what tag is being used to generate the curren heatmap
@@ -100,5 +110,18 @@ class Heatmap
         }
 
         return output;
+    }
+}
+
+// A data structure holding all heatmaps for all detectable features.
+class Heatmaps
+{
+    constructor(ac, js, tar, iso, lv)
+    {
+        this.ac = ac;
+        this.js = js;
+        this.tar = tar;
+        this.iso = iso;
+        this.lv = lv;
     }
 }

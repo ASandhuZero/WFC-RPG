@@ -5,8 +5,8 @@
 import { WFC } from "./WaveFunctionCollapse/WaveFunctionCollapse";
 import * as testjson from "./UNITTEST.json!json";
 import evaluateHorrorPotential from "./Evals/TilemapEvaluation";
-import { detectJumpscares } from "./Evals/FeatureDetection";
-import { generateHeatmap } from "./Evals/Visualization";
+import { detectFeatures } from "./Evals/FeatureDetection";
+import { generateHeatmaps } from "./Evals/Visualization";
 
 // This is the lifted WFC running code. Placing it here to know what I need
 //      For the function call.
@@ -32,9 +32,9 @@ let wfc = WFC(0, tilemap_data);
 let feature_mapping = {
     6 : ["LV"],
     7 : ["T"], 
-    8 : ["T"],
+    8 : ["AC, T"],
     9 : ["T"],
-    16 : ["LV", "T"]
+    16 : ["AC", "LV", "T"]
 }
 
 // YEPT THIS IS BAD CODE. STRUCTURAL CODE RIGHT HERE THT NEEDS TO BE REFACTORED TODO:
@@ -51,12 +51,18 @@ for (let i = 0; i < width; i++) {
 console.log(feature_map);
 //TODO: Yeah so the above code is horrible. Either flatten everything down to
 //      an array. OR just turn everything into a matrix.
-let features = detectJumpscares(feature_map, 10, 10);
-console.log(features);
-let heatmap = generateHeatmap(features, 10, 10, "JS");
-console.log(heatmap.output);
+let features = detectFeatures(feature_map, 10, 10);
+// console.log(features.ac);
+// console.log(features.lv);
+// console.log(features.js);
+// console.log(features.iso);
+let heatmaps = generateHeatmaps(features, 10, 10);
+// console.log(heatmaps.ac);
+// console.log(heatmaps.lv);
+// console.log(heatmaps.js);
+// console.log(heatmaps.iso);
 let tilemapEval = evaluateHorrorPotential(features, 10, 10, "slasher");
-console.log(tilemapEval);
+// console.log(tilemapEval);
 //TODO: wfc returns back two different things, right now I should focus on 
 //      consolidating it over to one output. Probably the more structured of 
 //      the two.
@@ -217,11 +223,11 @@ function draw() {
                     tileSize, row * tileOutputSize, col * tileOutputSize,
                     updatedTileSize, updatedTileSize);
                 // TODO: Please figure out a standard for matrix (row by column or column by row), for the love of GOD.
-                let srgb = heatmap.output[col / 16][row / 16].srgb;
-                ctx.fillStyle = 'rgba(' + 255 * srgb.red + ', ' +
-                255 * srgb.green + ', ' + 255 * srgb.blue + ', 0.5)';
-                ctx.fillRect(row * tileOutputSize, col * tileOutputSize,
-                    updatedTileSize, updatedTileSize);
+                // let srgb = heatmap.output[col / 16][row / 16].srgb;
+                // ctx.fillStyle = 'rgba(' + 255 * srgb.red + ', ' +
+                // 255 * srgb.green + ', ' + 255 * srgb.blue + ', 0.5)';
+                // ctx.fillRect(row * tileOutputSize, col * tileOutputSize,
+                //     updatedTileSize, updatedTileSize);
             }
             mapIndex ++;
         }

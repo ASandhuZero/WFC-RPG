@@ -1,5 +1,18 @@
 // A class containing methods and objects for use in detecting higher-order features of WFC-generated tilemaps.
 
+// A main function that runs all detectors and stores them in a Features object.
+export function detectFeatures(input, numRows, numCols)
+{
+    let ac = detectAmbientCreep(input, numRows, numCols);
+    let js = detectJumpscares(input, numRows, numCols);
+    let tar = null;
+    let iso = detectIsolation(input, numRows, numCols);
+    let lv = detectLowVisibility(input, numRows, numCols);
+
+    let features = new Features(ac, js, tar, iso, lv);
+    return features;
+}
+
 // Jumpscare detector. 
 // Input: input - a 2D array whose elements are strings (metadata of tiles); numRows - an int, number of rows; numCols - an int, number of columns.
 // Output: a 2D array whose elements are strings describing the grid's features.
@@ -7,13 +20,8 @@
 export function detectJumpscares(input, numRows, numCols)
 {
     // Create new 2D array for output.
-    let output = [];
-    for (let i = 0; i < numRows; i++) {
-        output.push([]);
-        for (let j = 0; j < numCols; j++) {
-            output[i][j] = [];
-        }
-    }
+    let output = generate2DArray(numRows, numCols);
+
     // Traverse through array.
     for (let i = 0; i < input.length; i++)
     {
@@ -21,11 +29,7 @@ export function detectJumpscares(input, numRows, numCols)
         {
             // Store the list of metadata we are currently looking at in the corresponding grid cell, along with the output list.
             let currentList = input[i][j];
-            // Initialize contents of output array to empty.
-            if (output[i][j] == null)
-            {
-                output[i][j] = [];
-            }
+            
             // Check if the current grid cell contains the relevant metadata.
             if (currentList.includes("LV"))
             {
@@ -52,6 +56,159 @@ export function detectJumpscares(input, numRows, numCols)
                             output[index_i][index_j].push("JS");
                         }
                     }
+                }
+            }
+        }
+    }
+
+    // Return the output array.
+    return output;
+}
+
+// Ambient creep detector. 
+// Input: input - a 2D array whose elements are strings (metadata of tiles); numRows - an int, number of rows; numCols - an int, number of columns.
+// Output: a 2D array whose elements are strings describing the grid's features.
+// Metadata required for this detector: AC (ambient creep)
+export function detectAmbientCreep(input, numRows, numCols)
+{
+    // Create new 2D array for output.
+    let output = generate2DArray(numRows, numCols);
+
+    // Traverse through array.
+    for (let i = 0; i < input.length; i++)
+    {
+        for (let j = 0; j < input[i].length; j++)
+        {
+            // Store the list of metadata we are currently looking at in the corresponding grid cell, along with the output list.
+            let currentList = input[i][j];
+            
+            // Check if the current grid cell contains the relevant metadata.
+            if (currentList.includes("AC"))
+            {
+                // If the current grid cell is marked as AC, mark the output tile as AC.
+                output[i][j].push("AC");
+
+                // Get the list of neighbors to this cell.
+                let neighbors = getNeighbors(input, i, j);
+
+                // Traverse the neighbors.
+                for (let n = 0; n < neighbors.length; n++)
+                {
+                    // Get indices stored in neighbor object.
+                    let index_i = neighbors[n].i;
+                    let index_j = neighbors[n].j;
+                    // Store the metadata list for the index being looked at.
+                    let neighborList = input[index_i][index_j];
+                    if (neighborList.includes("AC"))
+                    {
+                        // If a neighbor cell is also marked as AC, increase the output tile's AC score.
+                        output[i][j].push("AC");
+                    }
+                }
+            }
+        }
+    }
+
+    // Return the output array.
+    return output;
+}
+
+// Low-vis detector. 
+// Input: input - a 2D array whose elements are strings (metadata of tiles); numRows - an int, number of rows; numCols - an int, number of columns.
+// Output: a 2D array whose elements are strings describing the grid's features.
+// Metadata required for this detector: LV (low-vis)
+export function detectLowVisibility(input, numRows, numCols)
+{
+    // Create new 2D array for output.
+    let output = generate2DArray(numRows, numCols);
+
+    // Traverse through array.
+    for (let i = 0; i < input.length; i++)
+    {
+        for (let j = 0; j < input[i].length; j++)
+        {
+            // Store the list of metadata we are currently looking at in the corresponding grid cell, along with the output list.
+            let currentList = input[i][j];
+            
+            // Check if the current grid cell contains the relevant metadata.
+            if (currentList.includes("LV"))
+            {
+                // If the current grid cell is marked as AC, mark the output tile as AC.
+                output[i][j].push("LV");
+
+                // Get the list of neighbors to this cell.
+                let neighbors = getNeighbors(input, i, j);
+
+                // Traverse the neighbors.
+                for (let n = 0; n < neighbors.length; n++)
+                {
+                    // Get indices stored in neighbor object.
+                    let index_i = neighbors[n].i;
+                    let index_j = neighbors[n].j;
+                    // Store the metadata list for the index being looked at.
+                    let neighborList = input[index_i][index_j];
+                    if (neighborList.includes("LV"))
+                    {
+                        // If a neighbor cell is also marked as AC, increase the output tile's AC score.
+                        output[i][j].push("LV");
+                    }
+                }
+            }
+        }
+    }
+
+    // Return the output array.
+    return output;
+}
+
+// Isolation detector. 
+// Input: input - a 2D array whose elements are strings (metadata of tiles); numRows - an int, number of rows; numCols - an int, number of columns.
+// Output: a 2D array whose elements are strings describing the grid's features.
+// Metadata required for this detector: LV (low-vis), T (traversable), AC (ambient creep)
+export function detectIsolation(input, numRows, numCols)
+{
+    // Create new 2D array for output.
+    let output = generate2DArray(numRows, numCols);
+
+    // Traverse through array.
+    for (let i = 0; i < input.length; i++)
+    {
+        for (let j = 0; j < input[i].length; j++)
+        {
+            // The minimum number of low-vis tiles that must be surrounding a certain tile for it to be considered isolated.
+            let threshold = 3;
+
+            // The current number of low-vis tiles surrounding the current tile.
+            let surroundings = 0;
+
+            // Store the list of metadata we are currently looking at in the corresponding grid cell, along with the output list.
+            let currentList = input[i][j];
+            
+            // Check if the current grid cell contains the relevant metadata.
+            if (currentList.includes("T"))
+            {
+                // If the tile is traversable, get its neighbors.
+                let neighbors = getNeighbors(input, i, j);
+
+                // Traverse the neighbors.
+                for (let n = 0; n < neighbors.length; n++)
+                {
+                    // Get indices stored in neighbor object.
+                    let index_i = neighbors[n].i;
+                    let index_j = neighbors[n].j;
+                    // Store the metadata list for the index being looked at.
+                    let neighborList = input[index_i][index_j];
+                    if (neighborList.includes("LV"))
+                    {
+                        surroundings++;
+                    }
+                }
+
+                // If the number of low-vis tiles surrounding the current tile is greater than the given threshold
+                if (surroundings >= threshold)
+                {
+                    // Mark the corresponding output tile as isolated.
+                    output[i][j].push("I");
                 }
             }
         }
@@ -155,5 +312,32 @@ class Neighbor
     {
         this.i = i;
         this.j = j;
+    }
+}
+
+// A helper function to generate an empty 2D array.
+function generate2DArray(numRows, numCols)
+{
+    let output = [];
+    for (let i = 0; i < numRows; i++) {
+        output.push([]);
+        for (let j = 0; j < numCols; j++) {
+            output[i][j] = [];
+        }
+    }
+    
+    return output;
+}
+
+// A simple data structure to hold the output maps of all features.
+class Features
+{
+    constructor(ac, js, tar, iso, lv)
+    {
+        this.ac = ac;
+        this.js = js;
+        this.tar = tar;
+        this.iso = iso;
+        this.lv = lv;
     }
 }
