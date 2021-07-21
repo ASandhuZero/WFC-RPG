@@ -208,27 +208,24 @@ function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, w, h) {
  * @returns {object} locality_propagator    
  */
 function GeneratePropagator(neighbors, tiles, items) {
-    // NEW DUMMY DUMB CODE IS BELOW, YO.
     let tile_amount = tiles.names.length
     let propagator = new Array(4);
     for (let direction = 0; direction < 4; direction++) {
         propagator[direction] = new Array(tile_amount);
         for (let i = 0; i < tile_amount; i++) {
-            propagator[direction][i] = new Array(tile_amount).fill(-1);
+            propagator[direction][i] = new Array(tile_amount).fill(-1); // -1 should never be a tile ID. If it is then something has gone horribly wrong.
         }
     }
     for (let i = 0; i < neighbors.length; i++) {
         // dissect neighbor constraints
-        neighbor_pair = neighbors[i];
-        left = neighbor_pair.left
-        right = neighbor_pair.right
-        L_ID = tiles.IDs[left];  // user defined rotation for left tile
-        R_ID = tiles.IDs[right];  // user defined rotation for right tile
+        let neighbor_pair = neighbors[i];
+        let left = tiles.IDs[neighbor_pair.left];  // user defined rotation for left tile
+        let right = tiles.IDs[neighbor_pair.right];  // user defined rotation for right tile
         
-        L = tiles.rotations[L_ID];   // uses tile id number
-        R = tiles.rotations[R_ID];   // array of tile id number according to its rotations
-        D = tiles.rotations[L[1]];
-        U = tiles.rotations[R[1]];
+        let L = tiles.rotations[left];   // uses tile id number
+        let R = tiles.rotations[right];   // array of tile id number according to its rotations
+        let D = tiles.rotations[L[1]];
+        let U = tiles.rotations[R[1]];
         // determines which neighbor tiles can exist
         propagator[0][L[0]][R[0]] = R[0];   // propagator[R, U, L, D]
         propagator[0][L[6]][R[6]] = R[6];
@@ -250,6 +247,7 @@ function GeneratePropagator(neighbors, tiles, items) {
             }
         }
     }
+    // Removing non-unique -1's from the neighbor arrays.
     for (let direction = 0; direction < 4; direction++) {
         let direction_array = propagator[direction];
         for (let i = 0; i < direction_array.length; i++) {
