@@ -117,6 +117,9 @@ function Clear(wave, tile_amount, tile_data) {
         for (let t = 0; t < tile_amount; t++) {
             for (let d = 0; d < 4; d++) {
                 // TODO: 
+                if (tile_data.neighbor_propagator[opposite[d]][t] === undefined) {
+                    debugger;
+                }
                 tiles.compatible[w][t][d] = 
                     tile_data.neighbor_propagator[opposite[d]][t].length; // compatible is the compatible tiles of t. NOT t itself. Which is why opposite is involved.
             }
@@ -205,82 +208,64 @@ function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, w, h) {
  * @returns {object} locality_propagator    
  */
 function GeneratePropagator(neighbors, tiles, items) {
-    let sparse_propagator;
-    let neighbor_pair;
-    let left, right, L_ID, R_ID, L, R, D, U;
-
-    let neighbor_tiles = neighbors;
-
-    let locality_propagator = new Array(4)
+    // NEW DUMMY DUMB CODE IS BELOW, YO.
+    let tile_amount = tiles.names.length
     let propagator = new Array(4);
-    
-    let tile_names = tiles.names;
-
-    // creates locality_propagator and propagator
-    // array of 4 elements, each element is an array equal to the number of tiles
-    for (let d = 0; d < 4; d++) { // d is for direction.
-        locality_propagator[d] = new Array(tile_names.length); // all the tiles. We are reaching that superposition stuff
-        propagator[d] = new Array(tile_names.length); // all the tiles. We are reaching that superposition stuff
-        for (let t = 0; t < tile_names.length; t++) {
-            locality_propagator[d][t] = new Array(tile_names.length); // This will be the bool array. Since each tile should know what it's possible neighbor tile is.
-            propagator[d][t] = new Array(tile_names.length).fill(false); // This will be the bool array. Since each tile should know what it's possible neighbor tile is.
+    for (let direction = 0; direction < 4; direction++) {
+        propagator[direction] = new Array(tile_amount);
+        for (let i = 0; i < tile_amount; i++) {
+            propagator[direction][i] = new Array(tile_amount).fill(-1);
         }
     }
-    for (let i = 0; i < neighbor_tiles.length; i++) {
+    for (let i = 0; i < neighbors.length; i++) {
         // dissect neighbor constraints
-        neighbor_pair = neighbor_tiles[i];
+        neighbor_pair = neighbors[i];
         left = neighbor_pair.left
         right = neighbor_pair.right
         L_ID = tiles.IDs[left];  // user defined rotation for left tile
         R_ID = tiles.IDs[right];  // user defined rotation for right tile
+        
         L = tiles.rotations[L_ID];   // uses tile id number
         R = tiles.rotations[R_ID];   // array of tile id number according to its rotations
-        if (R === undefined) {
-            debugger;
-        }
         D = tiles.rotations[L[1]];
         U = tiles.rotations[R[1]];
-        
         // determines which neighbor tiles can exist
-        propagator[0][L[0]][R[0]] = true;   // propagator[R, U, L, D]
-        propagator[0][L[6]][R[6]] = true;
-        propagator[0][R[4]][L[4]] = true;
-        propagator[0][R[2]][L[2]] = true;
+        propagator[0][L[0]][R[0]] = R[0];   // propagator[R, U, L, D]
+        propagator[0][L[6]][R[6]] = R[6];
+        propagator[0][R[4]][L[4]] = L[4];
+        propagator[0][R[2]][L[2]] = L[2];
 
-        propagator[1][D[0]][U[0]] = true;
-        propagator[1][U[6]][D[6]] = true;
-        propagator[1][D[4]][U[4]] = true;
-        propagator[1][U[2]][D[2]] = true;
-
+        propagator[1][D[0]][U[0]] = U[0];
+        propagator[1][U[6]][D[6]] = D[6];
+        propagator[1][D[4]][U[4]] = U[4];
+        propagator[1][U[2]][D[2]] = D[2];
     }
-    for (let t = 0; t < tile_names.length; t++) {
-        for (let t2 = 0; t2 < tile_names.length; t2++) {
-            propagator[2][t][t2] = propagator[0][t2][t];
-            propagator[3][t][t2] = propagator[1][t2][t];
-        }
-    }
-
-    sparse_propagator = new Array(4);
-    for (let d = 0; d < 4; d++) {
-        sparse_propagator[d] = new Array(4);
-        for (let t = 0; t < tile_names.length; t++) {
-            sparse_propagator[d][t] = [];
-        }
-    }
-    for (let d = 0; d < 4; d++) {
-        for (let t = 0; t < tile_names.length; t++) {
-            let sp = sparse_propagator[d][t];
-            let p = propagator[d][t]
-
-            for (let t1 = 0; t1 < tile_names.length; t1++) {
-                if (p[t1]) {
-                    sp.push(t1);
-                }
+    for (let tile_1 = 0; tile_1 < tile_amount; tile_1++) {
+        for (let tile_2 = 0; tile_2 < tile_amount; tile_2++) {
+            if (propagator[0][tile_2][tile_1] !== -1) {
+                propagator[2][tile_1][tile_2] = tile_2;
             }
-            locality_propagator[d][t] = sp;
+            if (propagator[1][tile_2][tile_1] !== -1) {
+                propagator[3][tile_1][tile_2] = tile_2;
+            }
         }
     }
-    return locality_propagator;
+    for (let direction = 0; direction < 4; direction++) {
+        let direction_array = propagator[direction];
+        for (let i = 0; i < direction_array.length; i++) {
+            let unique_neighbors = [];
+            let neighbor_array = direction_array[i];
+            for (let j = 0; j < neighbor_array.length; j++) {
+                let neighbor = neighbor_array[j];
+                if (neighbor !== -1) { unique_neighbors.push(neighbor); }
+            }
+            // Fun fact, javascript sort does not sort numbers by ascending order. Instead, they are transformed into strings and sorted alphabetically. The arrow function ensures sort does an actual numerical sort. 
+            // Doc: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+            unique_neighbors = unique_neighbors.sort((a, b) => a - b);
+            propagator[direction][i] = unique_neighbors;
+        }
+    }
+    return propagator;
 }
 /**
  * GenerateWave

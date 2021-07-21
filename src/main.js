@@ -34,6 +34,9 @@ while (wfc === undefined && loop_count < 100) {
     try {
         wfc = WFC(0, tilemap_data); 
         console.log(wfc);
+        if (wfc.length === 0) {
+            wfc = undefined;
+        }
     } catch (error) {
         console.log(error);
         wfc = undefined;
