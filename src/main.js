@@ -7,6 +7,7 @@ import * as testjson from "./UNITTEST.json!json";
 import evaluateHorrorPotential from "./Evals/TilemapEvaluation";
 import { detectFeatures } from "./Evals/FeatureDetection";
 import { generateHeatmaps } from "./Evals/Visualization";
+import { hasData } from "jquery";
 
 // This is the lifted WFC running code. Placing it here to know what I need
 //      For the function call.
@@ -271,16 +272,18 @@ let heatmapNames = ["Ambeint Creep", "Low Visibility", "Jumpscare", "Isolation"]
 let btnDiv = document.getElementById("btnDiv")
 for (let i = 0; i < heatmapNames.length; i++) {
     let btn = document.createElement("button");
+    let heatmapStyle = heatmapCanvases[i].style;
     btn.innerHTML = heatmapNames[i];
     btn.style.position = "relative";
     btn.style.top = (mapHeight * tileOutputSize) + updatedTileSize;
     btn.addEventListener("click", function () {
-        if (heatmapCanvases[i].style.display === "none") {
-            heatmapCanvases[i].style.display = "block";
+        if (heatmapStyle.display === "none") {
+            heatmapStyle.display = "block";
         } else {
-            heatmapCanvases[i].style.display = "none"
+            heatmapStyle.display = "none"
         }
     });
+    heatmapStyle.display = "none";
     btnDiv.appendChild(btn);
 }
 
