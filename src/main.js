@@ -269,7 +269,7 @@ function DrawTileMap() {
     }
 }
 // Adding in buttons for heatmap toggling.
-let heatmapNames = ["Ambeint Creep", "Low Visibility", "Jumpscare", "Isolation"]
+let heatmapNames = ["Ambient Creep", "Low Visibility", "Jumpscare", "Isolation"]
 let btnDiv = document.getElementById("btnDiv")
 for (let i = 0; i < heatmapNames.length; i++) {
     let btn = document.createElement("button");
