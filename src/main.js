@@ -98,10 +98,10 @@ let features = detectFeatures(feature_map, 10, 10);
 // console.log(features.js);
 // console.log(features.iso);
 let heatmaps = generateHeatmaps(features, 10, 10);
-// console.log(heatmaps.ac);
-// console.log(heatmaps.lv);
+console.log(heatmaps.ac);
+console.log(heatmaps.lv);
 console.log(heatmaps.js);
-// console.log(heatmaps.iso);
+console.log(heatmaps.iso);
 // let tilemapEval = evaluateHorrorPotential(features, 10, 10, "slasher");
 // console.log(tilemapEval);
 
@@ -117,9 +117,8 @@ const ctxList = []
 for (let i = 0; i < 5; i++) {
     ctxList.push(canvasList[i].getContext('2d'));
 }
-const lv_ctx = canvasList[2].getContext('2d');
-const js_ctx = canvasList[3].getContext('2d');
-const iso_ctx = canvasList[4].getContext('2d');
+let srgbs = []
+
 
 const tileSet = new Image();
 tileSet.src = './assets/tilesets/graveyard.png';
@@ -157,6 +156,7 @@ function DrawTileMap() {
     let tile = {};
     let tileVal = "";
     let tileRot = "";
+    srgbs = [];
     // Sigh... This offsetting, with tileSize, is to ensure the interior of the map gets properly drawn.
     for (let col = tileSize; col < mapHeight; col += tileSize) {
         for (let row = tileSize; row < mapWidth; row += tileSize) {
@@ -183,11 +183,12 @@ function DrawTileMap() {
                 } else if (tileRot === "3") {
                     destinationX = destinationX - updatedTileSize;
                 }
-
+                // Actual drawing of the tilemap right here.
                 ctxList[0].drawImage(tileSet, sourceX, sourceY, tileSize,
                     tileSize, destinationX, destinationY,
                     updatedTileSize, updatedTileSize);
                 ctxList[0].setTransform(1, 0, 0, 1, 0, 0);
+                
                 // DEBUGGING CODE FOR TILE NAME TODO: REMOVE AT SOME POINT.
                 ctxList[0].font = '24px serif';
                 ctxList[0].fillStyle = "#ff0000";
@@ -198,11 +199,19 @@ function DrawTileMap() {
                 // TODO: Please figure out a standard for matrix (row by column or column by row), for the love of GOD.
                 //TODO: THIS IS ONLY FOR AC. NEEDS TO DO ALL OF THE HEATMAPS.
                 // Also hardcoding an index call like this is weird... stop it.
-                let srgb = heatmaps.ac.output[(col / 16)-1][(row / 16)-1].srgb;
-                ctxList[1].fillStyle = 'rgba(' + 255 * srgb.red + ', ' +
-                255 * srgb.green + ', ' + 255 * srgb.blue + ', 0.5)';
-                ctxList[1].fillRect(row * tileOutputSize, col * tileOutputSize,
-                    updatedTileSize, updatedTileSize);
+                srgbs[0] = heatmaps.ac.output[(col / 16)-1][(row / 16)-1].srgb;
+                srgbs[1] = heatmaps.lv.output[(col / 16)-1][(row / 16)-1].srgb;
+                srgbs[2] = heatmaps.js.output[(col / 16)-1][(row / 16)-1].srgb;
+                srgbs[3] = heatmaps.iso.output[(col / 16)-1][(row / 16)-1].srgb;
+                for (let i = 0; i < 4; i++) {
+                    ctxList[1+i].fillStyle = 'rgba(' + 255 * srgbs[i].red + ', '
+                    + 255 * srgbs[i].green + ', ' + 255 * srgbs[i].blue + 
+                    ', 0.5)';
+                    //TODO: Decide if ctxList should contain the tilemap 
+                    // renderer as well.
+                    ctxList[1+i].fillRect(row * tileOutputSize, 
+                        col * tileOutputSize, updatedTileSize, updatedTileSize);
+                }
             }
             mapIndex ++;
         }
