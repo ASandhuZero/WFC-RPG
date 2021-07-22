@@ -169,8 +169,8 @@ let updatedTileSize = tileSize * tileOutputSize;
 
 let atlasCol = 9;
 let atlasRow = 8;
-let mapCols = 10;
-let mapRows = 10;
+let mapCols = 11;
+let mapRows = 11;
 let mapHeight = mapRows * tileSize;
 let mapWidth = mapCols * tileSize
 let levelMap = wfc[1].tiles;
@@ -184,15 +184,16 @@ function draw() {
 }
 
 function DrawTileMap() {
-    canvas.width = mapWidth * tileOutputSize;
-    canvas.height = mapHeight * tileOutputSize;
+    canvas.width = mapWidth * (1 + tileOutputSize);
+    canvas.height = mapHeight * (1 + tileOutputSize);
     let destinationX = 0;
     let destinationY = 0;
     let tile = {};
     let tileVal = "";
     let tileRot = "";
-    for (let col = 0; col < mapHeight; col += tileSize) {
-        for (let row = 0; row < mapWidth; row += tileSize) {
+    // Sigh... This offsetting, with tileSize, is to ensure the interior of the map gets properly drawn.
+    for (let col = tileSize; col < mapHeight; col += tileSize) {
+        for (let row = tileSize; row < mapWidth; row += tileSize) {
             tile = levelMap[mapIndex];
             tileVal = tile.name;
             tileRot = tile.rotation;
@@ -228,8 +229,8 @@ function DrawTileMap() {
                 ctx.font = '24px serif';
                 ctx.fillStyle = "#ff0000";
                 ctx.fillText(tile.name, 
-                    ((row * tileOutputSize-10) + (updatedTileSize/2)),
-                    ((col * tileOutputSize) + (updatedTileSize/2)));
+                    (((row+1) * tileOutputSize-10) + (updatedTileSize/2)),
+                    (((col+1) * tileOutputSize) + (updatedTileSize/2)));
                 // THE ABOVE IS CODE TO REMOVE.
                 // TODO: Please figure out a standard for matrix (row by column or column by row), for the love of GOD.
                 // let srgb = heatmap.output[col / 16][row / 16].srgb;
@@ -240,5 +241,51 @@ function DrawTileMap() {
             }
             mapIndex ++;
         }
+    }
+    // .. a hardcoded nightmare for the tilemap trim tile.
+    ctx.drawImage(tileAtlas, (5 % atlasCol) * tileSize, 
+        Math.floor(5/atlasCol) * tileSize, tileSize, tileSize, 0, 0, 
+        updatedTileSize, updatedTileSize);
+
+    ctx.drawImage(tileAtlas, (23 % atlasCol) * tileSize, 
+        Math.floor(23/atlasCol) * tileSize, tileSize, tileSize, 0, 
+        mapHeight * tileOutputSize, updatedTileSize, updatedTileSize);
+
+    ctx.drawImage(tileAtlas, (8 % atlasCol) * tileSize, 
+        Math.floor(8/atlasCol) * tileSize, tileSize, tileSize, 
+        mapWidth * tileOutputSize, 0, updatedTileSize, updatedTileSize);
+
+    ctx.drawImage(tileAtlas, (25 % atlasCol) * tileSize, 
+        Math.floor(25/atlasCol) * tileSize, tileSize, tileSize, 
+        (mapWidth-tileSize) * tileOutputSize, mapHeight * tileOutputSize, 
+        updatedTileSize, updatedTileSize);
+
+    ctx.drawImage(tileAtlas, (7 % atlasCol) * tileSize, 
+        Math.floor(7/atlasCol) * tileSize, tileSize, tileSize, 
+        (mapWidth-tileSize) * tileOutputSize, 0, 
+        updatedTileSize, updatedTileSize);
+
+    ctx.drawImage(tileAtlas, (26 % atlasCol) * tileSize, 
+        Math.floor(26/atlasCol) * tileSize, tileSize, tileSize, 
+        mapWidth * tileOutputSize, mapHeight * tileOutputSize, 
+        updatedTileSize, updatedTileSize);
+
+    for (let col = tileSize; col < mapHeight; col += tileSize) {
+        ctx.drawImage(tileAtlas, (14 % atlasCol) * tileSize, 
+            Math.floor(14/atlasCol) * tileSize, tileSize, tileSize, 0, 
+            col * tileOutputSize, updatedTileSize, updatedTileSize);
+        ctx.drawImage(tileAtlas, (17 % atlasCol) * tileSize, 
+            Math.floor(17/atlasCol) * tileSize, tileSize, tileSize, 
+            mapWidth * tileOutputSize, col * tileOutputSize, updatedTileSize, 
+            updatedTileSize);
+    }
+    for (let row = tileSize ; row < mapHeight - tileSize; row += tileSize) {
+        ctx.drawImage(tileAtlas, (6 % atlasCol) * tileSize, 
+            Math.floor(6/atlasCol) * tileSize, tileSize, tileSize, 
+            row * tileOutputSize, 0, updatedTileSize, updatedTileSize);
+        ctx.drawImage(tileAtlas, (24 % atlasCol) * tileSize, 
+            Math.floor(24/atlasCol) * tileSize, tileSize, tileSize, 
+            row * tileOutputSize, mapHeight * tileOutputSize, updatedTileSize, 
+            updatedTileSize);
     }
 }
