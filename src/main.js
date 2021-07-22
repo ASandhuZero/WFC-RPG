@@ -85,8 +85,8 @@ let feature_map = Array.from(Array(width), () => new Array(height));
 let col = 0;
 for (let i = 0; i < width; i++) {
     for (let j = 0; j < height; j++) {
-        let tile = wfc[0][j+(i*10)].split(" ");
-        let tile_name = tile[0]; // This is the tile name. Honestly this is more broken then a college student trying to get a job.
+        let tile = wfc.tiles[j+(i*10)];
+        let tile_name = tile.name; // This is the tile name. Honestly this is more broken then a college student trying to get a job.
         let tile_feature = feature_mapping[tile_name];
         feature_map[i][j] = tile_feature;
     }
@@ -109,8 +109,6 @@ console.log(feature_map);
 //TODO: wfc returns back two different things, right now I should focus on 
 //      consolidating it over to one output. Probably the more structured of 
 //      the two.
-let mapData = GetMap(wfc[0], 1);
-console.log("mapData",mapData)
 function GetMap(wfc, a) {
 
     var array = [];
@@ -173,7 +171,7 @@ let mapCols = 11;
 let mapRows = 11;
 let mapHeight = mapRows * tileSize;
 let mapWidth = mapCols * tileSize
-let levelMap = wfc[1].tiles;
+let levelMap = wfc.tiles;
 let mapIndex = 0;
 let sourceX = 0;
 let sourceY = 0;

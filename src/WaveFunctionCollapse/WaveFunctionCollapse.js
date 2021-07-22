@@ -150,10 +150,6 @@ function Clear(wave, tile_amount, tile_data) {
  */
 function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, w, h) {
     let array = [];
-    let tile = {
-        tile : 0,
-        rotation : 0
-    }
     let generated_tilemap = {
         tiles : [],
         items : []
@@ -191,9 +187,8 @@ function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, w, h) {
             }
         } 
     }
-    console.log(generated_tilemap);
     if(array.length != 0) {
-        return [array, generated_tilemap];
+        return generated_tilemap;
     } else {
         throw 'No Map Generated'
     }
