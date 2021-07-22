@@ -109,20 +109,25 @@ console.log(heatmaps.js);
 // CANVAS CODE TODO: BREAK THIS OUT INTO ITS OWN JS FILE IF WORK.
 // Also, got this from this helpful link https://medium.com/geekculture/make-your-own-tile-map-with-vanilla-javascript-a627de67b7d9 
 // Good good stuff.
-const canvas = document.getElementById('test-canvas');
-const ctx = canvas.getContext('2d');
 
+const canvasList = document.getElementsByTagName('canvas');
+
+const tilemap_canvas = canvasList[0];
+const ctxList = []
+for (let i = 0; i < 5; i++) {
+    ctxList.push(canvasList[i].getContext('2d'));
+}
+const lv_ctx = canvasList[2].getContext('2d');
+const js_ctx = canvasList[3].getContext('2d');
+const iso_ctx = canvasList[4].getContext('2d');
 
 const tileSet = new Image();
 tileSet.src = './assets/tilesets/graveyard.png';
-
-const heatmap_display = document.getElementById('heatmap')
-console.log(heatmap_display);
 tileSet.onload = draw;
 
 let tileSize = 16;
 let tileOutputSize = 4; // can set to 1 for 32px or higher
-let updatedTileSize = tileSize * tileOutputSize;
+let updatedTileSize = tileSize * tileOutputSize - 1;
 
 let atlasCol = 9;
 let atlasRow = 8;
@@ -141,8 +146,12 @@ function draw() {
 }
 
 function DrawTileMap() {
-    canvas.width = mapWidth * (1 + tileOutputSize);
-    canvas.height = mapHeight * (1 + tileOutputSize);
+    // Going to have to update all canvases right here.
+    for (let i = 0; i < canvasList.length; i++) {
+        canvasList[i].width = mapWidth * (1 + tileOutputSize);
+        canvasList[i].height = mapHeight * (1 + tileOutputSize);
+
+    }
     let destinationX = 0;
     let destinationY = 0;
     let tile = {};
@@ -162,9 +171,9 @@ function DrawTileMap() {
                 destinationX = row * tileOutputSize;
                 destinationY = col * tileOutputSize;
                 // Rotates canvsas. Rotating at the location of the tile. And then trasnlating the rotation back to the (0,0)
-                ctx.translate(destinationX, destinationY);
-                ctx.rotate(rotation);
-                ctx.translate(-(destinationX), -(destinationY));
+                ctxList[0].translate(destinationX, destinationY);
+                ctxList[0].rotate(rotation);
+                ctxList[0].translate(-(destinationX), -(destinationY));
                 // Adjusting rotation offset. ctx.rotate does not rotate at center, but at the top-left corner of the image. Hence the offseting.
                 if (tileRot === "1") {
                     destinationY = destinationY - updatedTileSize;
@@ -175,69 +184,71 @@ function DrawTileMap() {
                     destinationX = destinationX - updatedTileSize;
                 }
 
-                ctx.drawImage(tileSet, sourceX, sourceY, tileSize,
+                ctxList[0].drawImage(tileSet, sourceX, sourceY, tileSize,
                     tileSize, destinationX, destinationY,
                     updatedTileSize, updatedTileSize);
-                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctxList[0].setTransform(1, 0, 0, 1, 0, 0);
                 // DEBUGGING CODE FOR TILE NAME TODO: REMOVE AT SOME POINT.
-                ctx.font = '24px serif';
-                ctx.fillStyle = "#ff0000";
-                ctx.fillText(tile.name, 
+                ctxList[0].font = '24px serif';
+                ctxList[0].fillStyle = "#ff0000";
+                ctxList[0].fillText(tile.name, 
                     (((row+1) * tileOutputSize-10) + (updatedTileSize/2)),
                     (((col+1) * tileOutputSize) + (updatedTileSize/2)));
                 // THE ABOVE IS CODE TO REMOVE.
                 // TODO: Please figure out a standard for matrix (row by column or column by row), for the love of GOD.
-                let srgb = heatmaps.js.output[(col / 16)-1][(row / 16)-1].srgb;
-                ctx.fillStyle = 'rgba(' + 255 * srgb.red + ', ' +
+                //TODO: THIS IS ONLY FOR AC. NEEDS TO DO ALL OF THE HEATMAPS.
+                // Also hardcoding an index call like this is weird... stop it.
+                let srgb = heatmaps.ac.output[(col / 16)-1][(row / 16)-1].srgb;
+                ctxList[1].fillStyle = 'rgba(' + 255 * srgb.red + ', ' +
                 255 * srgb.green + ', ' + 255 * srgb.blue + ', 0.5)';
-                ctx.fillRect(row * tileOutputSize, col * tileOutputSize,
+                ctxList[1].fillRect(row * tileOutputSize, col * tileOutputSize,
                     updatedTileSize, updatedTileSize);
             }
             mapIndex ++;
         }
     }
     // .. a hardcoded nightmare for the tilemap trim tile.
-    ctx.drawImage(tileSet, (5 % atlasCol) * tileSize, 
+    ctxList[0].drawImage(tileSet, (5 % atlasCol) * tileSize, 
         Math.floor(5/atlasCol) * tileSize, tileSize, tileSize, 0, 0, 
         updatedTileSize, updatedTileSize);
 
-    ctx.drawImage(tileSet, (23 % atlasCol) * tileSize, 
+    ctxList[0].drawImage(tileSet, (23 % atlasCol) * tileSize, 
         Math.floor(23/atlasCol) * tileSize, tileSize, tileSize, 0, 
         mapHeight * tileOutputSize, updatedTileSize, updatedTileSize);
 
-    ctx.drawImage(tileSet, (8 % atlasCol) * tileSize, 
+    ctxList[0].drawImage(tileSet, (8 % atlasCol) * tileSize, 
         Math.floor(8/atlasCol) * tileSize, tileSize, tileSize, 
         mapWidth * tileOutputSize, 0, updatedTileSize, updatedTileSize);
 
-    ctx.drawImage(tileSet, (25 % atlasCol) * tileSize, 
+    ctxList[0].drawImage(tileSet, (25 % atlasCol) * tileSize, 
         Math.floor(25/atlasCol) * tileSize, tileSize, tileSize, 
         (mapWidth-tileSize) * tileOutputSize, mapHeight * tileOutputSize, 
         updatedTileSize, updatedTileSize);
 
-    ctx.drawImage(tileSet, (7 % atlasCol) * tileSize, 
+    ctxList[0].drawImage(tileSet, (7 % atlasCol) * tileSize, 
         Math.floor(7/atlasCol) * tileSize, tileSize, tileSize, 
         (mapWidth-tileSize) * tileOutputSize, 0, 
         updatedTileSize, updatedTileSize);
 
-    ctx.drawImage(tileSet, (26 % atlasCol) * tileSize, 
+    ctxList[0].drawImage(tileSet, (26 % atlasCol) * tileSize, 
         Math.floor(26/atlasCol) * tileSize, tileSize, tileSize, 
         mapWidth * tileOutputSize, mapHeight * tileOutputSize, 
         updatedTileSize, updatedTileSize);
 
     for (let col = tileSize; col < mapHeight; col += tileSize) {
-        ctx.drawImage(tileSet, (14 % atlasCol) * tileSize, 
+        ctxList[0].drawImage(tileSet, (14 % atlasCol) * tileSize, 
             Math.floor(14/atlasCol) * tileSize, tileSize, tileSize, 0, 
             col * tileOutputSize, updatedTileSize, updatedTileSize);
-        ctx.drawImage(tileSet, (17 % atlasCol) * tileSize, 
+        ctxList[0].drawImage(tileSet, (17 % atlasCol) * tileSize, 
             Math.floor(17/atlasCol) * tileSize, tileSize, tileSize, 
             mapWidth * tileOutputSize, col * tileOutputSize, updatedTileSize, 
             updatedTileSize);
     }
     for (let row = tileSize ; row < mapHeight - tileSize; row += tileSize) {
-        ctx.drawImage(tileSet, (6 % atlasCol) * tileSize, 
+        ctxList[0].drawImage(tileSet, (6 % atlasCol) * tileSize, 
             Math.floor(6/atlasCol) * tileSize, tileSize, tileSize, 
             row * tileOutputSize, 0, updatedTileSize, updatedTileSize);
-        ctx.drawImage(tileSet, (24 % atlasCol) * tileSize, 
+        ctxList[0].drawImage(tileSet, (24 % atlasCol) * tileSize, 
             Math.floor(24/atlasCol) * tileSize, tileSize, tileSize, 
             row * tileOutputSize, mapHeight * tileOutputSize, updatedTileSize, 
             updatedTileSize);
