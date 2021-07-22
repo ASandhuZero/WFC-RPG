@@ -156,10 +156,10 @@ const canvas = document.getElementById('test-canvas');
 const ctx = canvas.getContext('2d');
 
 
-const tileAtlas = new Image();
-tileAtlas.src = './assets/tilesets/graveyard.png';
+const tileSet = new Image();
+tileSet.src = './assets/tilesets/graveyard.png';
 
-tileAtlas.onload = draw;
+tileSet.onload = draw;
 
 let tileSize = 16;
 let tileOutputSize = 4; // can set to 1 for 32px or higher
@@ -219,7 +219,7 @@ function DrawTileMap() {
                     destinationX = destinationX - updatedTileSize;
                 }
 
-                ctx.drawImage(tileAtlas, sourceX, sourceY, tileSize,
+                ctx.drawImage(tileSet, sourceX, sourceY, tileSize,
                     tileSize, destinationX, destinationY,
                     updatedTileSize, updatedTileSize);
                 ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -241,47 +241,47 @@ function DrawTileMap() {
         }
     }
     // .. a hardcoded nightmare for the tilemap trim tile.
-    ctx.drawImage(tileAtlas, (5 % atlasCol) * tileSize, 
+    ctx.drawImage(tileSet, (5 % atlasCol) * tileSize, 
         Math.floor(5/atlasCol) * tileSize, tileSize, tileSize, 0, 0, 
         updatedTileSize, updatedTileSize);
 
-    ctx.drawImage(tileAtlas, (23 % atlasCol) * tileSize, 
+    ctx.drawImage(tileSet, (23 % atlasCol) * tileSize, 
         Math.floor(23/atlasCol) * tileSize, tileSize, tileSize, 0, 
         mapHeight * tileOutputSize, updatedTileSize, updatedTileSize);
 
-    ctx.drawImage(tileAtlas, (8 % atlasCol) * tileSize, 
+    ctx.drawImage(tileSet, (8 % atlasCol) * tileSize, 
         Math.floor(8/atlasCol) * tileSize, tileSize, tileSize, 
         mapWidth * tileOutputSize, 0, updatedTileSize, updatedTileSize);
 
-    ctx.drawImage(tileAtlas, (25 % atlasCol) * tileSize, 
+    ctx.drawImage(tileSet, (25 % atlasCol) * tileSize, 
         Math.floor(25/atlasCol) * tileSize, tileSize, tileSize, 
         (mapWidth-tileSize) * tileOutputSize, mapHeight * tileOutputSize, 
         updatedTileSize, updatedTileSize);
 
-    ctx.drawImage(tileAtlas, (7 % atlasCol) * tileSize, 
+    ctx.drawImage(tileSet, (7 % atlasCol) * tileSize, 
         Math.floor(7/atlasCol) * tileSize, tileSize, tileSize, 
         (mapWidth-tileSize) * tileOutputSize, 0, 
         updatedTileSize, updatedTileSize);
 
-    ctx.drawImage(tileAtlas, (26 % atlasCol) * tileSize, 
+    ctx.drawImage(tileSet, (26 % atlasCol) * tileSize, 
         Math.floor(26/atlasCol) * tileSize, tileSize, tileSize, 
         mapWidth * tileOutputSize, mapHeight * tileOutputSize, 
         updatedTileSize, updatedTileSize);
 
     for (let col = tileSize; col < mapHeight; col += tileSize) {
-        ctx.drawImage(tileAtlas, (14 % atlasCol) * tileSize, 
+        ctx.drawImage(tileSet, (14 % atlasCol) * tileSize, 
             Math.floor(14/atlasCol) * tileSize, tileSize, tileSize, 0, 
             col * tileOutputSize, updatedTileSize, updatedTileSize);
-        ctx.drawImage(tileAtlas, (17 % atlasCol) * tileSize, 
+        ctx.drawImage(tileSet, (17 % atlasCol) * tileSize, 
             Math.floor(17/atlasCol) * tileSize, tileSize, tileSize, 
             mapWidth * tileOutputSize, col * tileOutputSize, updatedTileSize, 
             updatedTileSize);
     }
     for (let row = tileSize ; row < mapHeight - tileSize; row += tileSize) {
-        ctx.drawImage(tileAtlas, (6 % atlasCol) * tileSize, 
+        ctx.drawImage(tileSet, (6 % atlasCol) * tileSize, 
             Math.floor(6/atlasCol) * tileSize, tileSize, tileSize, 
             row * tileOutputSize, 0, updatedTileSize, updatedTileSize);
-        ctx.drawImage(tileAtlas, (24 % atlasCol) * tileSize, 
+        ctx.drawImage(tileSet, (24 % atlasCol) * tileSize, 
             Math.floor(24/atlasCol) * tileSize, tileSize, tileSize, 
             row * tileOutputSize, mapHeight * tileOutputSize, updatedTileSize, 
             updatedTileSize);
