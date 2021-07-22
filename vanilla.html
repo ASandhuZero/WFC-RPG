@@ -3,6 +3,11 @@ canvas {
     position: absolute;
     top: 0;
     left: 0;
+    z-index: 1;
+}
+#btnDiv {
+    position: absolute;
+    z-index: 2;
 }
 </style>
 <script src="jspm_packages/system.js"></script>
@@ -11,8 +16,13 @@ canvas {
     System.import('src/main');
 </script>
 <! -- HTML code -->
-<canvas id="tilemap"></canvas>
-<canvas id="ac_heatmap1"></canvas>
-<canvas id="lv_heatmap2"></canvas>
-<canvas id="js_heatmap3"></canvas>
-<canvas id="iso_heatmap4"></canvas>
+<body>
+    <div>
+        <canvas id="tilemap"></canvas>
+        <canvas id="ac_heatmap"></canvas>
+        <canvas id="lv_heatmap"></canvas>
+        <canvas id="js_heatmap"></canvas>
+        <canvas id="iso_heatmap"></canvas>
+    </div>
+    <div id="btnDiv"></div>
+</body>
