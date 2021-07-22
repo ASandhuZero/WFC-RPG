@@ -53,27 +53,27 @@ let feature_mapping = {
     7 : ["T"], 
     8 : ["T"],
     9 : ["T"],
-    10 : ["AC, LV"],
-    11 : ["AC, LV"],
-    12 : ["AC, LV"],
-    13 : ["AC, LV"],
-    14 : ["AC, LV"],
+    10 : ["AC", "LV"],
+    11 : ["AC", "LV"],
+    12 : ["AC", "LV"],
+    13 : ["AC", "LV"],
+    14 : ["AC", "LV"],
     15 : ["T"],
     16 : ["T"],
     17 : ["T"],
     18 : ["T"],
-    19 : ["AC, LV"],
-    20 : ["AC, LV"],
-    21 : ["AC, LV"],
-    22 : ["AC, LV"],
+    19 : ["AC", "LV"],
+    20 : ["AC", "LV"],
+    21 : ["AC", "LV"],
+    22 : ["AC", "LV"],
     24 : ["T"],
     25 : ["T"],
     26 : ["T"],
     27 : ["T"],
-    28 : ["AC, T"],
-    29 : ["AC, T"],
-    30 : ["AC, T"],
-    31 : ["AC, T"],
+    28 : ["AC", "T"],
+    29 : ["AC", "T"],
+    30 : ["AC", "T"],
+    31 : ["AC", "T"],
     37 : [],
     38 : [],
     39 : []
@@ -92,15 +92,15 @@ for (let i = 0; i < width; i++) {
 console.log(feature_map);
 //TODO: Yeah so the above code is horrible. Either flatten everything down to
 //      an array. OR just turn everything into a matrix.
-// let features = detectFeatures(feature_map, 10, 10);
+let features = detectFeatures(feature_map, 10, 10);
 // console.log(features.ac);
 // console.log(features.lv);
 // console.log(features.js);
 // console.log(features.iso);
-// let heatmaps = generateHeatmaps(features, 10, 10);
+let heatmaps = generateHeatmaps(features, 10, 10);
 // console.log(heatmaps.ac);
 // console.log(heatmaps.lv);
-// console.log(heatmaps.js);
+console.log(heatmaps.js);
 // console.log(heatmaps.iso);
 // let tilemapEval = evaluateHorrorPotential(features, 10, 10, "slasher");
 // console.log(tilemapEval);
@@ -116,6 +116,8 @@ const ctx = canvas.getContext('2d');
 const tileSet = new Image();
 tileSet.src = './assets/tilesets/graveyard.png';
 
+const heatmap_display = document.getElementById('heatmap')
+console.log(heatmap_display);
 tileSet.onload = draw;
 
 let tileSize = 16;
@@ -185,11 +187,11 @@ function DrawTileMap() {
                     (((col+1) * tileOutputSize) + (updatedTileSize/2)));
                 // THE ABOVE IS CODE TO REMOVE.
                 // TODO: Please figure out a standard for matrix (row by column or column by row), for the love of GOD.
-                // let srgb = heatmap.output[col / 16][row / 16].srgb;
-                // ctx.fillStyle = 'rgba(' + 255 * srgb.red + ', ' +
-                // 255 * srgb.green + ', ' + 255 * srgb.blue + ', 0.5)';
-                // ctx.fillRect(row * tileOutputSize, col * tileOutputSize,
-                //     updatedTileSize, updatedTileSize);
+                let srgb = heatmaps.js.output[(col / 16)-1][(row / 16)-1].srgb;
+                ctx.fillStyle = 'rgba(' + 255 * srgb.red + ', ' +
+                255 * srgb.green + ', ' + 255 * srgb.blue + ', 0.5)';
+                ctx.fillRect(row * tileOutputSize, col * tileOutputSize,
+                    updatedTileSize, updatedTileSize);
             }
             mapIndex ++;
         }
