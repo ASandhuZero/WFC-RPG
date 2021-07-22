@@ -106,48 +106,7 @@ console.log(feature_map);
 // console.log(heatmaps.iso);
 // let tilemapEval = evaluateHorrorPotential(features, 10, 10, "slasher");
 // console.log(tilemapEval);
-//TODO: wfc returns back two different things, right now I should focus on 
-//      consolidating it over to one output. Probably the more structured of 
-//      the two.
-function GetMap(wfc, a) {
 
-    var array = [];
-    var elements, element, tile_number, rotation;
-    switch(a) {
-        case 1:
-            for (let i = 0; i < wfc.length; i++){
-                elements = wfc[i];
-                element = elements.split(/[ ]+/);
-                array.push(element[0]);
-            }
-            break;
-        case 0:
-            for (let i = 0; i < wfc.length; i++) {
-                elements = wfc[i];
-                element = elements.split(/[ ]+/);
-                tile_number = parseInt(element[a]);
-                rotation = element[a+1];
-                switch (rotation) {
-                    case '3':
-                    array.push(tile_number + 0xA0000000);
-                        break;
-                    case '2':
-                    array.push(tile_number + 0xC0000000);
-                        break;
-                    case '1':
-                    array.push(tile_number + 0x60000000);
-                        break;
-                    case '0':
-                    array.push(tile_number);
-                        break;
-                    default:
-                    array.push(tile_number);
-                        break;
-                }
-            }
-    }
-    return array;
-}
 
 // CANVAS CODE TODO: BREAK THIS OUT INTO ITS OWN JS FILE IF WORK.
 // Also, got this from this helpful link https://medium.com/geekculture/make-your-own-tile-map-with-vanilla-javascript-a627de67b7d9 
