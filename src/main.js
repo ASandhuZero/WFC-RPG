@@ -43,8 +43,7 @@ while (wfc === undefined && loop_count < 100) {
     }
     loop_count++;
 }
-// PAIN EXISTS HERE. FIGURE OUT A BETTER WAY TO DO MAPPINGS LIKE THIS
-// TODO: PLEASE GOD HELP ME
+// Feature mapping of tiles to their horror low level feature.
 let feature_mapping = {
     1 : ["T"],
     2 : ["T"],
@@ -80,14 +79,13 @@ let feature_mapping = {
     39 : []
 }
 
-// YEPT THIS IS BAD CODE. STRUCTURAL CODE RIGHT HERE THT NEEDS TO BE REFACTORED TODO:
+// TODO: Really, just figure out if WFC should be a flattened array or not.
 let feature_map = Array.from(Array(width), () => new Array(height));
 let col = 0;
 for (let i = 0; i < width; i++) {
     for (let j = 0; j < height; j++) {
         let tile = wfc.tiles[j+(i*10)];
-        let tile_name = tile.name; // This is the tile name. Honestly this is more broken then a college student trying to get a job.
-        let tile_feature = feature_mapping[tile_name];
+        let tile_feature = feature_mapping[tile.name];
         feature_map[i][j] = tile_feature;
     }
 }
@@ -161,14 +159,11 @@ function DrawTileMap() {
                 sourceY = Math.floor(tileVal/atlasCol) * tileSize;
                 destinationX = row * tileOutputSize;
                 destinationY = col * tileOutputSize;
-                // Rotates canvsas. Rotating at the location of the tile. 
-                // And then trasnlating the rotation back to the (0,0)
+                // Rotates canvsas. Rotating at the location of the tile. And then trasnlating the rotation back to the (0,0)
                 ctx.translate(destinationX, destinationY);
                 ctx.rotate(rotation);
                 ctx.translate(-(destinationX), -(destinationY));
-                // Adjusting rotation offset. ctx.rotate does not rotate at 
-                // center, but at the top-left corner of the image. Hence the
-                // offseting.
+                // Adjusting rotation offset. ctx.rotate does not rotate at center, but at the top-left corner of the image. Hence the offseting.
                 if (tileRot === "1") {
                     destinationY = destinationY - updatedTileSize;
                 } else if (tileRot === "2") {

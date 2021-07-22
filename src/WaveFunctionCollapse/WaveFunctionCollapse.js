@@ -33,14 +33,14 @@ export function WFC(periodic, tilemap_data) {
     } else {
         neighbors = Constraints.GetNeighbors(tiles); // O(n^2)
     }
-    let neighbor_propagator = GeneratePropagator(neighbors, tiles, items); // O(n^3) ...TODO: this is dumb
+    let propagator = GeneratePropagator(neighbors, tiles, items); // O(n^3) ...TODO: this is dumb
 
     let tile_data = {
         "tiles": tiles,
         "items": items,
         "rules": rules,
         "neighbors": neighbors,
-        "neighbor_propagator": neighbor_propagator
+        "propagator": propagator
     }
     let tile_amount = tiles.amount;
     let item_amount = items.amount;
@@ -85,7 +85,7 @@ export function WFC(periodic, tilemap_data) {
             } 
             
             Propagate(wave, elements_data, periodic, w, h,
-                neighbor_propagator);
+                propagator);
         }
     }
     tiles = tile_data.tiles.names;
@@ -117,11 +117,11 @@ function Clear(wave, tile_amount, tile_data) {
         for (let t = 0; t < tile_amount; t++) {
             for (let d = 0; d < 4; d++) {
                 // TODO: 
-                if (tile_data.neighbor_propagator[opposite[d]][t] === undefined) {
+                if (tile_data.propagator[opposite[d]][t] === undefined) {
                     debugger;
                 }
                 tiles.compatible[w][t][d] = 
-                    tile_data.neighbor_propagator[opposite[d]][t].length; // compatible is the compatible tiles of t. NOT t itself. Which is why opposite is involved.
+                    tile_data.propagator[opposite[d]][t].length; // compatible is the compatible tiles of t. NOT t itself. Which is why opposite is involved.
             }
         }
     }
@@ -330,7 +330,8 @@ function Observe(wave, elements_data, elem, periodic, width, height, tile_data, 
     // frequency adjustment
     if(elem == 'items' && elem_data.frequencies[r] == 0){ 
         // defaults to no tile
-        return Ban(wave, elem_data, elem, argmin, r, elems_to_remove, 'frequency')
+        return Ban(wave, elem_data, elem, argmin, r, elems_to_remove, 
+            'frequency')
 
     } else if(elem == 'items' && elem_data.frequencies[r] > 0){
         elem_data.frequencies[r] -= 1;
@@ -416,7 +417,7 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, til
                             } 
                         }
                         Propagate(wave, elements_data, periodic, width, height, 
-                            tile_data['neighbor_propagator']);
+                            tile_data['propagator']);
                     }
                     
                 break;
@@ -444,7 +445,7 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, til
                             }
                         }
 
-                        Propagate(wave, elems_to_remove, periodic, width, height, elem_data, tile_data['neighbor_propagator']);
+                        Propagate(wave, elems_to_remove, periodic, width, height, elem_data, tile_data['propagator']);
                     }
                 break;
                 case 'weight':
@@ -553,7 +554,7 @@ function GetEntropySort(indexes){
     return ordered_index;
 }
 
-function Propagate(wave, elements_data, periodic, width, height, neighbor_propagator) {
+function Propagate(wave, elements_data, periodic, w, h, propagator) {
     let DX = [1, 0, -1, 0]; // [right, up, left, down]
     let DY = [0, -1, 0, 1]; // [right, up, left, down]
     let elems_to_remove = elements_data.elems_to_remove;
@@ -564,11 +565,10 @@ function Propagate(wave, elements_data, periodic, width, height, neighbor_propag
     // item elem_to_remove never reaches this while loop
     while(elems_to_remove.length > 0) {
         let e1 = elems_to_remove.pop(); // element 1
-
         let index_1 = e1[0]; // index of element to remove
         let tile_1 = e1[1]; // tile within element to remove
-        let x1 = index_1 % width;   // calculates x position of tile in map
-        let y1 = Math.floor(index_1 / width);   // calculate y position of tile in map
+        let x1 = index_1 % w;   // calculates x position of tile in map
+        let y1 = Math.floor(index_1 / w);   // calculate y position of tile in map
 
         for (let d = 0; d < 4; d++) {
             let dx = DX[d];
@@ -577,27 +577,27 @@ function Propagate(wave, elements_data, periodic, width, height, neighbor_propag
             let y2 = y1 + dy;   // y position of neighbor
 
             // boundary check
-            if (OnBoundary(x2, y2, periodic, width, height)) {
+            if (OnBoundary(x2, y2, periodic, w, h)) {
                 continue;
             }
             
             // x position correction for index_2 calculation?
             if (x2 < 0) {
-                x2 += width;
-            } else if (x2 >= width) {
-                x2 -= width;
+                x2 += w;
+            } else if (x2 >= w) {
+                x2 -= w;
             }
 
             if (y2 < 0) {
-                y2 += height;
-            } else if (y2 >= height) {
-                y2 -= height;
+                y2 += h;
+            } else if (y2 >= h) {
+                y2 -= h;
             }
 
             // 
-            let index_2 = x2 + y2 * width;  // Item 2 - calculates index of neighbor tile element within map
-            let p = neighbor_propagator[d][tile_1]; // an array of tiles to remove according to d
-            /* neighbor_propagator is a matrix
+            let index_2 = x2 + y2 * w;  // Item 2 - calculates index of neighbor tile element within map
+            let p = propagator[d][tile_1]; // an array of tiles to remove according to d
+            /* propagator is a matrix
              * each element corresponds to [right, up, left, down]
              * each element is an array of all tiles
              * each tile is an array of tile index to remove from wave 
@@ -629,6 +629,7 @@ function Propagate(wave, elements_data, periodic, width, height, neighbor_propag
  * @returns {array} elements to remove in wave
  */
 function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove, origin) {
+
     let wave_array = wave[wave_index][elem];    // creates array of tiles in chosen element
 
     // This is where Ban actually bans the undesired tile
@@ -648,13 +649,14 @@ function Ban(wave, elem_data, elem, wave_index, wave_elem, elems_to_remove, orig
         throw 'conflict detected'
     }
     let sum = elem_data.sums_of_weights[wave_index];    // get sum of weights for element with false tile
-    elem_data.entropies[wave_index] += elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum); // recalculate entropy
+    let log_sums = elem_data.sums_of_log_weights[wave_index];
+    elem_data.entropies[wave_index] += log_sums / sum - Math.log(sum); // recalculate entropy
     elem_data.possible_choices[wave_index] -= 1;    // decrease possible choices according to wave_index
     elem_data.sums_of_weights[wave_index] -= elem_data.weights[wave_elem];  
     elem_data.sums_of_log_weights[wave_index] -= elem_data.log_weights[wave_elem];
     sum = elem_data.sums_of_weights[wave_index];    // get sum of weights for element with false tile
-    elem_data.entropies[wave_index] -= elem_data.sums_of_log_weights[wave_index] / sum - Math.log(sum);
-
+    elem_data.entropies[wave_index] -= log_sums / sum - Math.log(sum);
+    //TODO: Maybe not have a pass by reference call here? Maybe do something a bit more... idk better?
     return elems_to_remove;
 }
 function BinarySearch(array, value, start, end) {
