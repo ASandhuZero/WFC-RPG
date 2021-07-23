@@ -94,17 +94,17 @@ console.log(feature_map);
 //TODO: Yeah so the above code is horrible. Either flatten everything down to
 //      an array. OR just turn everything into a matrix.
 let features = detectFeatures(feature_map, 10, 10);
-// console.log(features.ac);
-// console.log(features.lv);
-// console.log(features.js);
-// console.log(features.iso);
+console.log(features.ac);
+console.log(features.lv);
+console.log(features.js);
+console.log(features.iso);
 let heatmaps = generateHeatmaps(features, 10, 10);
 console.log(heatmaps.ac);
 console.log(heatmaps.lv);
 console.log(heatmaps.js);
 console.log(heatmaps.iso);
-// let tilemapEval = evaluateHorrorPotential(features, 10, 10, "slasher");
-// console.log(tilemapEval);
+let tilemapEval = evaluateHorrorPotential(features, 10, 10, "slasher");
+console.log(tilemapEval);
 
 
 // CANVAS CODE TODO: BREAK THIS OUT INTO ITS OWN JS FILE IF WORK.
