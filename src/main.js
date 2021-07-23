@@ -7,7 +7,6 @@ import * as testjson from "./UNITTEST.json!json";
 import evaluateHorrorPotential from "./Evals/TilemapEvaluation";
 import { detectFeatures } from "./Evals/FeatureDetection";
 import { generateHeatmaps } from "./Evals/Visualization";
-import { hasData } from "jquery";
 
 // This is the lifted WFC running code. Placing it here to know what I need
 //      For the function call.
