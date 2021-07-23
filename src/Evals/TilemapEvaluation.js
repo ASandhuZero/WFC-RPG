@@ -12,15 +12,27 @@ function evaluateHorrorPotential(input, numRows, numCols, subgenre)
     // Set up data structures for basic statistics about the map (size of map and frequency of tile tags).
     let size = numRows * numCols;
     let frequencies = [0, 0, 0, 0, 0];
-
     // Traverse through the input array.
-    for (let i = 0; i < input.length; i++)
+    // TODO: TESTING
+    let horrorFeatures = [];
+
+    for (let i = 0; i < input.iso.length; i++) 
     {
-        for (let j = 0; j < input[i].length; j++)
+        let temp_array = new Array(input.iso[i]);
+        for (let j = 0; j < input.iso[i].length; j++) 
+        {
+            temp_array[j] = []
+            temp_array[j] = temp_array[j].concat(input.iso[i][j], 
+                input.ac[i][j],input.js[i][j], input.lv[i][j]);
+        }
+        horrorFeatures.push(temp_array)
+    }
+    for (let i = 0; i < horrorFeatures.length; i++)
+    {
+        for (let j = 0; j < horrorFeatures[i].length; j++)
         {
             // Store the list of metadata for the grid cell we are currently looking at.
-            let currentList = input[i][j];
-            
+            let currentList = horrorFeatures[i][j];
             // Gather basic statistics about the map: percentage of the map taken up by each kind of tile/groups of tiles
             // If a certain metatag appears at the current tile, increase its frequency by one.
             // Stored in the frequencies array with the following indices: 0 = AC, 1 = JS, 2 = TaR, 3 = I, 4 = LV
