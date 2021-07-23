@@ -13,28 +13,28 @@ import { pathfinding } from "./pathfinding";
 // This is the lifted WFC running code. Placing it here to know what I need
 //      For the function call.
 // this.model = WFC(this.periodic, this.height, this.width, this.tileJSON, 
-//     this.tile_rule, this.item_rule); 
+//     this.tileRule, this.itemRules); 
 
 
 const height = 10;
 const width = 10;
-let tile_rules = {}
-let item_rules = {}
-let tilemap_data = {
+let tileRules = {}
+let itemRules = {}
+let tilemapData = {
     h : height,
     w : width,
-    tile_rules : tile_rules,
-    item_rules : item_rules,
-    tileset_info : testjson
+    tileRules : tileRules,
+    itemRules : itemRules,
+    tilesetInfo : testjson
 }
 // TODO: ... what can I say. This is bad... and maybe needs something else in
 //      in here.
 let wfc = undefined
-let loop_count = 0;
-while (wfc === undefined && loop_count < 100) {
+let loopCount = 0;
+while (wfc === undefined && loopCount < 100) {
     console.log("in loop");
     try {
-        wfc = WFC(0, tilemap_data); 
+        wfc = WFC(0, tilemapData); 
         console.log(wfc);
         if (wfc.length === 0) {
             wfc = undefined;
@@ -43,10 +43,10 @@ while (wfc === undefined && loop_count < 100) {
         console.log(error);
         wfc = undefined;
     }
-    loop_count++;
+    loopCount++;
 }
 // Feature mapping of tiles to their horror low level feature.
-let feature_mapping = {
+let featureMapping = {
     1 : ["T"],
     2 : ["T"],
     3 : ["T"],
@@ -82,19 +82,18 @@ let feature_mapping = {
 }
 
 // TODO: Really, just figure out if WFC should be a flattened array or not.
-let feature_map = Array.from(Array(width), () => new Array(height));
+let lowLevelFeatureMap = Array.from(Array(width), () => new Array(height));
 let col = 0;
 for (let i = 0; i < width; i++) {
     for (let j = 0; j < height; j++) {
         let tile = wfc.tiles[j+(i*10)];
-        let tile_feature = feature_mapping[tile.name];
-        feature_map[i][j] = tile_feature;
+        lowLevelFeatureMap[i][j] = featureMapping[tile.name];
     }
 }
-console.log(feature_map);
+console.log(lowLevelFeatureMap);
 //TODO: Yeah so the above code is horrible. Either flatten everything down to
 //      an array. OR just turn everything into a matrix.
-let features = detectFeatures(feature_map, 10, 10);
+let features = detectFeatures(lowLevelFeatureMap, 10, 10);
 // console.log(features.ac);
 // console.log(features.lv);
 // console.log(features.js);
@@ -104,10 +103,9 @@ let heatmaps = generateHeatmaps(features, 10, 10);
 // console.log(heatmaps.lv);
 // console.log(heatmaps.js);
 // console.log(heatmaps.iso);
-let combinedFeatures = combineFeatures(features);
-let tilemapEval = evaluateHorrorPotential(combinedFeatures, 10, 10, "slasher");
-debugger;
-pathfinding();
+let combinedFeatureMap = combineFeatures(features);
+let tilemapEval = evaluateHorrorPotential(combinedFeatureMap, 10, 10, "slasher");
+pathfinding(combinedFeatureMap);
 console.log(tilemapEval);
 
 
@@ -117,14 +115,15 @@ function combineFeatures(features) {
     let horrorFeatures = [];
     for (let i = 0; i < features.iso.length; i++) 
     {
-        let temp_array = new Array(features.iso[i]);
+        let tempArray = new Array(features.iso[i]);
         for (let j = 0; j < features.iso[i].length; j++) 
         {
-            temp_array[j] = []
-            temp_array[j] = temp_array[j].concat(features.iso[i][j], 
-                features.ac[i][j],features.js[i][j], features.lv[i][j]);
+            tempArray[j] = []
+            tempArray[j] = tempArray[j].concat(features.iso[i][j], 
+                features.ac[i][j], features.js[i][j], features.lv[i][j],
+                features.t[i][j]);
         }
-        horrorFeatures.push(temp_array)
+        horrorFeatures.push(tempArray)
     }
     return horrorFeatures
 }
@@ -135,7 +134,6 @@ function combineFeatures(features) {
 
 const canvasList = document.getElementsByTagName('canvas');
 
-const tilemap_canvas = canvasList[0];
 const heatmapCanvases = []
 const ctxList = [];
 const tileCtx = canvasList[0].getContext('2d');

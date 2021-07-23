@@ -1,5 +1,5 @@
 
 
-export function pathfinding() {
+export function pathfinding(combinedFeatureMap) {
     debugger;
 }

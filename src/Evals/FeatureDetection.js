@@ -3,14 +3,41 @@
 // A main function that runs all detectors and stores them in a Features object.
 export function detectFeatures(input, numRows, numCols)
 {
+    let t = detectTraversable(input, numRows, numCols);
     let ac = detectAmbientCreep(input, numRows, numCols);
     let js = detectJumpscares(input, numRows, numCols);
     let tar = null;
     let iso = detectIsolation(input, numRows, numCols);
     let lv = detectLowVisibility(input, numRows, numCols);
 
-    let features = new Features(ac, js, tar, iso, lv);
+    let features = new Features(t, ac, js, tar, iso, lv);
     return features;
+}
+
+export function detectTraversable(input, numRows, numCols)
+{
+    // Create new 2D array for output.
+    let output = generate2DArray(numRows, numCols);
+
+    // Traverse through array.
+    for (let i = 0; i < input.length; i++)
+    {
+        for (let j = 0; j < input[i].length; j++)
+        {
+            // Store the list of metadata we are currently looking at in the corresponding grid cell, along with the output list.
+            let currentList = input[i][j];
+            
+            // Check if the current grid cell contains the relevant metadata.
+            if (currentList.includes("T"))
+            {
+                // If the current grid cell is traversable, mark as traverseable.
+                output[i][j].push("T");
+            }
+        }
+    }
+
+    // Return the output array.
+    return output;
 }
 
 // Jumpscare detector. 
@@ -332,8 +359,9 @@ function generate2DArray(numRows, numCols)
 // A simple data structure to hold the output maps of all features.
 class Features
 {
-    constructor(ac, js, tar, iso, lv)
+    constructor(t, ac, js, tar, iso, lv)
     {
+        this.t = t;
         this.ac = ac;
         this.js = js;
         this.tar = tar;

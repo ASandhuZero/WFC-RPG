@@ -3,22 +3,22 @@ import * as Constraints from "./Constraints/Constraints"
 /**
  * WaveFunctionCollapse
  * @param {*} periodic 
- * @param {*} tilemap_data - All the data needed for WFC to work.
+ * @param {*} tilemapData - All the data needed for WFC to work.
  * @returns 
  */
 //TODO: Pass everything as a param object rahter than individual variables.
 //  then break it out.
-export function WFC(periodic, tilemap_data) {
+export function WFC(periodic, tilemapData) {
     //TODO: THERE IS SOME NIGHTMARES RIGHT HERE THAT NEED TO BE WORKED THROUGH.
     //      AS IN THE TILE_RULE AND ITEM_RULE ARE UNDEFINED I THINK AND THAT IS 
     //      WHAT IS CAUSING THE BLANK SCREEN. FIX THIS.
     
-    let w = tilemap_data.w ? tilemap_data.w : 0;
-    let h = tilemap_data.h ? tilemap_data.h : 0;
-    let tileset_info = tilemap_data.tileset_info;
-    let tile_rules = tilemap_data.tile_rules;
-    let item_rules = tilemap_data.item_rules;
-    let data = tileset_info["data"];
+    let w = tilemapData.w ? tilemapData.w : 0;
+    let h = tilemapData.h ? tilemapData.h : 0;
+    let tilesetInfo = tilemapData.tilesetInfo;
+    let tileRules = tilemapData.tileRules;
+    let itemRules = tilemapData.itemRules;
+    let data = tilesetInfo["data"];
     let neighbor_data = data["neighbors"];
     let num_elem = 0;
     // Getting the constraints for each type of data    
@@ -75,7 +75,7 @@ export function WFC(periodic, tilemap_data) {
 
             // result returns [chosen tile, chosen index], true (argmin == -1), false (possiblities == 0), or null
             result = Observe(wave, elements_data, elem, periodic, w, h, 
-                tile_data, tile_rules, item_rules, init); // TODO: Fix observe. Like once in your life, please. I can't begin to describe how bad this function is.
+                tile_data, tileRules, itemRules, init); // TODO: Fix observe. Like once in your life, please. I can't begin to describe how bad this function is.
                         
             // Converts index to name to match with rules
             if (result === true) {
