@@ -7,6 +7,8 @@ import * as testjson from "./UNITTEST.json!json";
 import evaluateHorrorPotential from "./Evals/TilemapEvaluation";
 import { detectFeatures } from "./Evals/FeatureDetection";
 import { generateHeatmaps } from "./Evals/Visualization";
+import { pathfinding } from "./pathfinding";
+
 
 // This is the lifted WFC running code. Placing it here to know what I need
 //      For the function call.
@@ -102,10 +104,30 @@ let heatmaps = generateHeatmaps(features, 10, 10);
 // console.log(heatmaps.lv);
 // console.log(heatmaps.js);
 // console.log(heatmaps.iso);
-let tilemapEval = evaluateHorrorPotential(features, 10, 10, "slasher");
-let spaceUsage = 0;
+let combinedFeatures = combineFeatures(features);
+let tilemapEval = evaluateHorrorPotential(combinedFeatures, 10, 10, "slasher");
+debugger;
+pathfinding();
 console.log(tilemapEval);
 
+
+
+
+function combineFeatures(features) {
+    let horrorFeatures = [];
+    for (let i = 0; i < features.iso.length; i++) 
+    {
+        let temp_array = new Array(features.iso[i]);
+        for (let j = 0; j < features.iso[i].length; j++) 
+        {
+            temp_array[j] = []
+            temp_array[j] = temp_array[j].concat(features.iso[i][j], 
+                features.ac[i][j],features.js[i][j], features.lv[i][j]);
+        }
+        horrorFeatures.push(temp_array)
+    }
+    return horrorFeatures
+}
 
 // CANVAS CODE TODO: BREAK THIS OUT INTO ITS OWN JS FILE IF WORK.
 // Also, got this from this helpful link https://medium.com/geekculture/make-your-own-tile-map-with-vanilla-javascript-a627de67b7d9 
