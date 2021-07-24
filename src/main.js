@@ -141,7 +141,7 @@ while ((wfc === undefined || path === false) && loopCount < 100) {
         y : 0
     };
     let goal = {
-        x : 8,
+        x : 9,
         y : 9
     };
     path = pathfinding(combinedFeatureMap, start, goal);

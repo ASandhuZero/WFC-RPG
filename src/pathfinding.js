@@ -22,7 +22,9 @@ function ReconstructPath(result) {
     }
     temp.push(tile);
     while (temp.length !== 0) {
-        path.push(temp.pop());
+        tile = temp.pop();
+        path.push(tile);
+        console.log(tile.score);
     }
     return path;
 }
@@ -54,11 +56,25 @@ function aStar(start, goal, aStarMap, cardinalFlag) {
         if (currentTile === goal) { return moves; }
         
         let neighbors = getNeighbors(currentTile, aStarMap, cardinalFlag);
+        neighbors = scoreNeighbors(neighbors, goal);
         openSet = openSet.concat(neighbors);
     }
     return [];
 }
 
+function scoreNeighbors(neighbors, goal) {
+    for (let i = 0; i < neighbors.length; i++) {
+        let neighbor = neighbors[i];
+        let d_x = goal.x - neighbor.x;
+        let d_y = goal.y - neighbor.y;
+        let dist = (d_x * d_x) + (d_y * d_y);
+        dist = Math.sqrt(dist);
+        neighbor.score = dist; 
+    }
+    neighbors = neighbors.sort((a, b) => b.score - a.score);
+    return neighbors;
+    
+}
 
 function getNeighbors(location, map, cardinalFlag) {
     let x = location.x;
@@ -79,6 +95,8 @@ function getNeighbors(location, map, cardinalFlag) {
             let tile = map[xOffset][yOffset];
             if (tile.checked) { continue; }
             tile.cameFrom = location;
+
+
             neighbors.push(tile);
         }
     }
@@ -92,5 +110,6 @@ class Tile {
         this.features = (features ? features : []);
         this.checked = false;
         this.cameFrom = null;
+        this.score = 9999;
     }   
 }
