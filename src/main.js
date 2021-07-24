@@ -30,18 +30,26 @@ let tilemapData = {
 // TODO: ... what can I say. This is bad... and maybe needs something else in
 //      in here.
 let wfc = undefined
-let partial = [
-    [11, false, false, false, false, false, false, false, false, false], 
-    [11, false, false, false, false, false, false, false, false, false], 
-    [11, false, false, false, false, false, false, false, false, false], 
-    [11, false, false, false, false, false, false, false, false, false], 
-    [11, false, false, false, false, false, false, false, false, false], 
-    [11, false, false, false, false, false, false, false, false, false], 
-    [11, false, false, false, false, false, false, false, false, false], 
-    [11, false, false, false, false, false, false, false, false, false], 
-    [11, false, false, false, false, false, false, false, false, false], 
-    [11, false, false, false, false, false, false, false, false, false]
-]
+// Good lord, the partial is a weird boy. So, set a tile to false if WFC should
+// solve for that tile.
+// Else put the tile number into the index. Note the tile number doesn't match
+// the tile number within the JSON. And that's because WFC does an internal
+//remapping of IDS... which causes this offset. To figure out the correct tile
+//number, put a random tile in, and search around until the correct tile is 
+// found :) 
+// let partial = [
+//     [12, 10, 12, 10, 12, 10, 12, 10, 12, 10], 
+//     [10, false, false, false, false, false, false, false, false, false], 
+//     [12, false, false, false, false, false, false, false, false, false], 
+//     [10, false, false, false, false, false, false, false, false, false], 
+//     [12, false, false, false, false, false, false, false, false, false], 
+//     [10, false, false, false, false, false, false, false, false, false], 
+//     [12, false, false, false, false, false, false, false, false, false], 
+//     [10, false, false, false, false, false, false, false, false, false], 
+//     [12, false, false, false, false, false, false, false, false, false], 
+//     [10, false, false, false, false, false, false, false, false, false]
+// ]
+let partial = null;
 let loopCount = 1;
 while (wfc === undefined && loopCount < 100) {
     console.log("in loop");

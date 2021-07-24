@@ -66,10 +66,10 @@ export function WFC(periodic, tilemapData, partial = null) {
         removeObservables[type] = []
         WaveData[type].elemsToRemove = removeObservables[type]
     }
-    // if (partial !== null) {
-    //     FillPartial(waves.tiles, partial, periodic, WaveData, w, h, tileAmount);
-    //     console.log("partial has been filled!")
-    // }
+    if (partial !== null) {
+        FillPartial(waves.tiles, partial, periodic, WaveData, w, h, tileAmount);
+        console.log("partial has been filled!")
+    }
     while (definiteState != observables.length) {
         definiteState = 0; 
         for (let type of observables) {
@@ -147,10 +147,10 @@ function FillPartial(wave, partial, periodic, WaveData, w, h, tileAmount) {
         for (let j = 0; j < partial[i].length; j++) {
             let value = partial[i][j];
             if (value !== false) { 
-                wave[i][value] = true; 
+                wave[j+(i*10)][value] = true; 
                 for (let k = 0; k < tileAmount; k++) {
                     if (k === value) { continue; }
-                    tileData.elemsTORemove = Ban(wave, tileData, i, k,
+                    tileData.elemsToRemove = Ban(wave, tileData, j+(i*10), k,
                         tileData.elemsToRemove, 'observation');
                     Propagate(wave, WaveData, 'tiles', periodic, w, h, 
                         WaveData.propagator);
@@ -407,7 +407,8 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, til
     let xmin, xmax, ymin, ymax;
     let collapse_indexes;
     let w;
-
+    // TODO: This is really gross... Maybe just want to break these up into 
+    // Further functions so we can clean things up :)
     switch(elem_type){
         case 'tiles':
             switch(tile_rule) {
@@ -437,13 +438,15 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, til
                             distribution[i] = w[i] ? elemsData.weights[i] : 0;
                             // distribution[t] /= elemsData.amount;
                         }
-                        r = _NonZeroIndex(distribution, elemsData.carray, elemsData.csumweight);    // chosen tile index within wave element
+                        r = _NonZeroIndex(distribution, elemsData.carray, 
+                            elemsData.csumweight);    // chosen tile index within wave element
                         for (let t = 0; t < elemsData.amount; t++) {
         
                             if (w[t] != (t == r)) {
                                 // argmin = wave element index
                                 // t = tile index
-                                elemsToRemove = Ban(wave, elemsData, elem, argmin, t, elemsToRemove, 'tile force');
+                                elemsToRemove = Ban(wave, elemsData, elem, 
+                                    argmin, t, elemsToRemove, 'tile force');
                             } 
                         }
                         Propagate(wave, elements_data, periodic, width, height, 
@@ -638,7 +641,6 @@ function Propagate(wave, WaveData, type, periodic, w, h, propagator) {
                 let comp = compat[tile_2];  // array of number of compatible tiles with neighbor tile to be removed
                 comp[d] = comp[d] - 1;  // decrease number of compatible tiles according to d
                 if (comp[d] == 0) {
-                    debugger;
                     elemsToRemove = Ban(wave, elemsData, elem, index_2, tile_2, elemsToRemove, 'propagate');
                 }
             }
