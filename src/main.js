@@ -228,6 +228,10 @@ function DrawTileMap() {
                 } else if (tileRot === "3") {
                     destinationX = destinationX - updatedTileSize;
                 }
+                // THIS DRAWS ALL THE NIGHTMARE WALKABLE TILES.
+                tileCtx.drawImage(tileSet, (16 % atlasCol) * tileSize, 
+                Math.floor(16/atlasCol) * tileSize, tileSize, tileSize, 
+                destinationX, destinationY, updatedTileSize, updatedTileSize);
                 // Actual drawing of the tilemap right here.
                 tileCtx.drawImage(tileSet, sourceX, sourceY, tileSize,
                     tileSize, destinationX, destinationY,
