@@ -159,7 +159,9 @@ export function GenerateTiles(tiles_info, width, height) {
     // compatible tiles should be calculated according to neighbor constraints?
     compatible = new Array(tiles.amount);
     log_weights = new Array(tiles.amount);
-    cumulative_weights = tiles.weights.reduce(function(a,b,i){return carray[i]=a+b;},0);
+    cumulative_weights = tiles.weights.reduce(function(a,b,i){ 
+        return carray[i]=a+b;
+    },0);
     // debugger
 
     for (let j = 0; j < width * height; j++) {
@@ -180,13 +182,13 @@ export function GenerateTiles(tiles_info, width, height) {
     tiles["log_weights"] = log_weights;
     tiles["sum_of_weights"] = sum_of_weights;
     tiles["sum_of_log_weights"] = sum_of_log_weights;
-    tiles["starting_entropy"] = Math.log(sum_of_weights) - sum_of_log_weights / sum_of_weights;
+    tiles["starting_entropy"] = Math.log(sum_of_weights) - 
+        sum_of_log_weights / sum_of_weights;
     tiles["possible_choices"] = new Array(width * height);
     tiles["sums_of_weights"] = new Array(width * height);
     tiles["sums_of_log_weights"] = new Array(width * height);
     tiles["entropies"] = new Array(width * height);
     tiles["carray"] = carray;
     tiles["csumweight"] = cumulative_weights;
-
     return tiles
 }
