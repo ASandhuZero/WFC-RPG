@@ -142,7 +142,7 @@ let goal = {
     x : 9,
     y : 9
 };
-let moves = pathfinding(combinedFeatureMap, start, goal);
+let path = pathfinding(combinedFeatureMap, start, goal);
 console.log(tilemapEval);
 
 
@@ -204,7 +204,7 @@ let sourceY = 0;
 
 function draw() {
     DrawTileMap();
-    DrawPath(moves)
+    DrawPath(path);
 }
 
 function DrawTileMap() {
@@ -331,15 +331,15 @@ function DrawTileMap() {
     }
 }
 
-function DrawPath(moves) {
-    if (moves.length === 0) { return; }
+function DrawPath(path) {
+    if (path.length === 0) { return; }
     tileCtx.beginPath();
     tileCtx.lineWidth = 5;
     let offset = 2;
-    tileCtx.moveTo((moves[0].x + 1) * updatedTileSize * 1.5, 
-        (moves[0].y + 1) * updatedTileSize * 1.5);
-    for (let i = 1; i < moves.length; i++) {
-        let tile = moves[i];
+    tileCtx.moveTo((path[0].x + 1) * updatedTileSize * 1.5, 
+        (path[0].y + 1) * updatedTileSize * 1.5);
+    for (let i = 1; i < path.length; i++) {
+        let tile = path[i];
         // TODO: THE ONE IS AN OFFSET BECAUSE OF THE TRIM.
         let x = (tile.x + 1) * tileSize;
         let y = (tile.y + 1) * tileSize;

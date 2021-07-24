@@ -8,9 +8,25 @@ export function pathfinding(featureMap, start, goal) {
     result = aStar(aStarMap[start.x][start.y], aStarMap[goal.x][goal.y], 
         aStarMap, cardinalFlag)
     console.log(result);
-    return result;
+    if (result.length !== 0) {
+        return ReconstructPath(result);
+    }
+    return [];
 }
-
+function ReconstructPath(result) {
+    let tile = result.pop(); //Pop gets the last item in a list. Basically the goal.
+    let temp = []
+    let path = []
+    while (tile.cameFrom !== null) {
+        temp.push(tile);
+        tile = tile.cameFrom;
+    }
+    temp.push(tile);
+    while (temp.length !== 0) {
+        path.push(temp.pop());
+    }
+    return path;
+}
 
 function GenerateMap(featureMap) {
     console.log(featureMap.length);
@@ -32,13 +48,13 @@ function aStar(start, goal, aStarMap, cardinalFlag) {
     console.log(start, goal, aStarMap);
     let openSet = [];
     let moves = [];
+    let currentTile = null;
     openSet.push(start);
     while (openSet.length !== 0) {
-        let currentTile = openSet.pop();
-        if (currentTile.checked) { continue; }
+        currentTile = openSet.pop();
+        currentTile.checked = true;
         if (!currentTile.features.includes("T")) { continue; } 
         moves.push(currentTile);
-        currentTile.checked = true;
         if (currentTile === goal) { return moves; }
         
         let neighbors = getNeighbors(currentTile, aStarMap, cardinalFlag);
@@ -65,6 +81,8 @@ function getNeighbors(location, map, cardinalFlag) {
                 if (i === 1 && (j === -1 || j === 1) ) { continue; }
             }
             let tile = map[xOffset][yOffset];
+            if (tile.checked) { continue; }
+            tile.cameFrom = location;
             neighbors.push(tile);
         }
     }
@@ -77,5 +95,6 @@ class Tile {
         this. y = y;
         this.features = (features ? features : []);
         this.checked = false;
+        this.cameFrom = null;
     }   
 }
