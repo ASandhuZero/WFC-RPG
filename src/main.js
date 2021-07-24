@@ -38,19 +38,19 @@ let wfc = undefined
 //number, put a random tile in, and search around until the correct tile is 
 // found :)
 let partial = null;
-let partialFlag = false;
+let partialFlag = true;
 if (partialFlag) {
     partial = [
-        [12, 12, 12, 10, 12, 10, 12, 10, 12, 10], 
-        [12, 20, 12, false, false, false, false, false, false, false], 
-        [12, false, 12, false, false, false, false, false, false, false], 
         [10, false, false, false, false, false, false, false, false, false], 
-        [12, false, false, false, false, false, false, false, false, false], 
         [10, false, false, false, false, false, false, false, false, false], 
-        [12, false, false, false, false, false, false, false, false, false], 
         [10, false, false, false, false, false, false, false, false, false], 
-        [12, false, false, false, false, false, false, false, false, false], 
-        [10, false, false, false, false, false, false, false, false, false]
+        [false, false, false, false, false, false, false, false, false, false], 
+        [false, false, false, false, false, false, false, false, false, false], 
+        [false, false, false, false, false, false, false, false, false, false], 
+        [false, false, false, false, false, false, false, false, false, false], 
+        [false, false, false, false, false, false, false, false, false, false], 
+        [false, false, false, false, false, false, false, false, false, false], 
+        [false, false, false, false, false, false, false, false, false, false]
     ];
 } else {
     partial = null;
@@ -72,6 +72,9 @@ while (wfc === undefined && loopCount < 100) {
     loopCount++;
 }
 // Feature mapping of tiles to their horror low level feature.
+// TODO: Make sure that tiles without anything come back as traverseable as 
+//  well. So, tiles are being drawn and their features aren't being accounted
+// for.
 let featureMapping = {
     1 : ["T"],
     2 : ["T"],
@@ -131,7 +134,15 @@ let heatmaps = generateHeatmaps(features, 10, 10);
 // console.log(heatmaps.iso);
 let combinedFeatureMap = combineFeatures(features);
 let tilemapEval = evaluateHorrorPotential(combinedFeatureMap, 10, 10, "slasher");
-pathfinding(combinedFeatureMap);
+let start = {
+    x : 0,
+    y : 0
+};
+let goal = {
+    x : 9,
+    y : 9
+};
+let moves = pathfinding(combinedFeatureMap, start, goal);
 console.log(tilemapEval);
 
 
@@ -193,6 +204,7 @@ let sourceY = 0;
 
 function draw() {
     DrawTileMap();
+    DrawPath(moves)
 }
 
 function DrawTileMap() {
@@ -316,6 +328,24 @@ function DrawTileMap() {
             Math.floor(24/atlasCol) * tileSize, tileSize, tileSize, 
             row * tileOutputSize, mapHeight * tileOutputSize, updatedTileSize, 
             updatedTileSize);
+    }
+}
+
+function DrawPath(moves) {
+    if (moves.length === 0) { return; }
+    tileCtx.beginPath();
+    tileCtx.lineWidth = 5;
+    let offset = 2;
+    tileCtx.moveTo((moves[0].x + 1) * updatedTileSize * 1.5, 
+        (moves[0].y + 1) * updatedTileSize * 1.5);
+    for (let i = 1; i < moves.length; i++) {
+        let tile = moves[i];
+        // TODO: THE ONE IS AN OFFSET BECAUSE OF THE TRIM.
+        let x = (tile.x + 1) * tileSize;
+        let y = (tile.y + 1) * tileSize;
+        tileCtx.lineTo(x * tileOutputSize + updatedTileSize/2,
+            y * tileOutputSize + updatedTileSize/2);
+        tileCtx.stroke();   
     }
 }
 // Adding in buttons for heatmap toggling.

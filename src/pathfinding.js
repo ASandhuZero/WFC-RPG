@@ -1,22 +1,53 @@
 
 
-export function pathfinding(combinedFeatureMap) {
-    let startingLocation = new Tile(0, 0);
-    let endingLocation = new Tile(10, 2);
-    console.log(startingLocation.x);
-    for (let i = 0; i < combinedFeatureMap.length; i++) {
-        for (let j = 0; j < combinedFeatureMap.length; j++) {
-            let tile = new Tile(i, j);
-            let neighbors = getNeighbors(tile, combinedFeatureMap);
-            console.log(neighbors);
+export function pathfinding(featureMap, start, goal) {
+    featureMap[start.x][start.y].push('START');
+    featureMap[goal.x][goal.y].push('GOAL');
+    let aStarMap = GenerateMap(featureMap);
+    result = aStar(aStarMap[start.x][start.y], aStarMap[goal.x][goal.y], 
+        aStarMap)
+    console.log(result);
+    return result;
+}
+
+
+function GenerateMap(featureMap) {
+    console.log(featureMap.length);
+    console.log(featureMap[0].length);
+    let map = []
+    for (let i = 0; i < featureMap.length; i++) {
+        map.push(new Array(featureMap.length));
+        for (let j = 0; j < featureMap.length; j++) {
+            let tile = new Tile(i, j, featureMap[i][j]);
+            map[i][j] = tile;
         }
     }
-    let neighbors = getNeighbors(startingLocation, combinedFeatureMap);
-    return null
+    return map
 }
 
 // function a*: 
 // input: starting location, end location, weights (slasher/psych), features
+function aStar(start, goal, aStarMap) {
+    console.log(start, goal, aStarMap);
+    let openSet = [];
+    let moves = [];
+    openSet.push(start);
+    while (openSet.length !== 0) {
+        let currentTile = openSet.pop();
+        moves.push(currentTile);
+        if (currentTile === goal) { return moves; }
+        if (currentTile.checked) { continue; }
+        currentTile.checked = true;
+        if (!currentTile.features.includes("T")) {
+            console.log("Is not walkable!");
+        } else {
+            let neighbors = getNeighbors(currentTile, aStarMap)
+            openSet = openSet.concat(neighbors);
+        }
+    }
+    return [];
+}
+
 
 function getNeighbors(location, map) {
     let x = location.x;
@@ -30,7 +61,7 @@ function getNeighbors(location, map) {
             if (xOffset < 0 || xOffset >= map.length) { continue }
             if (xOffset === location.x && yOffset === location.y) { continue; }
             if (yOffset < 0 || yOffset >= map[xOffset].length) { continue; }
-            let tile = new Tile(xOffset, yOffset, map[xOffset][yOffset]);
+            let tile = map[xOffset][yOffset];
             neighbors.push(tile);
         }
     }
@@ -41,6 +72,7 @@ class Tile {
     constructor(x, y, features) {
         this.x = x;
         this. y = y;
-        this.features = (features ? features : null);
+        this.features = (features ? features : []);
+        this.checked = false;
     }   
 }
