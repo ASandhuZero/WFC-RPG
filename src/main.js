@@ -29,48 +29,8 @@ let tilemapData = {
 }
 // TODO: ... what can I say. This is bad... and maybe needs something else in
 //      in here.
-let wfc = undefined
-// Good lord, the partial is a weird boy. So, set a tile to false if WFC should
-// solve for that tile.
-// Else put the tile number into the index. Note the tile number doesn't match
-// the tile number within the JSON. And that's because WFC does an internal
-//remapping of IDS... which causes this offset. To figure out the correct tile
-//number, put a random tile in, and search around until the correct tile is 
-// found :)
-let partial = null;
-let partialFlag = true;
-if (partialFlag) {
-    partial = [
-        [10, false, false, false, false, false, false, false, false, false], 
-        [10, false, false, false, false, false, false, false, false, false], 
-        [10, false, false, false, false, false, false, false, false, false], 
-        [false, false, false, false, false, false, false, false, false, false], 
-        [false, false, false, false, false, false, false, false, false, false], 
-        [false, false, false, false, false, false, false, false, false, false], 
-        [false, false, false, false, false, false, false, false, false, false], 
-        [false, false, false, false, false, false, false, false, false, false], 
-        [false, false, false, false, false, false, false, false, false, false], 
-        [false, false, false, false, false, false, false, false, false, false]
-    ];
-} else {
-    partial = null;
-}
+let wfc = undefined;
 
-let loopCount = 1;
-while (wfc === undefined && loopCount < 100) {
-    console.log("in loop");
-    try {
-        wfc = WFC(0, tilemapData, partial); 
-        console.log(wfc);
-        if (wfc.length === 0) {
-            wfc = undefined;
-        }
-    } catch (error) {
-        console.log(error);
-        wfc = undefined;
-    }
-    loopCount++;
-}
 // Feature mapping of tiles to their horror low level feature.
 // TODO: Make sure that tiles without anything come back as traverseable as 
 //  well. So, tiles are being drawn and their features aren't being accounted
@@ -110,40 +70,88 @@ let featureMapping = {
     39 : []
 }
 
-// TODO: Really, just figure out if WFC should be a flattened array or not.
-let lowLevelFeatureMap = Array.from(Array(width), () => new Array(height));
-let col = 0;
-for (let i = 0; i < width; i++) {
-    for (let j = 0; j < height; j++) {
-        let tile = wfc.tiles[j+(i*10)];
-        lowLevelFeatureMap[i][j] = featureMapping[tile.name];
-    }
+
+// Good lord, the partial is a weird boy. So, set a tile to false if WFC should
+// solve for that tile.
+// Else put the tile number into the index. Note the tile number doesn't match
+// the tile number within the JSON. And that's because WFC does an internal
+//remapping of IDS... which causes this offset. To figure out the correct tile
+//number, put a random tile in, and search around until the correct tile is 
+// found :)
+let partial = null;
+let partialFlag = true;
+if (partialFlag) {
+    partial = [
+        [10, false, false, false, false, false, false, false, false, false], 
+        [10, false, false, false, false, false, false, false, false, false], 
+        [10, false, false, false, false, false, false, false, false, false], 
+        [false, false, false, false, false, false, false, false, false, false], 
+        [false, false, false, false, false, false, false, false, false, false], 
+        [false, false, false, false, false, false, false, false, false, false], 
+        [false, false, false, false, false, false, false, false, false, false], 
+        [false, false, false, false, false, false, false, false, false, false], 
+        [false, false, false, false, false, false, false, false, false, false], 
+        [false, false, false, false, false, false, false, false, false, false]
+    ];
+} else {
+    partial = null;
 }
-console.log(lowLevelFeatureMap);
-//TODO: Yeah so the above code is horrible. Either flatten everything down to
-//      an array. OR just turn everything into a matrix.
-let features = detectFeatures(lowLevelFeatureMap, 10, 10);
-// console.log(features.ac);
-// console.log(features.lv);
-// console.log(features.js);
-// console.log(features.iso);
-let heatmaps = generateHeatmaps(features, 10, 10);
-// console.log(heatmaps.ac);
-// console.log(heatmaps.lv);
-// console.log(heatmaps.js);
-// console.log(heatmaps.iso);
-let combinedFeatureMap = combineFeatures(features);
-let tilemapEval = evaluateHorrorPotential(combinedFeatureMap, 10, 10, "slasher");
-let start = {
-    x : 0,
-    y : 0
-};
-let goal = {
-    x : 9,
-    y : 9
-};
-let path = pathfinding(combinedFeatureMap, start, goal);
-console.log(tilemapEval);
+
+let loopCount = 1;
+let path = false;
+let heatmaps = null;
+let features = null; 
+while ((wfc === undefined || path === false) && loopCount < 100) {
+    console.log("in loop");
+    try {
+        wfc = WFC(0, tilemapData, partial); 
+        console.log(wfc);
+        if (wfc.length === 0) {
+            wfc = undefined;
+        }
+    } catch (error) {
+        console.log(error);
+        wfc = undefined;
+    }
+    // TODO: Really, just figure out if WFC should be a flattened array or not.
+    let lowLevelFeatureMap = Array.from(Array(width), () => new Array(height));
+    for (let i = 0; i < width; i++) {
+        for (let j = 0; j < height; j++) {
+            let tile = wfc.tiles[j+(i*10)];
+            lowLevelFeatureMap[i][j] = featureMapping[tile.name];
+        }
+    }
+    //TODO: Yeah so the above code is horrible. Either flatten everything down to
+    //      an array. OR just turn everything into a matrix.
+    features = detectFeatures(lowLevelFeatureMap, 10, 10);
+    // console.log(features.ac);
+    // console.log(features.lv);
+    // console.log(features.js);
+    // console.log(features.iso);
+    heatmaps = generateHeatmaps(features, 10, 10);
+    // console.log(heatmaps.ac);
+    // console.log(heatmaps.lv);
+    // console.log(heatmaps.js);
+    // console.log(heatmaps.iso);
+    let combinedFeatureMap = combineFeatures(features);
+    let tilemapEval = evaluateHorrorPotential(combinedFeatureMap, 10, 10, 
+        "slasher");
+    let start = {
+        x : 0,
+        y : 0
+    };
+    let goal = {
+        x : 9,
+        y : 9
+    };
+    path = pathfinding(combinedFeatureMap, start, goal);
+    console.log(lowLevelFeatureMap);
+    console.log(tilemapEval);
+    loopCount++;
+}
+
+
+
 
 
 
