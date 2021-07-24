@@ -36,14 +36,13 @@ export function WFC(periodic, tilemapData, partial = null) {
     }
     let propagator = GeneratePropagator(neighbors, tiles, items); // O(n^3) ...TODO: this is dumb
 
-    let WaveData = {
+        let WaveData = {
         "tiles": tiles,
         "items": items,
         "rules": rules,
         "neighbors": neighbors,
         "propagator": propagator
     }
-    debugger;
     let tileAmount = tiles.amount;
     let itemAmount = items.amount;
 
@@ -58,7 +57,7 @@ export function WFC(periodic, tilemapData, partial = null) {
     Clear(waves, tileAmount, WaveData); // O(n^3) TODO: I was a broken man when I wrote this function. 
     
     // if (partial !== null) {
-    //     FillPartial(wave, partial, tileAmount);
+    //     FillPartial(waves, partial, WaveData['tiles'], tileAmount);
     //     console.log("partial has been filled!")
     // }
     let removeObservables = {};
@@ -118,7 +117,7 @@ function Clear(waves, tileAmount, WaveData) {
     let items = WaveData.items;
     for (let i = 0; i < waves.length; i++) {
         for (let t = 0; t < tileAmount; t++) {
-            waves[i]["tiles"][t] = true;
+            waves.tiles[i][t] = true;
         }
     }
 
@@ -143,37 +142,39 @@ function Clear(waves, tileAmount, WaveData) {
         items.sums_of_weights[t] = items.sum_of_weights;
         items.sums_of_log_weights[t] = items.sum_of_log_weights;
         items.entropies[t] = items.starting_entropy;
-        console.log(tiles, items)
     }
 }
 
-function FillPartial(wave, partial, tileAmount) {
+function FillPartial(wave, partial, elemsData, tileAmount) {
+    debugger;
+    let  elemsToRemove = [];
     for (let i = 0; i < partial.length; i++) {
         for (let j = 0; j < partial[i].length; j++) {
             let value = partial[i][j];
             for (let k = 0; k < tileAmount; k++) {
 
             }
-            if (value !== false) {
-                wave[i]["tiles"].fill(false);
-                wave[i]["tiles"][value] = true; 
+            if (value !== false) { wave[i]["tiles"][value] = true; }
+            else { 
+
+                elemsTORemove = Ban(wave, elemsData, i, value, 
+                elemsToRemove, 'observation')
             }
         }
     }
-    debugger;
 }
 /**
  * GnereateTileMap
  * Uses wave booleans to create a new array from the data indexes.
- * @param {matrix} wave 
- * @param {int} tile_amount 
- * @param {int} item_amount 
+ * @param {matrix} waves 
+ * @param {int} tileAmount 
+ * @param {int} itemAmount 
  * @param {json} tiles 
  * @param {json} items 
  * @param {int} w 
  * @param {int} h 
  */
-function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, w, h) {
+function GenerateTileMap(waves, tileAmount, itemAmount, tiles, items, w, h) {
     let array = [];
     let generated_tilemap = {
         tiles : [],
@@ -182,21 +183,21 @@ function GenerateTileMap(wave, tile_amount, item_amount, tiles, items, w, h) {
     console.log(tiles); 
     for (let x = 0; x < w; x++) {
         for (let y = 0; y < h; y++) {
-            let tile_elem = wave[y + x * h]["tiles"];
-            let item_elem = wave[y + x * h]["items"];
+            let tileElem = waves.tiles[y + x * h];
+            let itemElem = waves.items[y + x * h];
             let amount = 0;
-            for (let i = 0; i < tile_elem.length; i++) {
-                if (tile_elem[i]) {
+            for (let i = 0; i < tileElem.length; i++) {
+                if (tileElem[i]) {
                     amount += 1;
                 }
             }
-            if (amount == tile_amount) {
+            if (amount == tileAmount) {
                 console.warn(amount)
             } else {
-                for (let t = 0; t < tile_amount; t++) {
-                    if (tile_elem[t]) {
-                        for (let i = 0; i < item_amount; i++) {
-                            if (item_elem[i]) {
+                for (let t = 0; t < tileAmount; t++) {
+                    if (tileElem[t]) {
+                        for (let i = 0; i < itemAmount; i++) {
+                            if (itemElem[i]) {
                                 array.push(tiles[t] + ' ' + items[i]);
                                 let split = tiles[t].split(/[ ]+/);
                                 let tile = {
@@ -294,14 +295,23 @@ function GeneratePropagator(neighbors, tiles, items) {
  * @returns matrix with each element being a true boolean array size of tiles. 
  */
 function GenerateWaves(tileAmount, itemAmount, w, h) {
-    let wave = new Array(w * h);
-    for (let i = 0; i < w * h; i++) {
-        wave[i] = {
-            "tiles" : new Array(tileAmount).fill(true),
-            "items" : new Array(itemAmount).fill(true)
-        }
+    let waves = {
+        "tiles" : [],
+        "items" : []
     }
-    return wave;
+    //TODO: Using wave and wave1 to avoid having to deep copy problem. 
+    // Figure out a better solution.
+    let wave = new Array(w * h);
+    let wave1 = new Array(w * h);
+    
+    for (let i = 0; i < w * h; i++) {
+        wave[i] = new Array(tileAmount).fill(true);
+        wave1[i] = new Array(tileAmount).fill(true);
+    }
+    waves.tiles = wave;
+    waves.items = wave1;
+    waves.length = (w * h);
+    return waves;
 }
 function Observe(waves, elementsData, type, periodic, w, h, WaveData, designRules, init) {
     let elemsData = elementsData.elemsData;
@@ -341,7 +351,7 @@ function Observe(waves, elementsData, type, periodic, w, h, WaveData, designRule
 
     // Creates distribution array that reflects the weight of each tile according to the number of tiles in an element of the wave
     let distribution = new Array(elemsData.amount);
-    let wave = waves[argmin][type];
+    let wave = waves[type][argmin];
     for (let t = 0; t < elemsData.amount; t++) {
         distribution[t] = wave[t] ? elemsData.weights[t] : 0;
         // distribution[t] /= elemsData.amount;
@@ -353,8 +363,7 @@ function Observe(waves, elementsData, type, periodic, w, h, WaveData, designRule
     // frequency adjustment
     if(type == 'items' && elemsData.frequencies[r] == 0){ 
         // defaults to no tile
-        return Ban(waves, elemsData, type, argmin, r, elemsToRemove, 
-            'frequency')
+        return Ban(waves[type], elemsData, argmin, r, elemsToRemove, 'frequency')
 
     } else if(type == 'items' && elemsData.frequencies[r] > 0){
         elemsData.frequencies[r] -= 1;
@@ -371,7 +380,7 @@ function Observe(waves, elementsData, type, periodic, w, h, WaveData, designRule
         if (wave[t] != (t == r)) {
             // argmin = wave element index to remove
             // t = tile index to remove
-            elemsToRemove = Ban(waves, elemsData, type, argmin, t, elemsToRemove, 'observation');
+            elemsToRemove = Ban(waves[type], elemsData, argmin, t, elemsToRemove, 'observation');
         } 
     }
 
@@ -379,7 +388,7 @@ function Observe(waves, elementsData, type, periodic, w, h, WaveData, designRule
     let chosen_name = chosen_tile.split(/[ ]+/)[0];
     if (WaveData["rules"][type][chosen_name] != undefined) {
         let elem_rules = WaveData["rules"][type][chosen_name];
-        Force(waves, r, argmin,tileRules, itemRules, elem_rules, type, WaveData, elemsData, elemsToRemove, periodic, w, h);
+        Force(waves[type], r, argmin,tileRules, itemRules, elem_rules, type, WaveData, elemsData, elemsToRemove, periodic, w, h);
     } 
     
     return null;
@@ -651,10 +660,9 @@ function Propagate(wave, elements_data, periodic, w, h, propagator) {
  * @param {array} elemsToRemove 
  * @returns {array} elements to remove in wave
  */
-function Ban(wave, elemsData, elem, wave_index, wave_elem, elemsToRemove, origin) {
+function Ban(wave, elemsData, wave_index, wave_elem, elemsToRemove, origin) {
 
-    let wave_array = wave[wave_index][elem];    // creates array of tiles in chosen element
-
+    let wave_array = wave[wave_index];    // creates array of tiles in chosen element
     // This is where Ban actually bans the undesired tile
     wave_array[wave_elem] = false;  // set tile to false according to wave_elem passed in
 
