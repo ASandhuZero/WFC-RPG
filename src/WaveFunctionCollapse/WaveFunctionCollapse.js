@@ -57,7 +57,7 @@ export function WFC(periodic, tilemapData, partial = null) {
     Clear(waves, tileAmount, WaveData); // O(n^3) TODO: I was a broken man when I wrote this function. 
     
     // if (partial !== null) {
-    //     FillPartial(waves, partial, WaveData['tiles'], tileAmount);
+    //     FillPartial(waves.tiles, partial, periodic, WaveData, w, h, tileAmount);
     //     console.log("partial has been filled!")
     // }
     let removeObservables = {};
@@ -72,19 +72,15 @@ export function WFC(periodic, tilemapData, partial = null) {
     while (definiteState != observables.length) {
         definiteState = 0; 
         for (let type of observables) {
-            let elementsData = {
-                elemsToRemove : removeObservables[type],
-                elemsData : WaveData[type]
-
-            }
+            WaveData[type].elemsToRemove = removeObservables[type]
             if(elemNumber == observables.length){
                 init = false;
             } else {
                 elemNumber += 1;
             }
             // result returns [chosen tile, chosen index], true (argmin == -1), false (possiblities == 0), or null
-            result = Observe(waves, elementsData, type, periodic, w, h, 
-                WaveData, designRules, init); // TODO: Fix observe. Like once in your life, please. I can't begin to describe how bad this function is.
+            result = Observe(waves, WaveData, type, periodic, w, h, designRules,
+                init); // TODO: Fix observe. Like once in your life, please. I can't begin to describe how bad this function is.
                         
             // Converts index to name to match with rules
             if (result === true) {
@@ -93,7 +89,7 @@ export function WFC(periodic, tilemapData, partial = null) {
                 return [];
             } 
             
-            Propagate(waves, elementsData, periodic, w, h, propagator);
+            Propagate(waves, WaveData, type, periodic, w, h, propagator);
         }
     }
     let tileNames = WaveData.tiles.names;
@@ -145,7 +141,8 @@ function Clear(waves, tileAmount, WaveData) {
     }
 }
 
-function FillPartial(wave, partial, elemsData, tileAmount) {
+function FillPartial(wave, partial, periodic, WaveData, w, h, tileAmount) {
+    let elemsData = WaveData.tiles;
     debugger;
     let  elemsToRemove = [];
     for (let i = 0; i < partial.length; i++) {
@@ -154,11 +151,12 @@ function FillPartial(wave, partial, elemsData, tileAmount) {
             for (let k = 0; k < tileAmount; k++) {
 
             }
-            if (value !== false) { wave[i]["tiles"][value] = true; }
+            if (value !== false) { wave[i][value] = true; }
             else { 
 
-                elemsTORemove = Ban(wave, elemsData, i, value, 
-                elemsToRemove, 'observation')
+                elemsTORemove = Ban(wave, elemsData, i, value, elemsToRemove, 
+                    'observation');
+                Propagate(wave, elemsData, periodic, w, h, WaveData.propagator);
             }
         }
     }
@@ -313,9 +311,9 @@ function GenerateWaves(tileAmount, itemAmount, w, h) {
     waves.length = (w * h);
     return waves;
 }
-function Observe(waves, elementsData, type, periodic, w, h, WaveData, designRules, init) {
-    let elemsData = elementsData.elemsData;
-    let elemsToRemove = elementsData.elemsToRemove;
+function Observe(waves, WaveData, type, periodic, w, h, designRules, init) {
+    let elemsData = WaveData[type];
+    let elemsToRemove = WaveData[type].elemsToRemove;
     let noise, entropy, possiblities, r;
     let min = 1000;
     let argmin = -1;    // wave_element_index
@@ -380,7 +378,8 @@ function Observe(waves, elementsData, type, periodic, w, h, WaveData, designRule
         if (wave[t] != (t == r)) {
             // argmin = wave element index to remove
             // t = tile index to remove
-            elemsToRemove = Ban(waves[type], elemsData, argmin, t, elemsToRemove, 'observation');
+            elemsToRemove = Ban(waves[type], elemsData, argmin, t, 
+                elemsToRemove, 'observation');
         } 
     }
 
@@ -388,7 +387,8 @@ function Observe(waves, elementsData, type, periodic, w, h, WaveData, designRule
     let chosen_name = chosen_tile.split(/[ ]+/)[0];
     if (WaveData["rules"][type][chosen_name] != undefined) {
         let elem_rules = WaveData["rules"][type][chosen_name];
-        Force(waves[type], r, argmin,tileRules, itemRules, elem_rules, type, WaveData, elemsData, elemsToRemove, periodic, w, h);
+        Force(waves[type], r, argmin,tileRules, itemRules, elem_rules, 
+            type, WaveData, elemsData, elemsToRemove, periodic, w, h);
     } 
     
     return null;
@@ -586,11 +586,11 @@ function GetEntropySort(indexes){
     return ordered_index;
 }
 
-function Propagate(wave, elements_data, periodic, w, h, propagator) {
+function Propagate(wave, WaveData, type, periodic, w, h, propagator) {
     let DX = [1, 0, -1, 0]; // [right, up, left, down]
     let DY = [0, -1, 0, 1]; // [right, up, left, down]
-    let elemsToRemove = elements_data.elemsToRemove;
-    let elemsData = elements_data.elemsData;
+    let elemsToRemove = WaveData[type].elemsToRemove;
+    let elemsData = WaveData[type];
     if (elemsData.compatible == undefined) {
         return [];
     }
