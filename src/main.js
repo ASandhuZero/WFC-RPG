@@ -36,20 +36,26 @@ let wfc = undefined
 // the tile number within the JSON. And that's because WFC does an internal
 //remapping of IDS... which causes this offset. To figure out the correct tile
 //number, put a random tile in, and search around until the correct tile is 
-// found :) 
-// let partial = [
-//     [12, 10, 12, 10, 12, 10, 12, 10, 12, 10], 
-//     [10, false, false, false, false, false, false, false, false, false], 
-//     [12, false, false, false, false, false, false, false, false, false], 
-//     [10, false, false, false, false, false, false, false, false, false], 
-//     [12, false, false, false, false, false, false, false, false, false], 
-//     [10, false, false, false, false, false, false, false, false, false], 
-//     [12, false, false, false, false, false, false, false, false, false], 
-//     [10, false, false, false, false, false, false, false, false, false], 
-//     [12, false, false, false, false, false, false, false, false, false], 
-//     [10, false, false, false, false, false, false, false, false, false]
-// ]
+// found :)
 let partial = null;
+let partialFlag = false;
+if (partialFlag) {
+    partial = [
+        [12, 12, 12, 10, 12, 10, 12, 10, 12, 10], 
+        [12, 20, 12, false, false, false, false, false, false, false], 
+        [12, false, 12, false, false, false, false, false, false, false], 
+        [10, false, false, false, false, false, false, false, false, false], 
+        [12, false, false, false, false, false, false, false, false, false], 
+        [10, false, false, false, false, false, false, false, false, false], 
+        [12, false, false, false, false, false, false, false, false, false], 
+        [10, false, false, false, false, false, false, false, false, false], 
+        [12, false, false, false, false, false, false, false, false, false], 
+        [10, false, false, false, false, false, false, false, false, false]
+    ];
+} else {
+    partial = null;
+}
+
 let loopCount = 1;
 while (wfc === undefined && loopCount < 100) {
     console.log("in loop");
