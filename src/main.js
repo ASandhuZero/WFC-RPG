@@ -31,16 +31,16 @@ let tilemapData = {
 //      in here.
 let wfc = undefined
 let partial = [
-    [20, false, false, false, false, false, false, false, false, false], 
-    [false, false, false, false, false, false, false, false, false, false], 
-    [false, false, false, false, false, false, false, false, false, false], 
-    [false, false, false, false, false, false, false, false, false, false], 
-    [false, false, false, false, false, false, false, false, false, false], 
-    [false, false, false, false, false, false, false, false, false, false], 
-    [false, false, false, false, false, false, false, false, false, false], 
-    [false, false, false, false, false, false, false, false, false, false], 
-    [false, false, false, false, false, false, false, false, false, false], 
-    [false, false, false, false, false, false, false, false, false, false]
+    [11, false, false, false, false, false, false, false, false, false], 
+    [11, false, false, false, false, false, false, false, false, false], 
+    [11, false, false, false, false, false, false, false, false, false], 
+    [11, false, false, false, false, false, false, false, false, false], 
+    [11, false, false, false, false, false, false, false, false, false], 
+    [11, false, false, false, false, false, false, false, false, false], 
+    [11, false, false, false, false, false, false, false, false, false], 
+    [11, false, false, false, false, false, false, false, false, false], 
+    [11, false, false, false, false, false, false, false, false, false], 
+    [11, false, false, false, false, false, false, false, false, false]
 ]
 let loopCount = 1;
 while (wfc === undefined && loopCount < 100) {

@@ -56,23 +56,23 @@ export function WFC(periodic, tilemapData, partial = null) {
     
     Clear(waves, tileAmount, WaveData); // O(n^3) TODO: I was a broken man when I wrote this function. 
     
-    // if (partial !== null) {
-    //     FillPartial(waves.tiles, partial, periodic, WaveData, w, h, tileAmount);
-    //     console.log("partial has been filled!")
-    // }
     let removeObservables = {};
     let designRules = {
         tileRules : tileRules,
         itemRules : itemRules
     }
-
+    
     for (let type of observables) {
         removeObservables[type] = []
+        WaveData[type].elemsToRemove = removeObservables[type]
     }
+    // if (partial !== null) {
+    //     FillPartial(waves.tiles, partial, periodic, WaveData, w, h, tileAmount);
+    //     console.log("partial has been filled!")
+    // }
     while (definiteState != observables.length) {
         definiteState = 0; 
         for (let type of observables) {
-            WaveData[type].elemsToRemove = removeObservables[type]
             if(elemNumber == observables.length){
                 init = false;
             } else {
@@ -142,21 +142,19 @@ function Clear(waves, tileAmount, WaveData) {
 }
 
 function FillPartial(wave, partial, periodic, WaveData, w, h, tileAmount) {
-    let elemsData = WaveData.tiles;
-    debugger;
-    let  elemsToRemove = [];
+    let tileData = WaveData.tiles;
     for (let i = 0; i < partial.length; i++) {
         for (let j = 0; j < partial[i].length; j++) {
             let value = partial[i][j];
-            for (let k = 0; k < tileAmount; k++) {
-
-            }
-            if (value !== false) { wave[i][value] = true; }
-            else { 
-
-                elemsTORemove = Ban(wave, elemsData, i, value, elemsToRemove, 
-                    'observation');
-                Propagate(wave, elemsData, periodic, w, h, WaveData.propagator);
+            if (value !== false) { 
+                wave[i][value] = true; 
+                for (let k = 0; k < tileAmount; k++) {
+                    if (k === value) { continue; }
+                    tileData.elemsTORemove = Ban(wave, tileData, i, k,
+                        tileData.elemsToRemove, 'observation');
+                    Propagate(wave, WaveData, 'tiles', periodic, w, h, 
+                        WaveData.propagator);
+                }
             }
         }
     }
@@ -635,12 +633,12 @@ function Propagate(wave, WaveData, type, periodic, w, h, propagator) {
              * each tile is an array of tile index to remove from wave 
              * */
             let compat = elemsData.compatible[index_2]; // a matrix of number of compatible tiles
-            
             for (let l = 0; l < p.length; l++) {
                 let tile_2 = p[l]   // position of neighbor tile to remove
                 let comp = compat[tile_2];  // array of number of compatible tiles with neighbor tile to be removed
                 comp[d] = comp[d] - 1;  // decrease number of compatible tiles according to d
                 if (comp[d] == 0) {
+                    debugger;
                     elemsToRemove = Ban(wave, elemsData, elem, index_2, tile_2, elemsToRemove, 'propagate');
                 }
             }
