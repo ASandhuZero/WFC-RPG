@@ -15,6 +15,9 @@ export function pathfinding(combinedFeatureMap) {
     return null
 }
 
+// function a*: 
+// input: starting location, end location, weights (slasher/psych), features
+
 function getNeighbors(location, map) {
     let x = location.x;
     let y = location.y;
