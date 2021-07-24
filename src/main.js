@@ -39,7 +39,7 @@ let featureMapping = {
     1 : ["T"],
     2 : ["T"],
     3 : ["T"],
-    4 : ["T"],
+    4 : [],
     6 : ["T"],
     7 : ["T"], 
     8 : ["T"],
@@ -141,7 +141,7 @@ while ((wfc === undefined || path === false) && loopCount < 100) {
         y : 0
     };
     let goal = {
-        x : 9,
+        x : 8,
         y : 9
     };
     path = pathfinding(combinedFeatureMap, start, goal);
@@ -351,8 +351,8 @@ function DrawPath(path) {
         // TODO: THE ONE IS AN OFFSET BECAUSE OF THE TRIM.
         let x = (tile.x + 1) * tileSize;
         let y = (tile.y + 1) * tileSize;
-        tileCtx.lineTo(x * tileOutputSize + updatedTileSize/2,
-            y * tileOutputSize + updatedTileSize/2);
+        tileCtx.lineTo(y * tileOutputSize + updatedTileSize/2,
+            x * tileOutputSize + updatedTileSize/2);
         tileCtx.stroke();   
     }
 }
