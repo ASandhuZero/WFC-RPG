@@ -7,11 +7,10 @@ export function pathfinding(featureMap, start, goal) {
     let aStarMap = GenerateMap(featureMap);
     result = aStar(aStarMap[start.x][start.y], aStarMap[goal.x][goal.y], 
         aStarMap, cardinalFlag)
-    console.log(result);
     if (result.length !== 0) {
         return ReconstructPath(result);
     }
-    return [];
+    return false;
 }
 function ReconstructPath(result) {
     let tile = result.pop(); //Pop gets the last item in a list. Basically the goal.
@@ -29,8 +28,6 @@ function ReconstructPath(result) {
 }
 
 function GenerateMap(featureMap) {
-    console.log(featureMap.length);
-    console.log(featureMap[0].length);
     let map = []
     for (let i = 0; i < featureMap.length; i++) {
         map.push(new Array(featureMap.length));
@@ -45,7 +42,6 @@ function GenerateMap(featureMap) {
 // function a*: 
 // input: starting location, end location, weights (slasher/psych), features
 function aStar(start, goal, aStarMap, cardinalFlag) {
-    console.log(start, goal, aStarMap);
     let openSet = [];
     let moves = [];
     let currentTile = null;
