@@ -30,11 +30,23 @@ let tilemapData = {
 // TODO: ... what can I say. This is bad... and maybe needs something else in
 //      in here.
 let wfc = undefined
-let loopCount = 0;
+let partial = [
+    [20, false, false, false, false, false, false, false, false, false], 
+    [false, false, false, false, false, false, false, false, false, false], 
+    [false, false, false, false, false, false, false, false, false, false], 
+    [false, false, false, false, false, false, false, false, false, false], 
+    [false, false, false, false, false, false, false, false, false, false], 
+    [false, false, false, false, false, false, false, false, false, false], 
+    [false, false, false, false, false, false, false, false, false, false], 
+    [false, false, false, false, false, false, false, false, false, false], 
+    [false, false, false, false, false, false, false, false, false, false], 
+    [false, false, false, false, false, false, false, false, false, false]
+]
+let loopCount = 1;
 while (wfc === undefined && loopCount < 100) {
     console.log("in loop");
     try {
-        wfc = WFC(0, tilemapData); 
+        wfc = WFC(0, tilemapData, partial); 
         console.log(wfc);
         if (wfc.length === 0) {
             wfc = undefined;
