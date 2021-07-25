@@ -6,8 +6,8 @@ export function pathfinding(featureMap, start, goal) {
     let cardinalFlag = true; // IF TRUE, ONLY GET CARDINAL DIRECTIONS. NO DIAGONALS.
     let aStarMap = GenerateMap(featureMap);
     let paths = [];
-    let scoringFunctions = [scoreDistance, scoreJumpscare, scoreIsolation,
-        scoreLowVis, scoreAmbientCreep];
+    let scoringFunctions = [scoreDistance, scoreAmbientCreep, scoreLowVis, 
+        scoreJumpscare, scoreIsolation];
     for (let i = 0; i < scoringFunctions.length; i++) {
         aStarMap = ResetMap(aStarMap);
         let path = aStar(aStarMap[start.x][start.y], aStarMap[goal.x][goal.y], 
@@ -29,7 +29,6 @@ function ReconstructPath(result) {
     while (temp.length !== 0) {
         tile = temp.pop();
         path.push(tile);
-        console.log(tile.score);
     }
     return path;
 }
@@ -39,6 +38,7 @@ function ResetMap(map) {
         for (let j = 0; j < map[i].length; j++) {
             map[i][j].checked = false;
             map[i][j].cameFrom = null;
+            map[i][j].score = 9999;
         }
     }
     return map;
@@ -73,21 +73,30 @@ function aStar(start, goal, aStarMap, cardinalFlag, scoringFunction) {
         moves.push(newTile);
         if (currentTile === goal) { return moves; }
         
-        let neighbors = getNeighbors(currentTile, aStarMap, cardinalFlag);
+        let neighbors = getNeighbors(currentTile, aStarMap);
         for (let i = 0; i < neighbors.length; i++) {
             let neighbor = neighbors[i];
             neighbor.score = scoringFunction(neighbor, goal, currentTile);
         }
+        if(currentTile.x === 2 && currentTile.y === 2) {
+            console.log(neighbors);
+        }
+        neighbors = getNeighbors(currentTile, aStarMap, cardinalFlag);
         neighbors = neighbors.sort((a, b) => b.score - a.score);
         openSet = openSet.concat(neighbors);
     }
     return false;
 }
-
-function scoreLowVis(neighbor, goal, current, feature) {
+function scoreScaredyCat(neighbor, goal, current) {
+    let creep = scoreAmbientCreep(neighbor, goal, current);
+    let scare = scoreJumpscare(neighbor, goal, current);
+    let score = scoreDistance(neighbor, goal, current);
+    return score * ( scare + creep )
+}
+function scoreLowVis(neighbor, goal, current) {
     let count = 1;
-    for (let j = 0; j < neighbor.features.length; j++) {
-        if (neighbor.features[j] === "LV") {
+    for (let i = 0; i < neighbor.features.length; i++) {
+        if (neighbor.features[i] === "LV") {
             count++;
         }
     }
@@ -95,8 +104,8 @@ function scoreLowVis(neighbor, goal, current, feature) {
 }
 function scoreAmbientCreep(neighbor, goal, current) {
     let count = 1;
-    for (let j = 0; j < neighbor.features.length; j++) {
-        if (neighbor.features[j] === "AC") {
+    for (let i = 0; i < neighbor.features.length; i++) {
+        if (neighbor.features[i] === "AC") {
             count++;
         }
     }
@@ -104,8 +113,8 @@ function scoreAmbientCreep(neighbor, goal, current) {
 }
 function scoreIsolation(neighbor, goal, current) {
     let count = 1;
-    for (let j = 0; j < neighbor.features.length; j++) {
-        if (neighbor.features[j] === "I") {
+    for (let i= 0; i < neighbor.features.length; i++) {
+        if (neighbor.features[i] === "I") {
             count++;
         }
     }
@@ -114,8 +123,8 @@ function scoreIsolation(neighbor, goal, current) {
 
 function scoreJumpscare(neighbor, goal, current) {
     let count = 1;
-    for (let j = 0; j < neighbor.features.length; j++) {
-        if (neighbor.features[j] === "JS") {
+    for (let i = 0; i < neighbor.features.length; i++) {
+        if (neighbor.features[i] === "JS") {
             count++;
         }
     }
@@ -127,11 +136,11 @@ function scoreDistance(neighbor, goal, currentTile) {
     let d_y = goal.y - neighbor.y;
     let dist = (d_x * d_x) + (d_y * d_y);
     dist = Math.sqrt(dist);
-    return dist;
+    return dist + 100;
     
 }
 
-function getNeighbors(location, map, cardinalFlag) {
+function getNeighbors(location, map, cardinalFlag=false) {
     let x = location.x;
     let y = location.y;
     let neighbors = [];

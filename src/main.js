@@ -34,7 +34,7 @@ let wfc = undefined;
 // Feature mapping of tiles to their horror low level feature.
 // TODO: Make sure that tiles without anything come back as traverseable as 
 //  well. So, tiles are being drawn and their features aren't being accounted
-// for.
+// for. Maybe we make this into it's own object?
 let featureMapping = {
     1 : ["T"],
     2 : ["T"],
@@ -79,18 +79,18 @@ let featureMapping = {
 //number, put a random tile in, and search around until the correct tile is 
 // found :)
 let partial = null;
-let partialFlag = false;
+let partialFlag = true;
 let shouldDrawPath = true;
 if (partialFlag) {
     partial = [
         [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
-        [10, 12, 12, 12, 12, 12, 12, 12, 12, 10], 
+        [10, 10, 10, 12, 12, 12, 12, 12, 12, 10], 
         [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
-        [10, 10, 10, 10, 10, 12, 12, 12, 12, 10], 
-        [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
+        [10, 15, 10, 10, 10, 12, 12, 12, 12, 10], 
+        [10, 10, 15, 15, 10, 10, 10, 10, 10, 10], 
         [10, 12, 10, 10, 10, 12, 12, 12, 12, 10], 
-        [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
-        [10, 10, 10, 10, 10, 12, 12, 12, 12, 10], 
+        [10, 12, 10, 12, 10, 10, 10, 10, 10, 10], 
+        [10, 12, 12, 12, 10, 12, 12, 12, 12, 10], 
         [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
         [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
     ];
@@ -367,11 +367,14 @@ function DrawPath(path, pathOffset) {
 // Adding in buttons for heatmap toggling.
 let heatmapNames = ["Ambient Creep", "Low Visibility", "Jumpscare", "Isolation"]
 let btnDiv = document.getElementById("btnDiv")
+let rgbs = ['rgb(0, 225, 0)',
+        'rgb(0, 0, 225)', 'rgb(225, 225, 0)', 'rgb(225, 0, 225)'];
 for (let i = 0; i < heatmapNames.length; i++) {
     let btn = document.createElement("button");
     let heatmapStyle = heatmapCanvases[i].style;
     btn.innerHTML = heatmapNames[i];
     btn.style.position = "relative";
+    btn.style.backgroundColor = rgbs[i];
     btn.style.top = (mapHeight * tileOutputSize) + updatedTileSize;
     btn.addEventListener("click", function () {
         if (heatmapStyle.display === "none") {

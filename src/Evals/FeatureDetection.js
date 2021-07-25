@@ -100,18 +100,23 @@ export function detectAmbientCreep(input, numRows, numCols)
 {
     // Create new 2D array for output.
     let output = generate2DArray(numRows, numCols);
-
+    let threshold = 2;
     // Traverse through array.
     for (let i = 0; i < input.length; i++)
     {
         for (let j = 0; j < input[i].length; j++)
         {
+            let count = 0;
             // Store the list of metadata we are currently looking at in the corresponding grid cell, along with the output list.
             let currentList = input[i][j];
             
             // Check if the current grid cell contains the relevant metadata.
             if (currentList.includes("AC"))
             {
+                for (let k = 0; k < currentList.length; k++) 
+                { 
+                    if (currentList[k] === "AC") { count++; }
+                }
                 // If the current grid cell is marked as AC, mark the output tile as AC.
                 output[i][j].push("AC");
 
@@ -128,10 +133,16 @@ export function detectAmbientCreep(input, numRows, numCols)
                     let neighborList = input[index_i][index_j];
                     if (neighborList.includes("AC"))
                     {
+                        count++;
                         // If a neighbor cell is also marked as AC, increase the output tile's AC score.
                         output[i][j].push("AC");
                     }
+                    if (count > threshold) 
+                    { 
+                        output[index_i][index_j].push("AC"); 
+                    }
                 }
+                console.log(count);
             }
         }
     }
@@ -148,10 +159,11 @@ export function detectLowVisibility(input, numRows, numCols)
 {
     // Create new 2D array for output.
     let output = generate2DArray(numRows, numCols);
-
+    let threshold = 2;
     // Traverse through array.
     for (let i = 0; i < input.length; i++)
     {
+        let count = 0;
         for (let j = 0; j < input[i].length; j++)
         {
             // Store the list of metadata we are currently looking at in the corresponding grid cell, along with the output list.
@@ -178,6 +190,11 @@ export function detectLowVisibility(input, numRows, numCols)
                     {
                         // If a neighbor cell is also marked as AC, increase the output tile's AC score.
                         output[i][j].push("LV");
+                        count++;
+                    }
+                    if (count > threshold) 
+                    { 
+                        output[index_i][index_j].push("LV");
                     }
                 }
             }
