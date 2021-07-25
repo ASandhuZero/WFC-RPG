@@ -80,6 +80,7 @@ let featureMapping = {
 // found :)
 let partial = null;
 let partialFlag = false;
+let shouldDrawPath = true;
 if (partialFlag) {
     partial = [
         [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
@@ -212,8 +213,10 @@ let sourceY = 0;
 
 function draw() {
     DrawTileMap();
-    for (let i = 0; i < paths.length; i++) {
-        DrawPath(paths[i], i);
+    if (shouldDrawPath) {
+        for (let i = 0; i < paths.length; i++) {
+            DrawPath(paths[i], i);
+        }
     }
 }
 
