@@ -7,7 +7,8 @@ export function pathfinding(featureMap, start, goal) {
     let cardinalFlag = true; // IF TRUE, ONLY GET CARDINAL DIRECTIONS. NO DIAGONALS.
     let map = GenerateMap(featureMap);
     let paths = [];
-    let scoringFunctions = [scoreDistance, scoreJumpscare];
+    let scoringFunctions = [scoreDistance, scoreAmbientCreep, scoreLowVis,
+        scoreJumpscare, scoreIsolation];
     for (let i = 0; i < scoringFunctions.length; i++) {
         map = ResetMap(map);
         let path = aStar(map[start.x][start.y], map[goal.x][goal.y], 
@@ -120,29 +121,50 @@ function scoreScaredyCat(neighbor, goal, map, current) {
 function scoreLowVis(neighbor, goal, map, current) {
     let count = 1;
     for (let i = 0; i < neighbor.features.length; i++) {
-        if (neighbor.features[i] === "LV") {
-            count++;
+        if (neighbor.features[i] === "LV") { count++; }
+    }
+    let distantNeihgbors = getNeighbors(neighbor, map);
+    for (let i = 0; i < distantNeihgbors.length; i++) {
+        let distantNeighbor = distantNeihgbors[i];
+        for (let j = 0; j < distantNeighbor.features.length; j++) {
+            if (distantNeighbor.features[j] === "LV") { count++; };
         }
     }
-    return scoreDistance(neighbor, goal, current) / count;
+    let dist = scoreDistance(neighbor, goal, map, current);
+    let combined = count + dist;
+    return  (dist/combined) - ((dist * count)/combined);
 }
 function scoreAmbientCreep(neighbor, goal, map,  current) {
     let count = 1;
     for (let i = 0; i < neighbor.features.length; i++) {
-        if (neighbor.features[i] === "AC") {
-            count++;
+        if (neighbor.features[i] === "AC") { count++; }
+    }
+    let distantNeihgbors = getNeighbors(neighbor, map);
+    for (let i = 0; i < distantNeihgbors.length; i++) {
+        let distantNeighbor = distantNeihgbors[i];
+        for (let j = 0; j < distantNeighbor.features.length; j++) {
+            if (distantNeighbor.features[j] === "AC") { count++; };
         }
     }
-    return scoreDistance(neighbor, goal, current) / count;
+    let dist = scoreDistance(neighbor, goal, map, current);
+    let combined = count + dist;
+    return  (dist/combined) - ((dist * count)/combined);
 }
 function scoreIsolation(neighbor, goal, map, current) {
     let count = 1;
     for (let i= 0; i < neighbor.features.length; i++) {
-        if (neighbor.features[i] === "I") {
-            count++;
+        if (neighbor.features[i] === "I") { count++; }
+    }    
+    let distantNeihgbors = getNeighbors(neighbor, map);
+    for (let i = 0; i < distantNeihgbors.length; i++) {
+        let distantNeighbor = distantNeihgbors[i];
+        for (let j = 0; j < distantNeighbor.features.length; j++) {
+            if (distantNeighbor.features[j] === "I") { count++; };
         }
     }
-    return scoreDistance(neighbor, goal, current) / count;
+    let dist = scoreDistance(neighbor, goal, map, current);
+    let combined = count + dist;
+    return  (dist/combined) - ((dist * count)/combined);
 }
 
 function scoreJumpscare(neighbor, goal, map, current) {
@@ -150,15 +172,16 @@ function scoreJumpscare(neighbor, goal, map, current) {
     for (let i = 0; i < neighbor.features.length; i++) {
         if (neighbor.features[i] === "JS") { count++; }
     }
-    // let distantNeihgbors = getNeighbors(neighbor, map);
-    // for (let i = 0; i < distantNeihgbors.length; i++) {
-    //     let distantNeighbor = distantNeihgbors[i];
-    //     for (let j = 0; j < distantNeighbor.features.length; j++) {
-    //         if (distantNeighbor.features[j] === "JS") { count++; };
-    //     }
-    // }
-    return 1 / count;
-    
+    let distantNeihgbors = getNeighbors(neighbor, map);
+    for (let i = 0; i < distantNeihgbors.length; i++) {
+        let distantNeighbor = distantNeihgbors[i];
+        for (let j = 0; j < distantNeighbor.features.length; j++) {
+            if (distantNeighbor.features[j] === "JS") { count++; };
+        }
+    }
+    let dist = scoreDistance(neighbor, goal, map, current);
+    let combined = count + dist;
+    return  (dist/combined) - ((dist * count)/combined);
 } 
 function scoreDistance(neighbor, goal, map, currentTile) {
     if (neighbor === goal) { return 0; }
@@ -166,7 +189,7 @@ function scoreDistance(neighbor, goal, map, currentTile) {
     let d_y = goal.y - neighbor.y;
     let dist = (d_x * d_x) + (d_y * d_y);
     dist = Math.sqrt(dist);
-    return dist + 100;
+    return dist;
     
 }
 

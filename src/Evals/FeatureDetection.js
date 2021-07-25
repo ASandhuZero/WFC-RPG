@@ -241,9 +241,10 @@ export function detectIsolation(input, numRows, numCols)
                     let index_j = neighbors[n].j;
                     // Store the metadata list for the index being looked at.
                     let neighborList = input[index_i][index_j];
-                    if (neighborList.includes("LV"))
-                    {
-                        surroundings++;
+                    if (neighborList.includes("LV")) { surroundings++; }
+                    if (output[index_i][index_j].includes("I")) 
+                    { 
+                        surroundings++; 
                     }
                 }
 
@@ -251,7 +252,7 @@ export function detectIsolation(input, numRows, numCols)
                 if (surroundings >= threshold)
                 {
                     // Mark the corresponding output tile as isolated.
-                    output[i][j].push("I");
+                    output[i][j].push("I"); 
                 }
             }
         }
