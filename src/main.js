@@ -71,20 +71,25 @@ let featureMapping = {
 //number, put a random tile in, and search around until the correct tile is 
 // found :)
 let partial = null;
-let partialFlag = false;
+let partialFlag = true;
 let shouldDrawPath = true;
 if (partialFlag) {
     partial = [
-        [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
-        [10, 10, 10, 12, 12, 12, 12, 12, 12, 10], 
-        [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
-        [10, 15, 10, 10, 10, 12, 12, 12, 12, 10], 
-        [10, 10, 15, 15, 10, 10, 10, 10, 10, 10], 
-        [10, 12, 10, 10, 10, 12, 12, 12, 12, 10], 
-        [10, 12, 10, 12, 10, 10, 10, 10, 10, 10], 
-        [10, 12, 12, 12, 10, 12, 12, 12, 12, 10], 
-        [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
-        [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
+[10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
     ];
 } else {
     partial = null;
