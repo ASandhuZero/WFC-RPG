@@ -140,18 +140,20 @@ function Clear(waves, tileAmount, WaveData) {
         items.entropies[t] = items.starting_entropy;
     }
 }
-
+// TODO: SIGH. Please, for the love of god, choose flattened array or 
+//      matrix representation. This whole transformation code breaks everything.
 function FillPartial(wave, partial, periodic, WaveData, w, h, tileAmount) {
     let tileData = WaveData.tiles;
-    for (let i = 0; i < partial.length; i++) {
+    let length = partial.length;
+    for (let i = 0; i < length; i++) {
         for (let j = 0; j < partial[i].length; j++) {
             let value = partial[i][j];
             if (value !== false) { 
-                wave[j+(i*10)][value] = true; 
+                wave[j+(i*length)][value] = true; 
                 for (let k = 0; k < tileAmount; k++) {
                     if (k === value) { continue; }
-                    tileData.elemsToRemove = Ban(wave, tileData, j+(i*10), k,
-                        tileData.elemsToRemove, 'observation');
+                    tileData.elemsToRemove = Ban(wave, tileData, j+(i*length), 
+                    k, tileData.elemsToRemove, 'observation');
                     Propagate(wave, WaveData, 'tiles', periodic, w, h, 
                         WaveData.propagator);
                 }

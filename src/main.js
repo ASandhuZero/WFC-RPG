@@ -76,7 +76,7 @@ let shouldDrawPath = true;
 if (partialFlag) {
     partial = [
 [10,14,15,16,10,10,10,10,10,10,10,10,10,10,10],
-[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+[10,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
 [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
 [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
 [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
