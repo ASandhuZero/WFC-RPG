@@ -83,25 +83,25 @@ let partialFlag = true;
 if (partialFlag) {
     partial = [
         [10, false, false, false, false, false, false, false, false, false], 
+        [10, 12, 12, 12, 12, 12, 12, 12, 12, 10], 
+        [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
+        [10, 12, 12, 12, 12, 12, 12, 12, 12, 10], 
+        [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
+        [10, 12, 12, 12, 12, 12, 12, 12, 12, 10], 
+        [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
+        [10, 12, 12, 12, 12, 12, 12, 12, 12, 10], 
+        [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
         [10, false, false, false, false, false, false, false, false, false], 
-        [10, false, false, false, false, false, false, false, false, false], 
-        [false, false, false, false, false, false, false, false, false, false], 
-        [false, false, false, false, false, false, false, false, false, false], 
-        [false, false, false, false, false, false, false, false, false, false], 
-        [false, false, false, false, false, false, false, false, false, false], 
-        [false, false, false, false, false, false, false, false, false, false], 
-        [false, false, false, false, false, false, false, false, false, false], 
-        [false, false, false, false, false, false, false, false, false, false]
     ];
 } else {
     partial = null;
 }
 
 let loopCount = 1;
-let path = false;
+let paths = false;
 let heatmaps = null;
 let features = null; 
-while ((wfc === undefined || path === false) && loopCount < 100) {
+while ((wfc === undefined || paths === false) && loopCount < 100) {
     console.log("in loop");
     try {
         wfc = WFC(0, tilemapData, partial); 
@@ -144,7 +144,7 @@ while ((wfc === undefined || path === false) && loopCount < 100) {
         x : 9,
         y : 9
     };
-    path = pathfinding(combinedFeatureMap, start, goal);
+    paths = pathfinding(combinedFeatureMap, start, goal);
     console.log(lowLevelFeatureMap);
     console.log(tilemapEval);
     loopCount++;
@@ -212,7 +212,9 @@ let sourceY = 0;
 
 function draw() {
     DrawTileMap();
-    DrawPath(path);
+    for (let i = 0; i < paths.length; i++) {
+        DrawPath(paths[i], i);
+    }
 }
 
 function DrawTileMap() {
@@ -339,8 +341,9 @@ function DrawTileMap() {
     }
 }
 
-function DrawPath(path) {
+function DrawPath(path, pathOffset) {
     if (path.length === 0) { return; }
+    tileCtx.strokeStyle = ['rgb(0, 0, 225)','rgb(225, 0, 0)'][pathOffset]
     tileCtx.beginPath();
     tileCtx.lineWidth = 5;
     let offset = 2;
@@ -351,8 +354,8 @@ function DrawPath(path) {
         // TODO: THE ONE IS AN OFFSET BECAUSE OF THE TRIM.
         let x = (tile.x + 1) * tileSize;
         let y = (tile.y + 1) * tileSize;
-        tileCtx.lineTo(y * tileOutputSize + updatedTileSize/2,
-            x * tileOutputSize + updatedTileSize/2);
+        tileCtx.lineTo(y * tileOutputSize + updatedTileSize/2 - (5*pathOffset),
+            x * tileOutputSize + updatedTileSize/2 + (5*pathOffset));
         tileCtx.stroke();   
     }
 }

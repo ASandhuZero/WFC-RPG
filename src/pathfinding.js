@@ -5,12 +5,16 @@ export function pathfinding(featureMap, start, goal) {
     featureMap[goal.x][goal.y].push('GOAL');
     let cardinalFlag = true; // IF TRUE, ONLY GET CARDINAL DIRECTIONS. NO DIAGONALS.
     let aStarMap = GenerateMap(featureMap);
-    result = aStar(aStarMap[start.x][start.y], aStarMap[goal.x][goal.y], 
-        aStarMap, cardinalFlag)
-    if (result.length !== 0) {
-        return ReconstructPath(result);
+    let paths = [];
+    let scoringFunctions = [scoreDistance, scoreJumpscare];
+    for (let i = 0; i < scoringFunctions.length; i++) {
+        aStarMap = ResetMap(aStarMap);
+        let path = aStar(aStarMap[start.x][start.y], aStarMap[goal.x][goal.y], 
+        aStarMap, cardinalFlag, scoringFunctions[i]);
+        if (path === false) { return false; }
+        paths.push(ReconstructPath(path));
     }
-    return false;
+    return paths;
 }
 function ReconstructPath(result) {
     let tile = result.pop(); //Pop gets the last item in a list. Basically the goal.
@@ -29,8 +33,17 @@ function ReconstructPath(result) {
     return path;
 }
 
+function ResetMap(map) {
+    for (let i = 0; i < map.length; i++) {
+        for (let j = 0; j < map[i].length; j++) {
+            map[i][j].checked = false;
+            map[i][j].cameFrom = null;
+        }
+    }
+    return map;
+}
 function GenerateMap(featureMap) {
-    let map = []
+    let map = [];
     for (let i = 0; i < featureMap.length; i++) {
         map.push(new Array(featureMap.length));
         for (let j = 0; j < featureMap.length; j++) {
@@ -43,36 +56,49 @@ function GenerateMap(featureMap) {
 
 // function a*: 
 // input: starting location, end location, weights (slasher/psych), features
-function aStar(start, goal, aStarMap, cardinalFlag) {
-    let openSet = [];
+function aStar(start, goal, aStarMap, cardinalFlag, scoringFunction) {
+    let openSet = [start];
     let moves = [];
     let currentTile = null;
-    openSet.push(start);
     while (openSet.length !== 0) {
         currentTile = openSet.pop();
         currentTile.checked = true;
         if (!currentTile.features.includes("T")) { continue; } 
-        moves.push(currentTile);
+        let newTile = new Tile(currentTile.x,currentTile.y);
+        newTile.features = currentTile.features;
+        newTile.checked = currentTile.checked;
+        newTile.score = currentTile.score;
+        newTile.cameFrom = currentTile.cameFrom;
+        moves.push(newTile);
         if (currentTile === goal) { return moves; }
         
         let neighbors = getNeighbors(currentTile, aStarMap, cardinalFlag);
-        neighbors = scoreNeighbors(neighbors, goal);
+        for (let i = 0; i < neighbors.length; i++) {
+            let neighbor = neighbors[i];
+            neighbor.score = scoringFunction(neighbor, goal, currentTile);
+        }
+        neighbors = neighbors.sort((a, b) => b.score - a.score);
         openSet = openSet.concat(neighbors);
     }
-    return [];
+    return false;
 }
 
-function scoreNeighbors(neighbors, goal) {
-    for (let i = 0; i < neighbors.length; i++) {
-        let neighbor = neighbors[i];
-        let d_x = goal.x - neighbor.x;
-        let d_y = goal.y - neighbor.y;
-        let dist = (d_x * d_x) + (d_y * d_y);
-        dist = Math.sqrt(dist);
-        neighbor.score = dist; 
+function scoreJumpscare(neighbor, goal, current) {
+    let count = 1;
+    for (let j = 0; j < neighbor.features.length; j++) {
+        if (neighbor.features[j] === "JS") {
+            count++;
+        }
     }
-    neighbors = neighbors.sort((a, b) => b.score - a.score);
-    return neighbors;
+    return scoreDistance(neighbor, goal, current)/ (count * count);
+    
+} 
+function scoreDistance(neighbor, goal, currentTile) {
+    let d_x = goal.x - neighbor.x;
+    let d_y = goal.y - neighbor.y;
+    let dist = (d_x * d_x) + (d_y * d_y);
+    dist = Math.sqrt(dist);
+    return dist;
     
 }
 
