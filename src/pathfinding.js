@@ -1,25 +1,29 @@
 
 
 export function pathfinding(featureMap, start, goal) {
+    console.log("Solving for path!")
     featureMap[start.x][start.y].push('START');
     featureMap[goal.x][goal.y].push('GOAL');
     let cardinalFlag = true; // IF TRUE, ONLY GET CARDINAL DIRECTIONS. NO DIAGONALS.
-    let aStarMap = GenerateMap(featureMap);
+    let map = GenerateMap(featureMap);
     let paths = [];
-    let scoringFunctions = [scoreDistance, scoreScaredyCat];
+    let scoringFunctions = [scoreDistance, scoreJumpscare];
     for (let i = 0; i < scoringFunctions.length; i++) {
-        aStarMap = ResetMap(aStarMap);
-        let path = aStar(aStarMap[start.x][start.y], aStarMap[goal.x][goal.y], 
-        aStarMap, cardinalFlag, scoringFunctions[i]);
+        map = ResetMap(map);
+        let path = aStar(map[start.x][start.y], map[goal.x][goal.y], 
+        map, cardinalFlag, scoringFunctions[i]);
         if (path === false) { return false; }
-        paths.push(ReconstructPath(path));
+        paths.push(ReconstructPath(path, map));
     }
     return paths;
 }
-function ReconstructPath(result) {
+function ReconstructPath(result, map) {
+    console.log("starting path reconstruction");
     let tile = result.pop(); //Pop gets the last item in a list. Basically the goal.
     let temp = []
     let path = []
+    let JSEval = 0;
+    let IEval = 0;
     while (tile.cameFrom !== null) {
         temp.push(tile);
         tile = tile.cameFrom;
@@ -28,7 +32,15 @@ function ReconstructPath(result) {
     while (temp.length !== 0) {
         tile = temp.pop();
         path.push(tile);
+        JSEval += evaluateMetaTag(tile, map, "JS");
+        IEval += evaluateMetaTag(tile, map, "I");
     }
+    let pathData = {
+        path : path,
+        slasherScore : JSEval,
+        psychologicalScore : IEval
+    }
+    console.log(pathData);
     return path;
 }
 
@@ -64,27 +76,39 @@ function aStar(start, goal, aStarMap, cardinalFlag, scoringFunction) {
         currentTile = openSet.pop();
         currentTile.checked = true;
         if (!currentTile.features.includes("T")) { continue; }
-        let newTile = new Tile(currentTile.x,currentTile.y);
-        newTile.features = currentTile.features;
-        newTile.checked = currentTile.checked;
-        newTile.score = currentTile.score;
-        newTile.cameFrom = currentTile.cameFrom;
-        moves.push(newTile);
+        moves.push(currentTile);
         if (currentTile === goal) { return moves; }
-        
-        let neighbors = getNeighbors(currentTile, aStarMap);
+        let neighbors = getNeighbors(currentTile, aStarMap, cardinalFlag);
         for (let i = 0; i < neighbors.length; i++) {
             let neighbor = neighbors[i];
-            neighbor.score = scoringFunction(neighbor, goal, currentTile);
+            neighbor.score = scoringFunction(neighbor, goal, aStarMap, 
+                currentTile);
+            neighbor.cameFrom = currentTile;
         }
-        neighbors = getNeighbors(currentTile, aStarMap, cardinalFlag);
         neighbors = neighbors.sort((a, b) => b.score - a.score);
         openSet = openSet.concat(neighbors);
-        openSet = openSet.sort((a,b) => b.score - a.score)
     }
+    console.log(openSet);
     return false;
 }
-function scoreScaredyCat(neighbor, goal, current) {
+// TODO: This whole count nonsense would be solved if instead of arrays, we 
+//      used an object, keeping the count around and the feature as the key.
+function evaluateMetaTag(tile, map, metatag) {
+    let neighbors = getNeighbors(tile, map);
+    let count = 0;
+    for (let i = 0; i < tile.features.length; i++) {
+        if (tile.features[i] === metatag) { count++; }
+    }
+    for (let i = 0; i < neighbors.length; i++) {
+        let neighbor = neighbors[i];
+        for (let j = 0; j < neighbor.features; j++) {
+            if (neighbors.features[j] === metatag) { count++; }
+        }
+    }
+    return count;
+}
+
+function scoreScaredyCat(neighbor, goal, map, current) {
     let creep = scoreAmbientCreep(neighbor, goal, current);
     let scare = scoreJumpscare(neighbor, goal, current) * 5;
     let vis = scoreLowVis(neighbor, goal, current);
@@ -93,7 +117,7 @@ function scoreScaredyCat(neighbor, goal, current) {
     console.log(creep, scare, vis, iso);
     return score + creep + scare + vis + iso;
 }
-function scoreLowVis(neighbor, goal, current) {
+function scoreLowVis(neighbor, goal, map, current) {
     let count = 1;
     for (let i = 0; i < neighbor.features.length; i++) {
         if (neighbor.features[i] === "LV") {
@@ -102,7 +126,7 @@ function scoreLowVis(neighbor, goal, current) {
     }
     return scoreDistance(neighbor, goal, current) / count;
 }
-function scoreAmbientCreep(neighbor, goal, current) {
+function scoreAmbientCreep(neighbor, goal, map,  current) {
     let count = 1;
     for (let i = 0; i < neighbor.features.length; i++) {
         if (neighbor.features[i] === "AC") {
@@ -111,7 +135,7 @@ function scoreAmbientCreep(neighbor, goal, current) {
     }
     return scoreDistance(neighbor, goal, current) / count;
 }
-function scoreIsolation(neighbor, goal, current) {
+function scoreIsolation(neighbor, goal, map, current) {
     let count = 1;
     for (let i= 0; i < neighbor.features.length; i++) {
         if (neighbor.features[i] === "I") {
@@ -121,23 +145,28 @@ function scoreIsolation(neighbor, goal, current) {
     return scoreDistance(neighbor, goal, current) / count;
 }
 
-function scoreJumpscare(neighbor, goal, current) {
+function scoreJumpscare(neighbor, goal, map, current) {
     let count = 1;
     for (let i = 0; i < neighbor.features.length; i++) {
-        if (neighbor.features[i] === "JS") {
-            count++;
-        }
+        if (neighbor.features[i] === "JS") { count++; }
     }
-    return scoreDistance(neighbor, goal, current) / count;
+    // let distantNeihgbors = getNeighbors(neighbor, map);
+    // for (let i = 0; i < distantNeihgbors.length; i++) {
+    //     let distantNeighbor = distantNeihgbors[i];
+    //     for (let j = 0; j < distantNeighbor.features.length; j++) {
+    //         if (distantNeighbor.features[j] === "JS") { count++; };
+    //     }
+    // }
+    return 1 / count;
     
 } 
-function scoreDistance(neighbor, goal, currentTile) {
+function scoreDistance(neighbor, goal, map, currentTile) {
     if (neighbor === goal) { return 0; }
     let d_x = goal.x - neighbor.x;
     let d_y = goal.y - neighbor.y;
     let dist = (d_x * d_x) + (d_y * d_y);
     dist = Math.sqrt(dist);
-    return dist;
+    return dist + 100;
     
 }
 
@@ -158,11 +187,7 @@ function getNeighbors(location, map, cardinalFlag=false) {
                 if (i === 1 && (j === -1 || j === 1) ) { continue; }
             }
             let tile = map[xOffset][yOffset];
-            if (!tile.features.includes("T")) { continue; }
             if (tile.checked) { continue; }
-            tile.cameFrom = location;
-
-
             neighbors.push(tile);
         }
     }

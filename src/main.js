@@ -75,21 +75,21 @@ let partialFlag = true;
 let shouldDrawPath = true;
 if (partialFlag) {
     partial = [
-[10,14,15,16,10,10,10,10,10,10,10,10,10,10,10],
-[10,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+        [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
+        [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
+        [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
+        [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
+        [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
+        [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
+        [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
+        [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
     ];
 } else {
     partial = null;
