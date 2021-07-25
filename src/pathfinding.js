@@ -63,6 +63,7 @@ function aStar(start, goal, aStarMap, cardinalFlag, scoringFunction) {
     while (openSet.length !== 0) {
         currentTile = openSet.pop();
         currentTile.checked = true;
+        if (!currentTile.features.includes("T")) { continue; }
         let newTile = new Tile(currentTile.x,currentTile.y);
         newTile.features = currentTile.features;
         newTile.checked = currentTile.checked;
@@ -89,7 +90,6 @@ function scoreScaredyCat(neighbor, goal, current) {
     let vis = scoreLowVis(neighbor, goal, current);
     let iso = scoreIsolation(neighbor, goal, current);
     let score = scoreDistance(neighbor, goal, current);
-
     console.log(creep, scare, vis, iso);
     return score + creep + scare + vis + iso;
 }

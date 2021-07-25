@@ -75,7 +75,7 @@ let partialFlag = true;
 let shouldDrawPath = true;
 if (partialFlag) {
     partial = [
-[10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+[10,14,15,16,10,10,10,10,10,10,10,10,10,10,10],
 [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
 [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
 [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
@@ -115,7 +115,7 @@ while ((wfc === undefined || paths === false) && loopCount < 100) {
     let lowLevelFeatureMap = Array.from(Array(width), () => new Array(height));
     for (let i = 0; i < width; i++) {
         for (let j = 0; j < height; j++) {
-            let tile = wfc.tiles[j+(i*10)];
+            let tile = wfc.tiles[j+(i*width)];
             lowLevelFeatureMap[i][j] = featureMapping[tile.name];
         }
     }
