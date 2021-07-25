@@ -1,20 +1,12 @@
 //TODO: REMOVED TILE COUNT, CURRENTLY HARDCODING TILE COUNT TO 128. FIX THIS 
 //      LATER. ALSO THERE IS A BUNCH OF HARDCODED VALUES WITHIN THE TILED 
 //      DATA. MIGHT BE WORTH TO SEE HOW MAKE IT MORE DYNAMIC. IF NEED BE.
-//   ALSO LOL, ADD BACK IN THE ITEM FUNCTIONALITY WITHIN THE TILED DATA.
 import { WFC } from "./WaveFunctionCollapse/WaveFunctionCollapse";
 import * as testjson from "./UNITTEST.json!json";
 import evaluateHorrorPotential from "./Evals/TilemapEvaluation";
 import { detectFeatures } from "./Evals/FeatureDetection";
 import { generateHeatmaps } from "./Evals/Visualization";
 import { pathfinding } from "./pathfinding";
-
-
-// This is the lifted WFC running code. Placing it here to know what I need
-//      For the function call.
-// this.model = WFC(this.periodic, this.height, this.width, this.tileJSON, 
-//     this.tileRule, this.itemRules); 
-
 
 const height = 10;
 const width = 10;
@@ -80,7 +72,7 @@ let featureMapping = {
 // found :)
 let partial = null;
 let partialFlag = true;
-let shouldDrawPath = true;
+let shouldDrawPath = false;
 if (partialFlag) {
     partial = [
         [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 

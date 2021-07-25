@@ -45,8 +45,6 @@ export function WFC(periodic, width, height, tileset_info, tile_rule, item_rule)
             if (result === true) {
                 definite_state++;
             } else if (result === false) {
-                // throw 'Oh Crap'
-                // console.log('crap')
                 return [];
             } 
             
