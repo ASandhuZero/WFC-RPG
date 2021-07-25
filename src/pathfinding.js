@@ -6,8 +6,7 @@ export function pathfinding(featureMap, start, goal) {
     let cardinalFlag = true; // IF TRUE, ONLY GET CARDINAL DIRECTIONS. NO DIAGONALS.
     let aStarMap = GenerateMap(featureMap);
     let paths = [];
-    let scoringFunctions = [scoreDistance, scoreAmbientCreep, scoreLowVis, 
-        scoreJumpscare, scoreIsolation];
+    let scoringFunctions = [scoreDistance, scoreScaredyCat];
     for (let i = 0; i < scoringFunctions.length; i++) {
         aStarMap = ResetMap(aStarMap);
         let path = aStar(aStarMap[start.x][start.y], aStarMap[goal.x][goal.y], 
@@ -64,7 +63,6 @@ function aStar(start, goal, aStarMap, cardinalFlag, scoringFunction) {
     while (openSet.length !== 0) {
         currentTile = openSet.pop();
         currentTile.checked = true;
-        if (!currentTile.features.includes("T")) { continue; } 
         let newTile = new Tile(currentTile.x,currentTile.y);
         newTile.features = currentTile.features;
         newTile.checked = currentTile.checked;
@@ -78,21 +76,22 @@ function aStar(start, goal, aStarMap, cardinalFlag, scoringFunction) {
             let neighbor = neighbors[i];
             neighbor.score = scoringFunction(neighbor, goal, currentTile);
         }
-        if(currentTile.x === 2 && currentTile.y === 2) {
-            console.log(neighbors);
-        }
         neighbors = getNeighbors(currentTile, aStarMap, cardinalFlag);
         neighbors = neighbors.sort((a, b) => b.score - a.score);
         openSet = openSet.concat(neighbors);
+        openSet = openSet.sort((a,b) => b.score - a.score)
     }
     return false;
 }
 function scoreScaredyCat(neighbor, goal, current) {
     let creep = scoreAmbientCreep(neighbor, goal, current);
-    let scare = scoreJumpscare(neighbor, goal, current);
-    let score = scoreDistance(neighbor, goal, current)/2;
-    console.log(score, creep, scare);
-    return score + ( scare + creep )
+    let scare = scoreJumpscare(neighbor, goal, current) * 5;
+    let vis = scoreLowVis(neighbor, goal, current);
+    let iso = scoreIsolation(neighbor, goal, current);
+    let score = scoreDistance(neighbor, goal, current);
+
+    console.log(creep, scare, vis, iso);
+    return score + creep + scare + vis + iso;
 }
 function scoreLowVis(neighbor, goal, current) {
     let count = 1;
@@ -138,7 +137,7 @@ function scoreDistance(neighbor, goal, currentTile) {
     let d_y = goal.y - neighbor.y;
     let dist = (d_x * d_x) + (d_y * d_y);
     dist = Math.sqrt(dist);
-    return dist + 100;
+    return dist;
     
 }
 
@@ -159,6 +158,7 @@ function getNeighbors(location, map, cardinalFlag=false) {
                 if (i === 1 && (j === -1 || j === 1) ) { continue; }
             }
             let tile = map[xOffset][yOffset];
+            if (!tile.features.includes("T")) { continue; }
             if (tile.checked) { continue; }
             tile.cameFrom = location;
 

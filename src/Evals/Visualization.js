@@ -12,13 +12,13 @@ window.Color = window.Color || Color;
 export default Color;
 
 // A function used to generate visualizations (heatmaps) of features from a Features object.
-export function generateHeatmaps(input, numRows, numCols)
+export function generateHeatmaps(input, numRows, numCols, walkableFlag = false)
 {
-    let ac = generateHeatmap(input.ac, numRows, numCols, "AC");
-    let js = generateHeatmap(input.js, numRows, numCols, "JS");
+    let ac = generateHeatmap(input, numRows, numCols, "AC", walkableFlag);
+    let js = generateHeatmap(input, numRows, numCols, "JS", walkableFlag);
     let tar = null;
-    let iso = generateHeatmap(input.iso, numRows, numCols, "I");
-    let lv = generateHeatmap(input.lv, numRows, numCols, "LV");
+    let iso = generateHeatmap(input, numRows, numCols, "I", walkableFlag);
+    let lv = generateHeatmap(input, numRows, numCols, "LV", walkableFlag);
     let heatmaps = new Heatmaps(ac, js, tar, iso, lv);
     return heatmaps;
 }
@@ -27,7 +27,7 @@ export function generateHeatmaps(input, numRows, numCols)
 // Input: input - a 2D array whose elements are strings (metadata/higher order features of tiles); metatag - a string denoting what tag is being used to generate the curren heatmap
 // Output: a 2D array that can be overlayed on the tilemap to see "hotspots" of tags
 // Metatags: AC (ambient creep), JS (jumpscare potential), TaR (tension and release), I (isolation), LV (low visibility)
-export function generateHeatmap(input, numRows, numCols, metatag)
+export function generateHeatmap(input, numRows, numCols, metatag, walkableFlag)
 {
     // Create new 2D array for output.
     let output = generate2DArray(numRows, numCols);
@@ -39,6 +39,7 @@ export function generateHeatmap(input, numRows, numCols, metatag)
         {
             // Store the list of metadata for the grid cell we are currently looking at.
             let currentList = input[i][j];
+            if (walkableFlag && !currentList.includes("T")) { continue; }
             // Count how many times the metatag appears in the list.
             let count = 0;
             for (let k = 0; k < currentList.length; k++)

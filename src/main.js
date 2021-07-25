@@ -8,8 +8,8 @@ import { detectFeatures } from "./Evals/FeatureDetection";
 import { generateHeatmaps } from "./Evals/Visualization";
 import { pathfinding } from "./pathfinding";
 
-const height = 10;
-const width = 10;
+const height = 15;
+const width = 15;
 let tileRules = {}
 let itemRules = {}
 let tilemapData = {
@@ -71,7 +71,7 @@ let featureMapping = {
 //number, put a random tile in, and search around until the correct tile is 
 // found :)
 let partial = null;
-let partialFlag = true;
+let partialFlag = false;
 let shouldDrawPath = true;
 if (partialFlag) {
     partial = [
@@ -116,26 +116,26 @@ while ((wfc === undefined || paths === false) && loopCount < 100) {
     }
     //TODO: Yeah so the above code is horrible. Either flatten everything down to
     //      an array. OR just turn everything into a matrix.
-    features = detectFeatures(lowLevelFeatureMap, 10, 10);
+    features = detectFeatures(lowLevelFeatureMap, width, height);
     // console.log(features.ac);
     // console.log(features.lv);
     // console.log(features.js);
     // console.log(features.iso);
-    heatmaps = generateHeatmaps(features, 10, 10);
+    let combinedFeatureMap = combineFeatures(features);
+    heatmaps = generateHeatmaps(combinedFeatureMap, width, height);
     // console.log(heatmaps.ac);
     // console.log(heatmaps.lv);
     // console.log(heatmaps.js);
     // console.log(heatmaps.iso);
-    let combinedFeatureMap = combineFeatures(features);
-    let tilemapEval = evaluateHorrorPotential(combinedFeatureMap, 10, 10, 
+    let tilemapEval = evaluateHorrorPotential(combinedFeatureMap, width, height, 
         "slasher");
     let start = {
         x : 0,
         y : 0
     };
     let goal = {
-        x : 9,
-        y : 9
+        x : 14,
+        y : 14
     };
     paths = pathfinding(combinedFeatureMap, start, goal);
     console.log(lowLevelFeatureMap);
@@ -188,13 +188,13 @@ tileSet.src = './assets/tilesets/graveyard.png';
 tileSet.onload = draw;
 
 let tileSize = 16;
-let tileOutputSize = 4; // can set to 1 for 32px or higher
+let tileOutputSize = 3; // can set to 1 for 32px or higher
 let updatedTileSize = tileSize * tileOutputSize - 1; // this -1 is offsetting everything and giving that cool grid look.
 
 let atlasCol = 9;
 let atlasRow = 8;
-let mapCols = 11;
-let mapRows = 11;
+let mapCols = width+1;
+let mapRows = height+1;
 let mapHeight = mapRows * tileSize;
 let mapWidth = mapCols * tileSize
 let levelMap = wfc.tiles;
@@ -262,7 +262,7 @@ function DrawTileMap() {
                 tileCtx.setTransform(1, 0, 0, 1, 0, 0);
                 
                 // DEBUGGING CODE FOR TILE NAME TODO: REMOVE AT SOME POINT.
-                tileCtx.font = '24px serif';
+                tileCtx.font = '14px serif';
                 tileCtx.fillStyle = "#ff0000";
                 tileCtx.fillText(tile.name, 
                     (((row+1) * tileOutputSize-10) + (updatedTileSize/2)),
