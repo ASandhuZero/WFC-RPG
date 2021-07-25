@@ -90,8 +90,9 @@ function aStar(start, goal, aStarMap, cardinalFlag, scoringFunction) {
 function scoreScaredyCat(neighbor, goal, current) {
     let creep = scoreAmbientCreep(neighbor, goal, current);
     let scare = scoreJumpscare(neighbor, goal, current);
-    let score = scoreDistance(neighbor, goal, current);
-    return score * ( scare + creep )
+    let score = scoreDistance(neighbor, goal, current)/2;
+    console.log(score, creep, scare);
+    return score + ( scare + creep )
 }
 function scoreLowVis(neighbor, goal, current) {
     let count = 1;
@@ -132,6 +133,7 @@ function scoreJumpscare(neighbor, goal, current) {
     
 } 
 function scoreDistance(neighbor, goal, currentTile) {
+    if (neighbor === goal) { return 0; }
     let d_x = goal.x - neighbor.x;
     let d_y = goal.y - neighbor.y;
     let dist = (d_x * d_x) + (d_y * d_y);

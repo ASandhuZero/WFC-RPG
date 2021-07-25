@@ -142,7 +142,6 @@ export function detectAmbientCreep(input, numRows, numCols)
                         output[index_i][index_j].push("AC"); 
                     }
                 }
-                console.log(count);
             }
         }
     }

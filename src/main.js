@@ -72,7 +72,7 @@ let featureMapping = {
 // found :)
 let partial = null;
 let partialFlag = true;
-let shouldDrawPath = false;
+let shouldDrawPath = true;
 if (partialFlag) {
     partial = [
         [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
