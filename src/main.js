@@ -79,19 +79,19 @@ let featureMapping = {
 //number, put a random tile in, and search around until the correct tile is 
 // found :)
 let partial = null;
-let partialFlag = true;
+let partialFlag = false;
 if (partialFlag) {
     partial = [
-        [10, false, false, false, false, false, false, false, false, false], 
-        [10, 12, 12, 12, 12, 12, 12, 12, 12, 10], 
         [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
         [10, 12, 12, 12, 12, 12, 12, 12, 12, 10], 
         [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
-        [10, 12, 12, 12, 12, 12, 12, 12, 12, 10], 
+        [10, 10, 10, 10, 10, 12, 12, 12, 12, 10], 
         [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
-        [10, 12, 12, 12, 12, 12, 12, 12, 12, 10], 
+        [10, 12, 10, 10, 10, 12, 12, 12, 12, 10], 
         [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
-        [10, false, false, false, false, false, false, false, false, false], 
+        [10, 10, 10, 10, 10, 12, 12, 12, 12, 10], 
+        [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
+        [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 
     ];
 } else {
     partial = null;
@@ -343,13 +343,15 @@ function DrawTileMap() {
 
 function DrawPath(path, pathOffset) {
     if (path.length === 0) { return; }
-    tileCtx.strokeStyle = ['rgb(0, 0, 225)','rgb(225, 0, 0)'][pathOffset]
+    tileCtx.strokeStyle = ['rgb(225, 0, 0)','rgb(0, 225, 0)',
+        'rgb(0, 0, 225)', 'rgb(225, 225, 0)', 'rgb(225, 0, 225)'][pathOffset]
     tileCtx.beginPath();
     tileCtx.lineWidth = 5;
     let offset = 2;
     tileCtx.moveTo((path[0].x + 1) * updatedTileSize * 1.5, 
         (path[0].y + 1) * updatedTileSize * 1.5);
     for (let i = 1; i < path.length; i++) {
+        if (i == path.length-1) { pathOffset = 0; }
         let tile = path[i];
         // TODO: THE ONE IS AN OFFSET BECAUSE OF THE TRIM.
         let x = (tile.x + 1) * tileSize;

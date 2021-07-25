@@ -6,7 +6,8 @@ export function pathfinding(featureMap, start, goal) {
     let cardinalFlag = true; // IF TRUE, ONLY GET CARDINAL DIRECTIONS. NO DIAGONALS.
     let aStarMap = GenerateMap(featureMap);
     let paths = [];
-    let scoringFunctions = [scoreDistance, scoreJumpscare];
+    let scoringFunctions = [scoreDistance, scoreJumpscare, scoreIsolation,
+        scoreLowVis, scoreAmbientCreep];
     for (let i = 0; i < scoringFunctions.length; i++) {
         aStarMap = ResetMap(aStarMap);
         let path = aStar(aStarMap[start.x][start.y], aStarMap[goal.x][goal.y], 
@@ -83,6 +84,34 @@ function aStar(start, goal, aStarMap, cardinalFlag, scoringFunction) {
     return false;
 }
 
+function scoreLowVis(neighbor, goal, current, feature) {
+    let count = 1;
+    for (let j = 0; j < neighbor.features.length; j++) {
+        if (neighbor.features[j] === "LV") {
+            count++;
+        }
+    }
+    return scoreDistance(neighbor, goal, current) / count;
+}
+function scoreAmbientCreep(neighbor, goal, current) {
+    let count = 1;
+    for (let j = 0; j < neighbor.features.length; j++) {
+        if (neighbor.features[j] === "AC") {
+            count++;
+        }
+    }
+    return scoreDistance(neighbor, goal, current) / count;
+}
+function scoreIsolation(neighbor, goal, current) {
+    let count = 1;
+    for (let j = 0; j < neighbor.features.length; j++) {
+        if (neighbor.features[j] === "I") {
+            count++;
+        }
+    }
+    return scoreDistance(neighbor, goal, current) / count;
+}
+
 function scoreJumpscare(neighbor, goal, current) {
     let count = 1;
     for (let j = 0; j < neighbor.features.length; j++) {
@@ -90,7 +119,7 @@ function scoreJumpscare(neighbor, goal, current) {
             count++;
         }
     }
-    return scoreDistance(neighbor, goal, current)/ (count * count);
+    return scoreDistance(neighbor, goal, current) / count;
     
 } 
 function scoreDistance(neighbor, goal, currentTile) {
