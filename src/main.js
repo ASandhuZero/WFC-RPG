@@ -71,30 +71,34 @@ let featureMapping = {
 //number, put a random tile in, and search around until the correct tile is 
 // found :)
 let partial = null;
-let partialFlag = true;
+let partialFlag = false;
 let shouldDrawPath = true;
 if (partialFlag) {
     partial = [
         [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
         [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
         [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        [10,10,10,10,10,12,10,12,10,12,10,12,10,12,10],
+        [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
         [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
         [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        [10,10,10,12,10,12,10,12,10,12,10,12,10,12,10],
+        [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
         [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        [10,10,10,12,10,12,10,12,10,12,10,12,10,12,10],
+        [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
         [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        [10,10,10,12,10,12,10,12,10,12,10,12,10,12,10],
+        [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
         [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        [10,10,10,12,10,12,10,12,10,12,10,12,10,12,10],
-        [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        [10,10,10,12,10,12,10,12,10,12,10,12,10,12,10],
+        [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
         [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
     ];
 } else {
     partial = null;
 }
-
+let short = 0;
+let psych = 0;
+let slash = 0; 
+let slasher = 0;
+let psycho = 0;
 let loopCount = 1;
 let paths = false;
 let heatmaps = null;
@@ -139,15 +143,29 @@ while ((wfc === undefined || paths === false) && loopCount < 100) {
         y : 0
     };
     let goal = {
-        x : 14,
-        y : 14
+        x : width - 1,
+        y : height -1
     };
     paths = pathfinding(combinedFeatureMap, start, goal);
     console.log(lowLevelFeatureMap);
     console.log(tilemapEval);
+    // if (paths) {
+    //     if (paths[0].movesTaken > paths[1].movesTaken) { short++; }
+    //     if (paths[0].slasherScore < paths[1].slasherScore ) { slash++; }
+    //     if (paths[0].psychologicalScore < paths[1].psychologicalScore ) { psych++; }
+    //     if (paths[2].slasherScore <= paths[3].slasherScore ) { slasher++; }
+    //     if (paths[3].psychologicalScore <= paths[2].psychologicalScore ) { psycho++; }
+    // }
+
+    // paths = false;
     loopCount++;
 }
-
+console.log("scaredy cat found shortest path:", short);
+console.log("shortest path had less slasher scares:", slash);
+console.log("shortest path had less psych scares:", psych);
+console.log("Slasher had more psych scare:", psycho);
+console.log("Psycho had more Slasher scare:", slasher);
+// debugger;
 
 
 
@@ -193,7 +211,7 @@ tileSet.src = './assets/tilesets/graveyard.png';
 tileSet.onload = draw;
 
 let tileSize = 16;
-let tileOutputSize = 3; // can set to 1 for 32px or higher
+let tileOutputSize = 2.5; // can set to 1 for 32px or higher
 let updatedTileSize = tileSize * tileOutputSize - 1; // this -1 is offsetting everything and giving that cool grid look.
 
 let atlasCol = 9;
@@ -212,7 +230,7 @@ function draw() {
     DrawTileMap();
     if (shouldDrawPath) {
         for (let i = 0; i < paths.length; i++) {
-            DrawPath(paths[i], i);
+            DrawPath(paths[i].path, i);
         }
     }
 }
