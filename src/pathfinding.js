@@ -139,7 +139,8 @@ function scoreSlasher(neighbor, goal, map, current) {
     let vis = scoreLowVis(neighbor, goal, map, current) * 0.1;
     let iso = scoreIsolation(neighbor, goal, map, current) * 0.1;
     let dist = scoreDistance(neighbor, goal, map, current);
-    let totalHorrorScore = scare + iso + vis + creep;
+    let totalHorrorScore = scare + vis;
+    totalHorrorScore /= (iso + creep);
     return 1/totalHorrorScore;
 }
 
@@ -149,7 +150,8 @@ function scorePsych(neighbor, goal, map, current) {
     let vis = scoreLowVis(neighbor, goal, map, current);
     let iso = scoreIsolation(neighbor, goal, map, current);
     let dist = scoreDistance(neighbor, goal, map, current);
-    let totalHorrorScore = scare + iso + vis + creep;
+    let totalHorrorScore = iso + creep;
+    totalHorrorScore /= (scare + vis);
     return 1/totalHorrorScore;
 }
 function scoreLowVis(neighbor, goal, map, current) {

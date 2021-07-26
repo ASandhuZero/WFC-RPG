@@ -137,6 +137,11 @@ export function detectAmbientCreep(input, numRows, numCols)
                         // If a neighbor cell is also marked as AC, increase the output tile's AC score.
                         output[i][j].push("AC");
                     }
+                }
+                for (let n = 0; n < neighbors.length; n++)
+                {
+                    let index_i = neighbors[n].i;
+                    let index_j = neighbors[n].j;
                     if (count > threshold) 
                     { 
                         output[index_i][index_j].push("AC"); 
@@ -220,7 +225,6 @@ export function detectIsolation(input, numRows, numCols)
         {
             // The minimum number of low-vis tiles that must be surrounding a certain tile for it to be considered isolated.
             let threshold = 3;
-
             // The current number of low-vis tiles surrounding the current tile.
             let surroundings = 0;
 
@@ -232,6 +236,7 @@ export function detectIsolation(input, numRows, numCols)
             {
                 // If the tile is traversable, get its neighbors.
                 let neighbors = getNeighbors(input, i, j);
+                let lonely = neighbors.length;
 
                 // Traverse the neighbors.
                 for (let n = 0; n < neighbors.length; n++)
@@ -241,10 +246,17 @@ export function detectIsolation(input, numRows, numCols)
                     let index_j = neighbors[n].j;
                     // Store the metadata list for the index being looked at.
                     let neighborList = input[index_i][index_j];
-                    if (neighborList.includes("LV")) { surroundings++; }
+                    if (neighborList.includes("LV")) 
+                    {
+                        surroundings++; 
+                    }
                     if (output[index_i][index_j].includes("I")) 
                     { 
                         surroundings++; 
+                    }
+                    if (neighborList[0] === "T" && neighborList.length === 1) 
+                    {
+                        lonely--;
                     }
                 }
 
@@ -252,6 +264,10 @@ export function detectIsolation(input, numRows, numCols)
                 if (surroundings >= threshold)
                 {
                     // Mark the corresponding output tile as isolated.
+                    output[i][j].push("I"); 
+                }
+                if (lonely === 0) 
+                {
                     output[i][j].push("I"); 
                 }
             }
