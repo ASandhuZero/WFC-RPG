@@ -7,10 +7,10 @@ export function pathfinding(featureMap, start, goal) {
     let cardinalFlag = true; // IF TRUE, ONLY GET CARDINAL DIRECTIONS. NO DIAGONALS.
     let map = GenerateMap(featureMap);
     let paths = [];
-    let scoringFunctions = [scoreDistance, scoreLongest,scoreScaredyCat,
-        scorePsych, scoreSlasher];
+    let scoringFunctions = [scoreShortest, scoreLongest, scoreScaredyCat,
+        scoreSlasher, scorePsych];
     for (let i = 0; i < scoringFunctions.length; i++) {
-        map = ResetMap(map);
+        map = ResetMap(map, goal);
         let path = aStar(map[start.x][start.y], map[goal.x][goal.y], 
         map, cardinalFlag, scoringFunctions[i]);
         if (path === false) { return false; }
@@ -55,12 +55,12 @@ function ReconstructPath(result, map) {
     return pathData;
 }
 
-function ResetMap(map) {
+function ResetMap(map, goal) {
     for (let i = 0; i < map.length; i++) {
         for (let j = 0; j < map[i].length; j++) {
             map[i][j].checked = false;
             map[i][j].cameFrom = null;
-            map[i][j].score = 9999;
+            map[i][j].score = scoreDistance(map[i][j], goal, map, null);
         }
     }
     return map;
@@ -83,7 +83,7 @@ function aStar(start, goal, aStarMap, cardinalFlag, scoringFunction) {
     let openSet = [start];
     let moves = [];
     let currentTile = null;
-    let totalScore = 0;
+
     while (openSet.length !== 0) {
         currentTile = openSet.pop();
         currentTile.checked = true;
@@ -93,9 +93,9 @@ function aStar(start, goal, aStarMap, cardinalFlag, scoringFunction) {
         let neighbors = getNeighbors(currentTile, aStarMap, cardinalFlag);
         for (let i = 0; i < neighbors.length; i++) {
             let neighbor = neighbors[i];
+            if (neighbor === start) { continue; }
             neighbor.score = scoringFunction(neighbor, goal, aStarMap, 
                 currentTile);
-            neighbor.score += totalScore;
             neighbor.cameFrom = currentTile;
         }
         neighbors = neighbors.sort((a, b) => b.score - a.score);
@@ -119,122 +119,46 @@ function evaluateMetaTag(tile, map, metatag) {
     }
     return count;
 }
+function scoreShortest(neighbor) {
+    return neighbor.score;
+}
+
+function scoreLongest(neighbor, goal, map, current) {
+    dist = scoreDistance(neighbor, goal, map, current);
+    return  1/dist;
+}
+
 function scoreScaredyCat(neighbor, goal, map, current) {
-    let creep = scoreAmbientCreep(neighbor, goal, map, current);
-    let scare = scoreJumpscare(neighbor, goal, map, current);
-    let vis = scoreLowVis(neighbor, goal, map, current);
-    let iso = scoreIsolation(neighbor, goal, map, current);
+    let creep = neighbor.ac;
+    let scare = neighbor.js;
+    let vis = neighbor.lv;
+    let iso = neighbor.iso;
     let dist = scoreDistance(neighbor, goal, map, current);
     let totalHorrorScore = scare + iso + vis + creep;
-    return totalHorrorScore;
-}
-function scoreLongest(neighbor, goal, map, current) {
-    let dist = scoreDistance(neighbor, goal, map, current);
-    return  1/(dist);
+    return ((0.1*dist) * totalHorrorScore);
 }
 
 function scoreSlasher(neighbor, goal, map, current) {
-    let creep = scoreAmbientCreep(neighbor, goal, map, current) * 0.9;
-    let scare = scoreJumpscare(neighbor, goal, map, current) * 0.1;
-    let vis = scoreLowVis(neighbor, goal, map, current) * 0.1;
-    let iso = scoreIsolation(neighbor, goal, map, current) * 0.1;
+    let creep = neighbor.ac;
+    let scare = neighbor.js * 4;
+    let vis = neighbor.lv * 2;
+    let iso = neighbor.iso * 0.5;
     let dist = scoreDistance(neighbor, goal, map, current);
-    let totalHorrorScore = scare + vis;
-    totalHorrorScore /= (iso + creep);
-    return 1/totalHorrorScore;
+    let totalHorrorScore = iso + creep + vis + scare;
+    let combined = dist + totalHorrorScore;
+    return (dist)/totalHorrorScore;
 }
 
 function scorePsych(neighbor, goal, map, current) {
-    let creep = scoreAmbientCreep(neighbor, goal, map, current);
-    let scare = scoreJumpscare(neighbor, goal, map, current);
-    let vis = scoreLowVis(neighbor, goal, map, current);
-    let iso = scoreIsolation(neighbor, goal, map, current);
+    let creep = neighbor.ac * 2;
+    let scare = neighbor.js * 0.5;
+    let vis = neighbor.lv;
+    let iso = neighbor.iso * 4;
     let dist = scoreDistance(neighbor, goal, map, current);
-    let totalHorrorScore = iso + creep;
-    totalHorrorScore /= (scare + vis);
-    return 1/totalHorrorScore;
+    let totalHorrorScore = iso + creep + vis + scare;
+    let combined = dist + totalHorrorScore;
+    return (dist)/totalHorrorScore;
 }
-function scoreLowVis(neighbor, goal, map, current) {
-    let count = 1;
-    for (let i = 0; i < neighbor.features.length; i++) {
-        if (neighbor.features[i] === "LV") { count++; }
-    }
-    // let distantNeihgbors = getNeighbors(neighbor, map);
-    // for (let i = 0; i < distantNeihgbors.length; i++) {
-    //     let distantNeighbor = distantNeihgbors[i];
-    //     for (let j = 0; j < distantNeighbor.features.length; j++) {
-    //         if (distantNeighbor.features[j] === "LV") { count++; };
-    //     }
-    // }
-    let dist = scoreDistance(neighbor, goal, map, current);
-    let score = (dist) - (dist * count);
-    if (count == 1) { score = 1}
-    if (score < 1) { score = 1/(score * score); }
-    if (score < 0) { debugger; }
-    return count;
-    return 100 + score;
-}
-function scoreAmbientCreep(neighbor, goal, map,  current) {
-    let count = 1;
-    for (let i = 0; i < neighbor.features.length; i++) {
-        if (neighbor.features[i] === "AC") { count++; }
-    }
-    // let distantNeihgbors = getNeighbors(neighbor, map);
-    // for (let i = 0; i < distantNeihgbors.length; i++) {
-    //     let distantNeighbor = distantNeihgbors[i];
-    //     for (let j = 0; j < distantNeighbor.features.length; j++) {
-    //         if (distantNeighbor.features[j] === "AC") { count++; };
-    //     }
-    // }
-    let dist = scoreDistance(neighbor, goal, map, current);
-    let score = (dist) - (dist * count);
-    if (count == 1) { score = 1}
-    if (score < 1) { score = 1/(score * score); }
-    if (score < 0) { debugger; }
-    return count;
-    return 100 + score;
-}
-function scoreIsolation(neighbor, goal, map, current) {
-    let count = 1;
-    for (let i= 0; i < neighbor.features.length; i++) {
-        if (neighbor.features[i] === "I") { count++; }
-    }    
-    // let distantNeihgbors = getNeighbors(neighbor, map);
-    // for (let i = 0; i < distantNeihgbors.length; i++) {
-    //     let distantNeighbor = distantNeihgbors[i];
-    //     for (let j = 0; j < distantNeighbor.features.length; j++) {
-    //         if (distantNeighbor.features[j] === "I") { count++; };
-    //     }
-    // }
-    let dist = scoreDistance(neighbor, goal, map, current);
-    let score = (dist) - (dist * count);
-    if (count == 1) { score = 1}
-    if (score < 1) { score = 1/(score * score); }
-    if (score < 0) { debugger; }
-    return count;
-    return 100 + score;
-}
-
-function scoreJumpscare(neighbor, goal, map, current) {
-    let count = 1;
-    for (let i = 0; i < neighbor.features.length; i++) {
-        if (neighbor.features[i] === "JS") { count++; }
-    }
-    // let distantNeihgbors = getNeighbors(neighbor, map);
-    // for (let i = 0; i < distantNeihgbors.length; i++) {
-    //     let distantNeighbor = distantNeihgbors[i];
-    //     for (let j = 0; j < distantNeighbor.features.length; j++) {
-    //         if (distantNeighbor.features[j] === "JS") { count++; };
-    //     }
-    // }
-    let dist = scoreDistance(neighbor, goal, map, current);
-    let score = (dist) - (dist * count);
-    if (count == 1) { score = 1}
-    if (score < 1) { score = 1/(score * score); }
-    if (score < 0) { debugger; }
-    return count;
-    return 100 + score;
-} 
 function scoreDistance(neighbor, goal, map, currentTile) {
     if (neighbor === goal) { return 0; }
     let d_x = goal.x - neighbor.x;
@@ -274,6 +198,10 @@ class Tile {
         this.x = x;
         this. y = y;
         this.features = (features ? features : []);
+        this.ac = features.filter(item => item === "AC").length;
+        this.js = features.filter(item => item === "JS").length;
+        this.iso = features.filter(item => item === "I").length;
+        this.lv = features.filter(item => item === "LV").length;
         this.checked = false;
         this.cameFrom = null;
         this.score = 9999;

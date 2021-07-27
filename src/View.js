@@ -93,7 +93,7 @@ function generateCanvas(name, w, h) {
 }
 
 function drawImage(ctx, tileSet, sourceX, sourceY, sourceSize, destX, destY, updatedSize) {
-    updatedSize -= 1;
+    // updatedSize -= 1;
     ctx.drawImage(tileSet, sourceX, sourceY, sourceSize, sourceSize, destX, 
         destY, updatedSize, updatedSize);
 }

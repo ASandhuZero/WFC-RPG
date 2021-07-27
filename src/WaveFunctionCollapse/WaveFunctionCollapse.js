@@ -9,7 +9,7 @@ import * as Constraints from "./Constraints/Constraints"
  */
 //TODO: Pass everything as a param object rahter than individual variables.
 //  then break it out.
-export function WFC(periodic, tilemapData, partial = null) {
+export function WFC(periodic, tilemapData, partial = null, strict=false) {
     //TODO: THERE IS SOME NIGHTMARES RIGHT HERE THAT NEED TO BE WORKED THROUGH.
     //      AS IN THE TILE_RULE AND ITEM_RULE ARE UNDEFINED I THINK AND THAT IS 
     //      WHAT IS CAUSING THE BLANK SCREEN. FIX THIS.
@@ -34,7 +34,7 @@ export function WFC(periodic, tilemapData, partial = null) {
     } else {
         neighbors = Constraints.GetNeighbors(tiles); // O(n^2)
     }
-    let propagator = GeneratePropagator(neighbors, tiles, items); // O(n^3) ...TODO: this is dumb
+    let propagator = GeneratePropagator(neighbors, tiles, items, strict); // O(n^3) ...TODO: this is dumb
 
         let WaveData = {
         "tiles": tiles,
@@ -89,7 +89,7 @@ export function WFC(periodic, tilemapData, partial = null) {
                 return [];
             } 
             
-            Propagate(waves, WaveData, type, periodic, w, h, propagator);
+            Propagate(waves[type], WaveData, type, periodic, w, h, propagator);
         }
     }
     let tileNames = WaveData.tiles.names;
@@ -226,7 +226,7 @@ function GenerateTileMap(waves, tileAmount, itemAmount, tiles, items, w, h) {
  * Returns a matrix of possible neighboring tiles.
  * @returns {object} locality_propagator    
  */
-function GeneratePropagator(neighbors, tiles, items) {
+function GeneratePropagator(neighbors, tiles, items, strict) {
     let tile_amount = tiles.names.length
     let propagator = new Array(4);
     for (let direction = 0; direction < 4; direction++) {
@@ -243,18 +243,26 @@ function GeneratePropagator(neighbors, tiles, items) {
         
         let L = tiles.rotations[left];   // uses tile id number
         let R = tiles.rotations[right];   // array of tile id number according to its rotations
+        // TODO: This is one of the most frustrating bugs. Basically
+        // If a tile isn't defined, then it should skip through the undefined
+        //tile, but there seems to be something wrong. Validate the josn, me
+        // thinks.
+        if (R === undefined) { debugger; }
+        if (L === undefined) { debugger; }
         let D = tiles.rotations[L[1]];
         let U = tiles.rotations[R[1]];
         // determines which neighbor tiles can exist
         propagator[0][L[0]][R[0]] = R[0];   // propagator[R, U, L, D]
-        propagator[0][L[6]][R[6]] = R[6];
-        propagator[0][R[4]][L[4]] = L[4];
-        propagator[0][R[2]][L[2]] = L[2];
+        if (!strict) {
+            propagator[0][L[6]][R[6]] = R[6];
+            propagator[0][R[4]][L[4]] = L[4];
+            propagator[0][R[2]][L[2]] = L[2];
+            propagator[1][D[0]][U[0]] = U[0];
+            propagator[1][U[6]][D[6]] = D[6];
+            propagator[1][D[4]][U[4]] = U[4];
+            propagator[1][U[2]][D[2]] = D[2];
+        }
 
-        propagator[1][D[0]][U[0]] = U[0];
-        propagator[1][U[6]][D[6]] = D[6];
-        propagator[1][D[4]][U[4]] = U[4];
-        propagator[1][U[2]][D[2]] = D[2];
     }
     for (let tile_1 = 0; tile_1 < tile_amount; tile_1++) {
         for (let tile_2 = 0; tile_2 < tile_amount; tile_2++) {
@@ -643,7 +651,7 @@ function Propagate(wave, WaveData, type, periodic, w, h, propagator) {
                 let comp = compat[tile_2];  // array of number of compatible tiles with neighbor tile to be removed
                 comp[d] = comp[d] - 1;  // decrease number of compatible tiles according to d
                 if (comp[d] == 0) {
-                    elemsToRemove = Ban(wave, elemsData, elem, index_2, tile_2, elemsToRemove, 'propagate');
+                    elemsToRemove = Ban(wave, elemsData, index_2, tile_2, elemsToRemove, 'propagate');
                 }
             }
         }
@@ -657,38 +665,39 @@ function Propagate(wave, WaveData, type, periodic, w, h, propagator) {
  *  Removes tiles from wave.
  * @param {matrix} wave 
  * @param {object} elemsData
- * @param {int} wave_index : index of element in wave
+ * @param {int} waveIndex : index of element in wave
  * @param {int} wave_elem : index of tile within element
  * @param {array} elemsToRemove 
  * @returns {array} elements to remove in wave
  */
-function Ban(wave, elemsData, wave_index, wave_elem, elemsToRemove, origin) {
+function Ban(wave, elemsData, waveIndex, wave_elem, elemsToRemove, origin) {
 
-    let wave_array = wave[wave_index];    // creates array of tiles in chosen element
+    let waveArray = wave[waveIndex];    // creates array of tiles in chosen element
     // This is where Ban actually bans the undesired tile
-    wave_array[wave_elem] = false;  // set tile to false according to wave_elem passed in
+    if ( waveArray === undefined) { debugger; }
+    waveArray[wave_elem] = false;  // set tile to false according to wave_elem passed in
 
     // This is where Ban takes it a step further to get rid of the banned tile's number of compatible tiles
     if (elemsData.compatible != undefined) {
         // elemsData.compatible contains number of compatible tiles
-        elemsData.compatible[wave_index][wave_elem] = [0,0,0,0];    // set the false tile's corresponding set of compatible tiles to 0
+        elemsData.compatible[waveIndex][wave_elem] = [0,0,0,0];    // set the false tile's corresponding set of compatible tiles to 0
     }
 
     // Now it's time to actually set the banned tile up for removal 
-    elemsToRemove.push([wave_index, wave_elem]);  // add the false tile to elemsToRemove array
+    elemsToRemove.push([waveIndex, wave_elem]);  // add the false tile to elemsToRemove array
 
     // Need to recalculate entropy for the element in the wave using Shannon Entropy
-    if(elemsData.sums_of_weights[wave_index] == elemsData.weights[wave_elem] || elemsData.entropies == NaN) { 
+    if(elemsData.sums_of_weights[waveIndex] == elemsData.weights[wave_elem] || elemsData.entropies == NaN) { 
         throw 'conflict detected'
     }
-    let sum = elemsData.sums_of_weights[wave_index];    // get sum of weights for element with false tile
-    let log_sums = elemsData.sums_of_log_weights[wave_index];
-    elemsData.entropies[wave_index] += log_sums / sum - Math.log(sum); // recalculate entropy
-    elemsData.possible_choices[wave_index] -= 1;    // decrease possible choices according to wave_index
-    elemsData.sums_of_weights[wave_index] -= elemsData.weights[wave_elem];  
-    elemsData.sums_of_log_weights[wave_index] -= elemsData.log_weights[wave_elem];
-    sum = elemsData.sums_of_weights[wave_index];    // get sum of weights for element with false tile
-    elemsData.entropies[wave_index] -= log_sums / sum - Math.log(sum);
+    let sum = elemsData.sums_of_weights[waveIndex];    // get sum of weights for element with false tile
+    let log_sums = elemsData.sums_of_log_weights[waveIndex];
+    elemsData.entropies[waveIndex] += log_sums / sum - Math.log(sum); // recalculate entropy
+    elemsData.possible_choices[waveIndex] -= 1;    // decrease possible choices according to wave_index
+    elemsData.sums_of_weights[waveIndex] -= elemsData.weights[wave_elem];  
+    elemsData.sums_of_log_weights[waveIndex] -= elemsData.log_weights[wave_elem];
+    sum = elemsData.sums_of_weights[waveIndex];    // get sum of weights for element with false tile
+    elemsData.entropies[waveIndex] -= log_sums / sum - Math.log(sum);
     //TODO: Maybe not have a pass by reference call here? Maybe do something a bit more... idk better?
     return elemsToRemove;
 }

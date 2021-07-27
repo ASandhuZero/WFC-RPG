@@ -250,10 +250,6 @@ export function detectIsolation(input, numRows, numCols)
                     {
                         surroundings++; 
                     }
-                    if (output[index_i][index_j].includes("I")) 
-                    { 
-                        surroundings++; 
-                    }
                     if (neighborList[0] === "T" && neighborList.length === 1) 
                     {
                         lonely--;

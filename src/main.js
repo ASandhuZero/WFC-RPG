@@ -37,18 +37,18 @@ let featureMapping = {
     7 : ["T"], 
     8 : ["T"],
     9 : ["T"],
-    10 : ["AC", "LV"],
+    10 : ["AC"],
     11 : ["AC", "LV"],
-    12 : ["AC", "LV"],
+    12 : ["AC"],
     13 : ["AC", "LV"],
     14 : ["AC", "LV"],
     15 : ["T"],
-    16 : ["T"],
+    16 : ["AC"],
     17 : ["T"],
     18 : ["T"],
-    19 : ["AC", "LV"],
+    19 : ["AC"],
     20 : ["AC", "LV"],
-    21 : ["AC", "LV"],
+    21 : ["AC"],
     22 : ["AC", "LV"],
     24 : ["T"],
     25 : ["T"],
@@ -60,7 +60,14 @@ let featureMapping = {
     31 : ["AC", "T"],
     37 : [],
     38 : [],
-    39 : []
+    39 : [],
+    41 : [],
+    45 : [],
+    50 : [],
+    54 : [],
+    59 : [],
+    60 : [],
+    61 : []
 }
 
 
@@ -73,27 +80,57 @@ let featureMapping = {
 // found :)
 let partial = null;
 let partialFlag = true;
-let shouldDrawPath = true;
+let testPaths = false;
+let strict = true;
 if (partialFlag) {
     partial = [
 
     ];
     partial = [
-        [10,12,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        [10,12,10,12,12,12,10,12,10,12,10,12,10,12,10],
-        [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        [10,10,10,10,10,12,10,12,10,12,10,12,10,12,10],
-        [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
-        [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
-        [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
-        [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
-        [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
-        [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
+        [10,10,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
+        // [10,12,10,12,12,12,10,12,10,12,10,12,10,12,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,12,10,12,10,12,10,12,10,12,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
     ];
 } else {
     partial = null;
@@ -107,10 +144,10 @@ let loopCount = 1;
 let paths = false;
 let heatmaps = null;
 let features = null; 
-while ((wfc === undefined || paths === false) && loopCount < 100) {
+while (wfc === undefined && loopCount < 1000) {
     console.log("in loop");
     try {
-        wfc = WFC(0, tilemapData, partial); 
+        wfc = WFC(0, tilemapData, partial, strict); 
         console.log(wfc);
         if (wfc.length === 0) {
             wfc = undefined;
@@ -119,6 +156,10 @@ while ((wfc === undefined || paths === false) && loopCount < 100) {
         console.log(error);
         wfc = undefined;
     }
+    loopCount++;
+}
+loopCount = 0;
+while (paths === false && loopCount < 10) {
     // TODO: Really, just figure out if WFC should be a flattened array or not.
     let lowLevelFeatureMap = Array.from(Array(width), () => new Array(height));
     for (let i = 0; i < width; i++) {
@@ -136,6 +177,7 @@ while ((wfc === undefined || paths === false) && loopCount < 100) {
     // console.log(features.iso);
     let combinedFeatureMap = combineFeatures(features);
     heatmaps = generateHeatmaps(combinedFeatureMap, width, height);
+    console.log(combinedFeatureMap);
     // console.log(heatmaps.ac);
     // console.log(heatmaps.lv);
     // console.log(heatmaps.js);
@@ -153,15 +195,14 @@ while ((wfc === undefined || paths === false) && loopCount < 100) {
     paths = pathfinding(combinedFeatureMap, start, goal);
     console.log(lowLevelFeatureMap);
     console.log(tilemapEval);
-    // if (paths) {
-    //     if (paths[0].movesTaken > paths[2].movesTaken) { short++; }
-    //     if (paths[0].slasherScore < paths[2].slasherScore ) { slash++; }
-    //     if (paths[0].psychologicalScore < paths[2].psychologicalScore ) { psych++; }
-    //     if (paths[4].slasherScore <= paths[3].slasherScore ) { slasher++; }
-    //     if (paths[3].psychologicalScore <= paths[4].psychologicalScore ) { psycho++; }
-    // }
-
-    // paths = false;
+    if (testPaths && paths) {
+            if (paths[0].movesTaken > paths[2].movesTaken) { short++; }
+            if (paths[0].slasherScore < paths[2].slasherScore ) { slash++; }
+            if (paths[0].psychologicalScore < paths[2].psychologicalScore ) { psych++; }
+            if (paths[3].slasherScore < paths[4].slasherScore ) { slasher++; }
+            if (paths[4].psychologicalScore < paths[3].psychologicalScore ) { psycho++; }
+        paths = false;
+    }    
     loopCount++;
 }
 console.log("scaredy cat found shortest path:", short);
@@ -170,11 +211,6 @@ console.log("shortest path had less psych scares:", psych);
 console.log("Slasher had more psych scare:", psycho);
 console.log("Psycho had more Slasher scare:", slasher);
 // debugger;
-
-
-
-
-
 
 function combineFeatures(features) {
     let horrorFeatures = [];
@@ -193,9 +229,7 @@ function combineFeatures(features) {
     return horrorFeatures
 }
 
-// CANVAS CODE TODO: BREAK THIS OUT INTO ITS OWN JS FILE IF WORK.
 // Also, got this from this helpful link https://medium.com/geekculture/make-your-own-tile-map-with-vanilla-javascript-a627de67b7d9 
-// Good good stuff.
 const tileSet = new Image();
 tileSet.src = './assets/tilesets/graveyard.png';
 tileSet.onload = drawAll;
