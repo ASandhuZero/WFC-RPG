@@ -65,7 +65,6 @@ export function GenerateItems(item_info, width, height) {
     items["sum_of_weights"] = sum_of_weights;
     items["sum_of_log_weights"] = sum_of_log_weights;
     items["starting_entropy"] = Math.log(sum_of_weights) - sum_of_log_weights / sum_of_weights;
-    items["possible_choices"] = new Array(width * height);
     items["sums_of_weights"] = new Array(width * height);
     items["sums_of_log_weights"] = new Array(width * height);
     items["entropies"] = new Array(width * height);
@@ -83,10 +82,10 @@ export function GenerateRules(rules_info) {
 }
 
 export function GenerateTiles(tiles_info, width, height) {
-    let tile, tile_name, new_tile, compatible, log_weights, cumulative_weights;
+    let tile, tile_name, new_tile, compatible, logWeights, cumulative_weights;
     let carray = [];
-    let sum_of_weights = 0;
-    let sum_of_log_weights = 0;
+    let weightSum = 0;
+    let logWeightSum = 0;
     let tiles = {
         types: [],
         rotations: [],
@@ -160,7 +159,7 @@ export function GenerateTiles(tiles_info, width, height) {
 
     // compatible tiles should be calculated according to neighbor constraints?
     compatible = new Array(tiles.amount);
-    log_weights = new Array(tiles.amount);
+    logWeights = new Array(tiles.amount);
     cumulative_weights = tiles.weights.reduce(function(a,b,i){ 
         return carray[i]=a+b;
     },0);
@@ -176,20 +175,18 @@ export function GenerateTiles(tiles_info, width, height) {
 
     // used for calculating entropy
     for (let t = 0; t < tiles.amount; t++) {
-        log_weights[t] = (tiles.weights[t] * Math.log(tiles.weights[t]));    // negative of shannon's entropy
-        sum_of_weights += tiles.weights[t]; // total weight for an element in wave array
-        sum_of_log_weights += log_weights[t];   // total entropy for an element in wave array
+        logWeights[t] = (tiles.weights[t] * Math.log(tiles.weights[t]));    // negative of shannon's entropy
+        weightSum += tiles.weights[t]; // total weight for an element in wave array
+        logWeightSum += logWeights[t];   // total entropy for an element in wave array
     }
+    //TODO: As an aside, if a weight is less that 1, then the logweight will be 
+    // a negative number... which doesn't work... please normalize or do 
+    // something more intelligent than that.
     tiles["compatible"] = compatible;
-    tiles["log_weights"] = log_weights;
-    tiles["sum_of_weights"] = sum_of_weights;
-    tiles["sum_of_log_weights"] = sum_of_log_weights;
-    tiles["starting_entropy"] = Math.log(sum_of_weights) - 
-        sum_of_log_weights / sum_of_weights;
-    tiles["possible_choices"] = new Array(width * height);
-    tiles["sums_of_weights"] = new Array(width * height);
-    tiles["sums_of_log_weights"] = new Array(width * height);
-    tiles["entropies"] = new Array(width * height);
+    tiles["logWeights"] = logWeights;
+    tiles["weightSum"] = weightSum;
+    tiles["logWeightSum"] = logWeightSum;
+    tiles["entropy"] = Math.log(weightSum) - logWeightSum / weightSum;
     tiles["carray"] = carray;
     tiles["csumweight"] = cumulative_weights;
     return tiles

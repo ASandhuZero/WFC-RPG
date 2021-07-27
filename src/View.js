@@ -28,8 +28,8 @@ export function Draw(heatmaps, w, h, tileSize, rescale, tileSet, tileSetCol, map
         typeof 1);
     let pathsCanvas = generateCanvas("Paths", w, h);
 
-    for (let col = 1; col < (w/updatedSize); col++) {
-        for (let row = 1; row < (h/updatedSize); row++) {
+    for (let row = 1; row < (w/updatedSize); row++) {
+        for (let col = 1; col < (h/updatedSize); col++) {
 
             drawTile(tilemapCanvas, tileSet, row, col, rescale, updatedSize, 
                 tileSize, atlasCol, map, index);
@@ -113,8 +113,8 @@ function drawPath(canvas, path, pathOffset, rescale, updatedSize, tileSize) {
         // TODO: THE ONE IS AN OFFSET BECAUSE OF THE TRIM.
         let x = (tile.x + 1) * tileSize;
         let y = (tile.y + 1) * tileSize;
-        ctx.lineTo(y * rescale + (2 * pathOffset)  + updatedSize/2, 
-            x * rescale + (2 * pathOffset) + updatedSize/2 );
+        ctx.lineTo(x * rescale + (2 * pathOffset)  + updatedSize/2, 
+            y * rescale + (2 * pathOffset) + updatedSize/2 );
         ctx.stroke();   
     }
 }
@@ -122,7 +122,8 @@ function drawName(canvas, map, index, row, col, atlasCol, rescale, updatedSize, 
     let ctx = canvas.getContext('2d');
     let updatedRow = row * tileSize;
     let updatCol = col * tileSize;
-    let tile = map[index];
+    //TODO: THE DUMB OFFSETTING RIGHT HERE AGAIN.
+    let tile = map[row-1][col-1];
     let tileVal = tile.name;
     let sourceX = (tileVal % atlasCol) * tileSize;
     let sourceY = Math.floor(tileVal/atlasCol) * tileSize;
@@ -172,7 +173,7 @@ function drawHeatmap(canvas, heatmap, row, col, rescale, updatedSize, tileSize) 
     let srgb = heatmap.output[row-1][col-1].srgb;
     ctx.fillStyle = 'rgba(' + 255 * srgb.red + ', '+ 255 * srgb.green + ', ' 
         + 255 * srgb.blue + ', 0.4)';
-    ctx.fillRect(updatCol * rescale, updatedRow * rescale, 
+    ctx.fillRect(updatedRow * rescale, updatCol * rescale, 
         updatedSize, updatedSize);
 }
 // We are passing too many things into this. Should just make it a parameter
@@ -187,7 +188,9 @@ function drawTile(canvas, tileSet, row, col, rescale, updatedSize, tileSize,
     let tile = {};
     let tileVal = "";
     let tileRot = "";
-    tile = map[index];
+    //TODO: THIS DUMB OFFSET REARS ITS UGLY HEAD. PLEASE FIGURE OUT A WAY TO 
+    // JUST DEAL WITH THIS.
+    tile = map[row-1][col-1];
     tileVal = tile.name;
     tileRot = tile.rotation;
     let rotation = (90 * tileRot)* Math.PI / 180;

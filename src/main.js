@@ -9,8 +9,8 @@ import { generateHeatmaps } from "./Evals/Visualization";
 import { pathfinding } from "./pathfinding";
 import { Draw } from "./View";
 
-const height = 15;
-const width = 15;
+const height = 20;
+const width = 20;
 let tileRules = {}
 let itemRules = {}
 let tilemapData = {
@@ -79,7 +79,7 @@ let featureMapping = {
 //number, put a random tile in, and search around until the correct tile is 
 // found :)
 let partial = null;
-let partialFlag = true;
+let partialFlag = false;
 let testPaths = false;
 let strict = true;
 if (partialFlag) {
@@ -87,7 +87,21 @@ if (partialFlag) {
 
     ];
     partial = [
-        [10,10,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        // [10,10,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
         [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
         [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
         [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
@@ -102,21 +116,6 @@ if (partialFlag) {
         [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
         [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
         [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
         // [10,12,10,12,12,12,10,12,10,12,10,12,10,12,10],
         // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
         // [10,10,10,10,10,12,10,12,10,12,10,12,10,12,10],
@@ -140,15 +139,14 @@ let psych = 0;
 let slash = 0; 
 let slasher = 0;
 let psycho = 0;
-let loopCount = 1;
+let loopCount = 0;
 let paths = false;
 let heatmaps = null;
 let features = null; 
-while (wfc === undefined && loopCount < 1000) {
+while (wfc === undefined && loopCount < 100) {
     console.log("in loop");
     try {
         wfc = WFC(0, tilemapData, partial, strict); 
-        console.log(wfc);
         if (wfc.length === 0) {
             wfc = undefined;
         }
@@ -158,13 +156,14 @@ while (wfc === undefined && loopCount < 1000) {
     }
     loopCount++;
 }
+console.log(wfc);
 loopCount = 0;
 while (paths === false && loopCount < 10) {
     // TODO: Really, just figure out if WFC should be a flattened array or not.
     let lowLevelFeatureMap = Array.from(Array(width), () => new Array(height));
     for (let i = 0; i < width; i++) {
         for (let j = 0; j < height; j++) {
-            let tile = wfc.tiles[j+(i*width)];
+            let tile = wfc.tiles[i][j];
             lowLevelFeatureMap[i][j] = featureMapping[tile.name];
         }
     }
