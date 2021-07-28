@@ -12,26 +12,34 @@ export function GetDependecies(items) {
     }
     return dependecies
 }
-
+// TODO: neighbors doesn't reflect the changes of having an item or something
+//else. Figure out how to conform data to fit the way you wrote this or 
+// do something else, idk.
 export function GetNeighbors(tiles) {
-    let neighbors = {
-        tiles: []
-    }
+    let neighbors = [];
     let tileNames = tiles["names"]
     for (let i = 0; i < tileNames.length; i++) {
         for (let j = 0; j < tileNames.length; j++) {
             if (i == j) {
                 continue;
             }
-            neighbors["tiles"].push({"left":tileNames[i], 
+            neighbors.push({"left":tileNames[i], 
                 "right":tileNames[j]});
-            neighbors["tiles"].push({"up":tileNames[i], 
+            neighbors.push({"up":tileNames[i], 
                 "down":tileNames[j]});
         }
     }
     return neighbors
 }
-
+export function GenerateStrictArray(tilesetInfo) {
+    let strictArray = [];
+    for (let i = 0; i < tilesetInfo.length; i++) {
+        if (tilesetInfo[i].noNeighbors) {
+            strictArray.push(tilesetInfo[i]);
+        }
+    }
+    return strictArray;
+}
 export function GenerateItems(item_info, width, height) {
     let item, cumulativeWeights;
     let carray=[];

@@ -9,8 +9,8 @@ import { generateHeatmaps } from "./Evals/Visualization";
 import { pathfinding } from "./pathfinding";
 import { Draw } from "./View";
 
-const height = 20;
-const width = 20;
+const height = 15;
+const width = 15;
 
 
 
@@ -82,30 +82,78 @@ let featureMapping = {
 //number, put a random tile in, and search around until the correct tile is 
 // found :)
 let partial = null;
-let partialFlag = true;
+let partialFlag = false;
 let testPaths = false;
 let strict = false;
-let shouldNeighbors = true;
+let shouldGenerateNeighbors = true;
 if (partialFlag) {
-    partial = [
-        [false,22,false]
-        // [10,false,false,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
+    let partials = 
+    [
+        [
+            [19,24,24,24,24,24,24,20],
+            [21,10,-1,-1,-1,-1,10,22],
+            [21,10,-1,-1,-1,-1,10,22],
+            [21,10,-1,-1,-1,-1,10,22]
+        ], 
+        [
+            [12,10,12,10,12],
+            [12,10,12,10,12],
+            [12,10,12,10,12]
+        ],
+        [
+            [19,24,24,24,24,24,20],
+            [21,12,10,12,10,12,22],
+            [21,12,10,12,10,12,22],
+            [21,12,10,12,10,12,22],
+            [21,12,10,12,10,12,22],
+        ], 
     ];
+    partial = generatePartial(partials, width, height);
 } else {
     partial = null;
+}
+function generatePartial(partials, w, h) {
+    let partialMap = new Array(w);
+    for (let i = 0; i < w; i++) {
+        partialMap[i] = new Array(h).fill(false);
+    }
+    // partials is a tensor. First degree indicies are the partials.
+    for (let i = 0; i < partials.length; i++) {
+        let randI, randJ;
+        randI = Math.floor(Math.random() * w);
+        randJ = Math.floor(Math.random() * h);
+        let randJReset = randJ;
+        for (let j = 0; j < partials[i].length; j++) {
+            let count = 0;
+            for (let k = 0; k < partials[i][j].length; k++) {
+                if (partialMap[randI][randJ]) {
+                    randJ++;
+                    k--;
+                    if (randJ >= h) { randJ = 0;}
+                    count++;
+                    if (count === w) { 
+                        count = 0; 
+                        continue; 
+                    }
+                } else {
+                    partialMap[randI][randJ] = partials[i][j][k];
+                    randJ++;
+                    if (randJ >= h) { randJ = 0;}
+                }
+            }
+            randI++;
+            if (randI >= w) { randI = 0;}
+            randJ = randJReset; 
+        }
+    }
+    for (let i = 0; i < partialMap.length; i++) {
+        for (let j = 0; j < partialMap[i].length; j++) {
+            if (partialMap[i][j] === -1) { partialMap[i][j] = false; }
+        }
+    }
+    partialMap[0][0] = 10;
+    partialMap[w-1][h-1] = 10;
+    return partialMap;
 }
 let short = 0;
 let psych = 0;
@@ -119,7 +167,7 @@ let features = null;
 while (wfc === undefined && loopCount < 10) {
     console.log("in loop");
     try {
-        wfc = WFC(0, tilemapData, partial, strict, shouldNeighbors); 
+        wfc = WFC(0, tilemapData, partial, strict, shouldGenerateNeighbors); 
         if (wfc.length === 0) {
             wfc = undefined;
         }

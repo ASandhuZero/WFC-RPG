@@ -8,7 +8,7 @@
 // Good good stuff.
 export function Draw(heatmaps, w, h, tileSize, rescale, tileSet, tileSetCol, map, paths) {
 
-    let debugging = true;
+    let debugging = false;
     let updatedSize = tileSize * rescale;
     let atlasCol = tileSetCol;
     // TODO: THE REASON WHY WE ARE DOING THIS OFFSET IS BECUASE OF THE TRIM...
@@ -60,7 +60,7 @@ export function Draw(heatmaps, w, h, tileSize, rescale, tileSet, tileSetCol, map
             rescale,updatedSize);
     }
     generateButton("paths", pathsCanvas.style, "#FFF", h, rescale, 
-        updatedSize, "block");
+        updatedSize, debugging);
     drawTrim(tilemapCanvas, tileSet, atlasCol, rescale, tileSize, updatedSize, w, h);
 }
 
