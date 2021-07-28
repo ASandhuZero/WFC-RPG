@@ -9,8 +9,8 @@ import { generateHeatmaps } from "./Evals/Visualization";
 import { pathfinding } from "./pathfinding";
 import { Draw } from "./View";
 
-const height = 15;
-const width = 15;
+const height = 20;
+const width = 20;
 
 
 
@@ -82,9 +82,10 @@ let featureMapping = {
 //number, put a random tile in, and search around until the correct tile is 
 // found :)
 let partial = null;
-let partialFlag = false;
+let partialFlag = true;
 let testPaths = false;
 let strict = false;
+let banList = [19,20,21,22,23,24,25];
 let shouldGenerateNeighbors = true;
 if (partialFlag) {
     let partials = 
@@ -123,27 +124,40 @@ function generatePartial(partials, w, h) {
         randI = Math.floor(Math.random() * w);
         randJ = Math.floor(Math.random() * h);
         let randJReset = randJ;
-        for (let j = 0; j < partials[i].length; j++) {
-            let count = 0;
-            for (let k = 0; k < partials[i][j].length; k++) {
-                if (partialMap[randI][randJ]) {
-                    randJ++;
-                    k--;
-                    if (randJ >= h) { randJ = 0;}
-                    count++;
-                    if (count === w) { 
-                        count = 0; 
-                        continue; 
-                    }
-                } else {
-                    partialMap[randI][randJ] = partials[i][j][k];
+        let randIReset = randI;
+        //First check if partial can fit...
+        let partial = partials[i];
+        if (partial.length > w) { continue; }
+        let count = 0;
+        let allPartial = 0;
+        //Check to see if the partial can fit...
+        for (let j = 0; j < partial.length; j++) {
+            let partialArr = partial[j];
+            if (partialArr.length > h) { continue; }
+            for (let k = 0; k < partialArr.length; k++) {
+                if (!partialMap[randI][randJ]) { count++; }
+                allPartial++;
+                randJ++;
+                if (randJ >= h) { randJ = 0;}
+            }
+            if (randI >= w) { randI = 0;}
+            randJ = randJReset; 
+        }
+        randI = randIReset;
+        randJ = randJReset;
+        // If it fits then place the tiles!
+        if (count === allPartial) {
+            for (let j = 0; j < partial.length; j++) {
+                let partialArr = partial[i];
+                for (let k = 0; k < partialArr.length; k++) {
+                    partialMap[randI][randJ] = partialArr[k];
                     randJ++;
                     if (randJ >= h) { randJ = 0;}
                 }
+                randI++;
+                if (randI >= w) { randI = 0;}
+                randJ = randJReset; 
             }
-            randI++;
-            if (randI >= w) { randI = 0;}
-            randJ = randJReset; 
         }
     }
     for (let i = 0; i < partialMap.length; i++) {
@@ -167,7 +181,7 @@ let features = null;
 while (wfc === undefined && loopCount < 10) {
     console.log("in loop");
     try {
-        wfc = WFC(0, tilemapData, partial, strict, shouldGenerateNeighbors); 
+        wfc = WFC(0, tilemapData, partial, strict, shouldGenerateNeighbors, banList); 
         if (wfc.length === 0) {
             wfc = undefined;
         }
