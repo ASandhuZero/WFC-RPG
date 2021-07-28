@@ -11,6 +11,9 @@ import { Draw } from "./View";
 
 const height = 20;
 const width = 20;
+
+
+
 let tileRules = {}
 let itemRules = {}
 let tilemapData = {
@@ -79,56 +82,26 @@ let featureMapping = {
 //number, put a random tile in, and search around until the correct tile is 
 // found :)
 let partial = null;
-let partialFlag = false;
+let partialFlag = true;
 let testPaths = false;
-let strict = true;
+let strict = false;
+let shouldNeighbors = true;
 if (partialFlag) {
     partial = [
-
-    ];
-    partial = [
-        // [10,10,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        // [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-        [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-        // [10,12,10,12,12,12,10,12,10,12,10,12,10,12,10],
+        [false,22,false]
+        // [10,false,false,10,10,10,10,10,10,10,10,10,10,10,10],
         // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,10,10,10,10,12,10,12,10,12,10,12,10,12,10],
         // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
         // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
         // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
         // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
         // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
-        // [10,12,10,12,10,12,10,12,10,12,10,12,10,12,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
+        // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10],
         // [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
     ];
 } else {
@@ -143,10 +116,10 @@ let loopCount = 0;
 let paths = false;
 let heatmaps = null;
 let features = null; 
-while (wfc === undefined && loopCount < 100) {
+while (wfc === undefined && loopCount < 10) {
     console.log("in loop");
     try {
-        wfc = WFC(0, tilemapData, partial, strict); 
+        wfc = WFC(0, tilemapData, partial, strict, shouldNeighbors); 
         if (wfc.length === 0) {
             wfc = undefined;
         }

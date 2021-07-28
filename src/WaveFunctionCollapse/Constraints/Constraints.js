@@ -17,14 +17,16 @@ export function GetNeighbors(tiles) {
     let neighbors = {
         tiles: []
     }
-    let tile_names = tiles["names"]
-    for (let i = 0; i < tile_names.length; i++) {
-        for (let j = 0; j < tile_names.length; j++) {
+    let tileNames = tiles["names"]
+    for (let i = 0; i < tileNames.length; i++) {
+        for (let j = 0; j < tileNames.length; j++) {
             if (i == j) {
                 continue;
             }
-            neighbors["tiles"].push({"left":tile_names[i], 
-                "right":tile_names[j]});
+            neighbors["tiles"].push({"left":tileNames[i], 
+                "right":tileNames[j]});
+            neighbors["tiles"].push({"up":tileNames[i], 
+                "down":tileNames[j]});
         }
     }
     return neighbors

@@ -9,7 +9,7 @@ import * as Constraints from "./Constraints/Constraints"
  */
 //TODO: Pass everything as a param object rahter than individual variables.
 //  then break it out.
-export function WFC(periodic, tilemapData, partial = null, strict=false) {
+export function WFC(periodic, tilemapData, partial = null, strict=false, neighborFlag=false) {
     //TODO: THERE IS SOME NIGHTMARES RIGHT HERE THAT NEED TO BE WORKED THROUGH.
     //      AS IN THE TILE_RULE AND ITEM_RULE ARE UNDEFINED I THINK AND THAT IS 
     //      WHAT IS CAUSING THE BLANK SCREEN. FIX THIS.
@@ -20,6 +20,9 @@ export function WFC(periodic, tilemapData, partial = null, strict=false) {
     let itemRules = tilemapData.itemRules;
     let data = tilesetInfo["data"];
     let neighborData = data["neighbors"];
+    if (neighborFlag) {
+        neighborData = [];
+    }
     let elemNumber = 0;
     // Getting the constraints for each type of data    
     // This really isn't robust TODO: Fix this later.
@@ -36,8 +39,9 @@ export function WFC(periodic, tilemapData, partial = null, strict=false) {
     }
     let propagator = GeneratePropagator(neighbors, tiles, items, strict); // O(n^3) ...TODO: this is dumb
 
-        tiles.rules = rules.tiles;
-        items.rules = rules.items;
+        tiles["rules"] = rules.tiles;
+        tiles["propagator"] = propagator;
+        items["rules"] = rules.items;
         let waveData = {
         "tiles": tiles,
         "items": items,
@@ -72,6 +76,7 @@ export function WFC(periodic, tilemapData, partial = null, strict=false) {
     if (partial !== null) {
         FillPartial(waves.tiles, partial, periodic, waveData, w, h, tileAmount);
         console.log("partial has been filled!")
+        console.log(waves.tiles);
     }
     elemsToRemove = [];
     while (result !== true) {
@@ -114,7 +119,6 @@ export function WFC(periodic, tilemapData, partial = null, strict=false) {
     let generated_tilemap = GenerateTileMap(waves, tileAmount, itemAmount, 
         tileNames, itemNames, w, h); // O(n^4)... Yep. This one is the one TODO: Fix this please, in some way.
     console.log(waves[type]);
-    debugger;
     return generated_tilemap
 }
 /**
@@ -135,16 +139,17 @@ function Clear(waves, waveData) {
 
     for (let i = 0; i < waves.tiles.length; i++) {
         for (let j = 0; j < waves.tiles[i].length; j++) {
+            let elem = waves.tiles[i][j];
             for (let t = 0; t < tileAmount; t++) {
-                let elem = waves.tiles[i][j];
                 elem.choices[t] = true;
                 elem.logWeightSum = tileData.logWeightSum;
                 elem.weightSum = tileData.weightSum;
                 elem.entropy = tileData.entropy;
+                let compatible = [0, 0, 0, 0];
                 for (let d = 0; d < 4; d++) {
-                    elem.compatible[t][d] = 
-                        waveData.propagator[opposite[d]][t].length; // compatible is the compatible tiles of t. NOT t itself. Which is why opposite is involved.
+                    compatible[d] = tileData.propagator[opposite[d]][t].length; // compatible is the compatible tiles of t. NOT t itself. Which is why opposite is involved.
                 }
+                elem.compatible[t] = compatible;
             }
         }
     }
@@ -162,6 +167,7 @@ function Clear(waves, waveData) {
 function FillPartial(wave, partial, periodic, WaveData, w, h, tileAmount) {
     let tileData = WaveData.tiles;
     let length = partial.length;
+    let removeArr = [];
     for (let i = 0; i < length; i++) {
         for (let j = 0; j < partial[i].length; j++) {
             let value = partial[i][j];
@@ -170,15 +176,22 @@ function FillPartial(wave, partial, periodic, WaveData, w, h, tileAmount) {
                 for (let k = 0; k < tileAmount; k++) {
                     if (k === value) { continue; }
                     // BAN MAKES THE ELEMENTS TO REMOVE
-                    let removed = Ban(wave, tileData, i, j, k, 
-                        tileData.elemsToRemove, 'fill partial');
-                    // PROPAGATE SENDS OUT THOSE CHANGES.
-                    Propagate(wave, WaveData['tiles'], removed, periodic, 
-                        w, h, WaveData.propagator);
+                    removeArr.push([i, j, k]);
+                    while (removeArr.length !== 0) {
+                        let toRemove = removeArr.pop();
+                        removed = Ban(wave, tileData, toRemove[0], toRemove[1],
+                            toRemove[2], 'fill partial');
+                        if (removed === null) {  continue; }
+                        // PROPAGATE SENDS OUT THOSE CHANGES.
+                        removeArr = removeArr.concat(Propagate(wave, 
+                            WaveData['tiles'], removed, periodic, w, h, 
+                            WaveData.propagator));
+                    }
                 }
             }
         }
     }
+    console.log(wave);
 }
 /**
  * GnereateTileMap
@@ -248,22 +261,35 @@ function GeneratePropagator(neighbors, tiles, items, strict) {
     }
     for (let i = 0; i < neighbors.length; i++) {
         // dissect neighbor constraints
+        let up, down;
+        let left, right;
+        let U, D;
+        let R, L;
         let neighbor_pair = neighbors[i];
-        let left = tiles.IDs[neighbor_pair.left];  // user defined rotation for left tile
-        let right = tiles.IDs[neighbor_pair.right];  // user defined rotation for right tile
+        if (neighbor_pair.hasOwnProperty("up")) {
+
+            up = tiles.IDs[neighbor_pair.up];  // user defined rotation for left tile
+            down = tiles.IDs[neighbor_pair.down];  // user defined rotation for left tile
+            U = tiles.rotations[up];
+            D = tiles.rotations[down];
+            L = tiles.rotations[D[3]]
+            R = tiles.rotations[U[3]]
+            propagator[1][D[0]][U[0]] = U[0];
+        } else {
+            let left = tiles.IDs[neighbor_pair.left];  // user defined rotation for right tile
+            let right = tiles.IDs[neighbor_pair.right];  // user defined rotation for right tile
+            L = tiles.rotations[left];   // uses tile id number
+            R = tiles.rotations[right];   // array of tile id number according to its rotations
+            D = tiles.rotations[L[1]];
+            U = tiles.rotations[R[1]];
+            propagator[0][L[0]][R[0]] = R[0];   // propagator[R, U, L, D]
+        }
         
-        let L = tiles.rotations[left];   // uses tile id number
-        let R = tiles.rotations[right];   // array of tile id number according to its rotations
         // TODO: This is one of the most frustrating bugs. Basically
         // If a tile isn't defined, then it should skip through the undefined
         //tile, but there seems to be something wrong. Validate the josn, me
         // thinks.
-        if (R === undefined) { debugger; }
-        if (L === undefined) { debugger; }
-        let D = tiles.rotations[L[1]];
-        let U = tiles.rotations[R[1]];
         // determines which neighbor tiles can exist
-        propagator[0][L[0]][R[0]] = R[0];   // propagator[R, U, L, D]
         if (!strict) {
             propagator[0][L[6]][R[6]] = R[6];
             propagator[0][R[4]][L[4]] = L[4];
@@ -289,18 +315,20 @@ function GeneratePropagator(neighbors, tiles, items, strict) {
     for (let direction = 0; direction < 4; direction++) {
         let direction_array = propagator[direction];
         for (let i = 0; i < direction_array.length; i++) {
-            let unique_neighbors = [];
+            let uniqueNeighbors = [];
             let neighbor_array = direction_array[i];
             for (let j = 0; j < neighbor_array.length; j++) {
                 let neighbor = neighbor_array[j];
-                if (neighbor !== -1) { unique_neighbors.push(neighbor); }
+                if (neighbor !== -1) { uniqueNeighbors.push(neighbor); }
             }
             // Fun fact, javascript sort does not sort numbers by ascending order. Instead, they are transformed into strings and sorted alphabetically. The arrow function ensures sort does an actual numerical sort. 
             // Doc: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
-            unique_neighbors = unique_neighbors.sort((a, b) => a - b);
-            propagator[direction][i] = unique_neighbors;
+            uniqueNeighbors = uniqueNeighbors.sort((a, b) => a - b);
+            propagator[direction][i] = uniqueNeighbors;
         }
     }
+    //TODO: FIgure out some way to verify that up and down work as you think
+    // they do.
     return propagator;
 }
 /**
@@ -350,7 +378,6 @@ function GenerateWaves(tileData, itemData, w, h) {
     }
     waves.tiles = wave;
     waves.items = wave1;
-    waves.length = (w * h);
     waves.tiles = newWave;
     waves.items = newWave1;
 
@@ -638,57 +665,50 @@ function GetEntropySort(indexes){
 function Propagate(wave, typeData, removed, periodic, w, h, propagator) {
     let DX = [1, 0, -1, 0]; // [right, up, left, down]
     let DY = [0, -1, 0, 1]; // [right, up, left, down]
-    if (typeData.compatible == undefined) {
+    let elemsToRemove = new Array();
+    // item elem_to_remove never reaches this while loop
+    let i = removed[0]; // index of element to remove
+    let j = removed[1]
+    let removedTile = removed[2]; // tile within element to remove
+    if (wave[i][j].compatible == undefined) {
         return [];
     }
-    let elemsToRemove = [];
-    // item elem_to_remove never reaches this while loop
-    let x1 = removed[0]; // index of element to remove
-    let y1 = removed[1]
-    let tile1 = removed[2]; // tile within element to remove
-    
     for (let d = 0; d < 4; d++) {
-        let x2 = x1 + DX[d];   // x position of neighbor
-        let y2 = y1 + DY[d];   // y position of neighbor
+        let x = i + DX[d];   // x position of neighbor
+        let y = j + DY[d];   // y position of neighbor
 
         // boundary check
-        if (OnBoundary(x2, y2, periodic, w, h)) {
+        if (OnBoundary(x, y, periodic, w, h)) {
             continue;
         }
         
         // x position correction for index_2 calculation?
-        if (x2 < 0) {
-            x2 += w;
-        } else if (x2 >= w) {
-            x2 -= w;
-        }
+        if (x < 0) { x += w; } 
+        else if (x >= w) { x -= w; }
 
-        if (y2 < 0) {
-            y2 += h;
-        } else if (y2 >= h) {
-            y2 -= h;
-        }
-        if (tile1 === undefined) {debugger; } 
-        if (d === undefined) {debugger; } 
-        if (propagator === undefined) {debugger; } 
-        let p = propagator[d][tile1]; // an array of tiles to remove according to d
+        if (y < 0) { y += h; } 
+        else if (y >= h) { y -= h; }
+
+        //TODO: IF COMPATIBLE IS ZERO ACROSS THE BOARD, REMOVE.
+        let p = propagator[d][removedTile]; // an array of tiles to remove according to d
         /* propagator is a matrix
         * each element corresponds to [right, up, left, down]
         * each element is an array of all tiles
         * each tile is an array of tile index to remove from wave 
         * */
-        let compat = wave[x2][y2].compatible; // a matrix of number of compatible tiles
+        let neighborCompatibleArr = wave[x][y].compatible; 
+        //THIS CODE IS WRONG. AND INCORRECT.
         for (let i = 0; i < p.length; i++) {
-            let tile2 = p[i]   // position of neighbor tile to remove
-            let comp = compat[tile2];  // array of number of compatible tiles with neighbor tile to be removed
-            if (comp[d] < 0) { continue; }
-            comp[d] = comp[d] - 1;  // decrease number of compatible tiles according to d
-            //TODO: comptible can go below zero. Figure out what this means.
-            if (comp[d] == 0) {
-                elemsToRemove.push([x2, y2, tile2]);
-                // elemsToRemove = Ban(wave, typeData, x2, y2, tile2, 
-                //     elemsToRemove, 'propagate');
+            let tile = p[i]   // position of neighbor tile to remove
+            if (!wave[x][y].choices[tile]) { continue; }
+            let compatibleCount = neighborCompatibleArr[tile];  // array of number of compatible tiles with neighbor tile to be removed
+            compatibleCount[d] = compatibleCount[d] - 1;  // decrease number of compatible tiles according to d
+            if (compatibleCount[d] === 0) {
+                elemsToRemove.push([x, y, tile]);
             }
+            
+            //TODO: comptible can go below zero. Figure out what this means.
+            if (compatibleCount[d] < 0) { throw "A compatible cell has reached zero. Here they are ", i, j, tile; } 
         }
     }
     return elemsToRemove;
@@ -711,7 +731,6 @@ function Ban(wave, typeData, row, col, index, origin) {
     let waveArray = wave[row][col];
     // If this is true, then the tile has become stable.
     if (waveArray.choices.filter(x => x===true).length === 1) { 
-        console.log(row, col);
         return null;
     }
     // This is where Ban actually bans the undesired tile
@@ -728,12 +747,12 @@ function Ban(wave, typeData, row, col, index, origin) {
     // Need to recalculate entropy for the element in the wave using Shannon Entropy
     if(waveArray.weightSum == typeData.weights[index] || waveArray.entropy == NaN) { 
         console.log(row, col);
-        debugger;
+        // debugger;
         // throw 'conflict detected';
     }
     if (waveArray.weightSum < 0) { 
         console.log(row, col);
-        debugger; 
+        // debugger; 
     }
     let weight = typeData.weights[index];
     waveArray.weightSum -= weight;  
@@ -772,5 +791,5 @@ function _NonZeroIndex(distribution, cweights, csumweight) {
     return index;
 }  
 function OnBoundary(x, y, periodic, width, height) {
-    return !periodic && (x < 0 || y < 0 || x >= width || y >= height);
+    return (x < 0 || y < 0 || x >= width || y >= height);
 }
