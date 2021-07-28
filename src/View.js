@@ -8,7 +8,7 @@
 // Good good stuff.
 export function Draw(heatmaps, w, h, tileSize, rescale, tileSet, tileSetCol, map, paths) {
 
-    let debugging = false;
+    let debugging = true;
     let updatedSize = tileSize * rescale;
     let atlasCol = tileSetCol;
     // TODO: THE REASON WHY WE ARE DOING THIS OFFSET IS BECUASE OF THE TRIM...
