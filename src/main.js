@@ -158,9 +158,13 @@ function generatePartial(partials, w, h) {
             let count = 0;
             let allPartial = 0;
             //Check to see if the partial can fit...
+            // Doesn't allow wrapping.
+            if (partial.length + randI >= w) { break; }
             for (let j = 0; j < partial.length; j++) {
                 let partialArr = partial[j];
                 if (partialArr.length > h) { continue; }
+                //Checking for wrapping. Will break if too long.
+                if (partialArr.length + randJ >= h) { break; }
                 for (let k = 0; k < partialArr.length; k++) {
                     if (!partialMap[randI][randJ]) { count++; }
                     allPartial++;
@@ -168,10 +172,8 @@ function generatePartial(partials, w, h) {
                     //TODO: This is for the wrapping of the paritals... might want
                     // to turn it back on later.
                     // if (randJ >= h) { randJ = 0;}
-                    if (randJ >= h) { count++; }
                 }
                 // if (randI >= w) { randI = 0;}
-                if (randI >= w) { continue; }
                 randJ = randJReset; 
             }
             randI = randIReset;
@@ -302,7 +304,7 @@ tileSet.src = './assets/tilesets/graveyard.png';
 tileSet.onload = drawAll;
 
 let tileSize = 16;
-let rescale = 3; // can set to 1 for 32px or higher
+let rescale = 1.6; // can set to 1 for 32px or higher
 
 let atlasCol = 9;
 let mapCols = width+1;
