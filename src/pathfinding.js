@@ -39,7 +39,6 @@ function ReconstructPath(result, map) {
         JSEval += evaluateMetaTag(tile, map, "LV");
         IEval += evaluateMetaTag(tile, map, "I");
         IEval += evaluateMetaTag(tile, map, "AC") ;
-        IEval += evaluateMetaTag(tile, map, "I") ;
         IEval += evaluateMetaTag(tile, map, "LV");
         totalMoves++;
     }

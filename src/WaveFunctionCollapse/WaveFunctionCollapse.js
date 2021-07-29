@@ -169,6 +169,7 @@ function FillPartial(wave, partial, periodic, WaveData, w, h, tileAmount) {
     for (let i = 0; i < length; i++) {
         for (let j = 0; j < partial[i].length; j++) {
             let value = partial[i][j];
+            if (wave[i][j] === undefined) { debugger; }
             if (value && wave[i][j].choices[value]) { 
                 wave[i][j].choices[value] = true; 
                 for (let k = 0; k < tileAmount; k++) {

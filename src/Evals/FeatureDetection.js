@@ -273,7 +273,7 @@ export function detectIsolation(input, numRows, numCols)
                         let index_i = neighbors[i].i;
                         let index_j = neighbors[i].j;
                         if (output[index_i][index_j].includes("L")) {
-                            if (lonely > 0) {continue;}
+                            if (lonely > 1) {continue;}
                             output[index_i][index_j].push("I"); 
                             lonely++;
                         }

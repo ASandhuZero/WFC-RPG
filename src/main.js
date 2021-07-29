@@ -13,6 +13,13 @@ const fs = require("fs");
 const height = 30;
 const width = 30;
 
+let partialFlag = true;
+let testPaths = false;
+let save = false;
+let strict = false;
+let shouldGenerateNeighbors = true;
+let banList = [19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37];
+
 
 let results = {
     "tilemaps" : []
@@ -99,75 +106,73 @@ let featureMapping = {
 //number, put a random tile in, and search around until the correct tile is 
 // found :)
 let partial = null;
-let partialFlag = true;
-let testPaths = false;
-let strict = false;
-let banList = [19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37];
-let shouldGenerateNeighbors = true;
-if (partialFlag) {
-    let partials = 
+
+let partials = 
+[
     [
-        [
-            [19,24,24,24,24,24,24,24,24,24,20],
-            [21,-1,10,10,10,10,10,10,10,-1,22],
-            [21,-1,10,10,10,10,10,10,10,-1,22],
-            [21,10,10,19,24,24,20,10,10,10,22],
-            [21,10,10,21,-1,10,22,10,10,10,22],
-            [21,24,24,25,10,10,22,10,10,10,22],
-        ],
-        [
-            [10,10,8,8,10,10],
-            [10,10,10,8,8,10,10,8,8,10,10,10],
-            [10,10,10,8,8,10,-1,10,-1,8,8,10,10,10],
-            [10,10,10,8,15,16,15,-1,17,10,8,10,10]
-        ],
-        [
-            [-1,-1,4,-1,-1],
-            [-1,-1,4,-1,-1],
-            [4,4,4,4,4],
-            [-1,-1,4,-1,-1],
-            [-1,-1,4,-1,-1]
-        ],
-        [
-            [20],
-            [22],
-            [20],
-            [22]
-        ],
-        [
-            [26,27,28],
-            [29,30,31],
-            [32,33,34],
-            [35,36,37]
-        ],
-        [
-            [19,24,24,24,24,24,24,20],
-            [21,10,10,10,10,10,10,22],
-            [21,10,10,10,10,10,10,22],
-            [21,10,10,10,10,10,10,22]
-        ], 
-        [
-            [12,10,13,10,12],
-            [12,10,13,10,12],
-            [12,10,13,10,12],
-            [12,10,13,10,12]
-        ],
-        [
-            [12,10,12],
-            [12,-1,12],
-        ],
-        [
-            [19,24,24,24,24,24,24,24,20],
-            [21,10,10,10,10,10,10,10,22],
-            [21,10,12,10,12,10,12,10,22],
-            [19,10,12,10,12,10,12,10,20],
-            [21,10,12,10,12,10,12,10,22]
-        ], 
-    ];
-    partial = generatePartial(partials, width, height);
-} else {
-    partial = null;
-}
+        [19,24,24,24,24,24,24,24,24,24,20],
+        [21,-1,10,10,10,10,10,10,10,-1,22],
+        [21,-1,10,10,10,10,10,10,10,-1,22],
+        [21,10,10,19,24,24,20,10,10,10,22],
+        [21,10,10,21,-1,10,22,10,10,10,22],
+        [21,24,24,25,10,10,22,10,10,10,22],
+    ],
+    [
+        [10,10,8,8,10,10],
+        [10,10,10,8,8,10,10,8,8,10,10,10],
+        [10,10,10,8,8,10,-1,10,-1,8,8,10,10,10],
+        [10,10,10,8,15,16,15,-1,17,10,8,10,10]
+    ],
+    [
+        [-1,-1,4,-1,-1],
+        [-1,-1,4,-1,-1],
+        [4,4,4,4,4],
+        [-1,-1,4,-1,-1],
+        [-1,-1,4,-1,-1]
+    ],
+    [
+        [20],
+        [22],
+        [20],
+        [22]
+    ],
+    [
+        [26,27,28],
+        [29,30,31],
+        [32,33,34],
+        [35,36,37]
+    ],
+    [
+        [19,24,24,24,24,24,24,20],
+        [21,10,10,10,10,10,10,22],
+        [21,10,10,10,10,10,10,22],
+        [21,10,10,10,10,10,10,22]
+    ], 
+    [
+        [10,10,10,10,10,10,10,10],
+        [10,10,10,10,10,10,10,10],
+        [10,10,10,10,10,10,10,10],
+        [10,10,10,10,10,10,10,10]
+    ], 
+    [
+        [12,10,13,10,12],
+        [12,10,13,10,12],
+        [12,10,13,10,12],
+        [12,10,13,10,12]
+    ],
+    [
+        [12,-1,12],
+        [12,-1,12],
+    ],
+    [
+        [19,24,24,24,24,24,24,24,20],
+        [21,10,10,10,10,10,10,10,22],
+        [21,10,12,10,12,10,12,10,22],
+        [19,10,12,10,12,10,12,10,20],
+        [21,10,12,10,12,10,12,10,22]
+    ], 
+];
+
 function generatePartial(partials, w, h) {
     let partialMap = new Array(w);
     for (let i = 0; i < w; i++) {
@@ -175,54 +180,45 @@ function generatePartial(partials, w, h) {
     }
     let partialPass = 0;
     // partials is a tensor. First degree indicies are the partials.
-    while (partialPass < 3) {
+    while (partialPass < 10) {
         partialPass++;
-        for (let i = 0; i < partials.length; i++) {
-            if (Math.floor(Math.random()*10) > 7) { continue; }
+        for (let p = 0; p < partials.length; p++) {
+            let partial = partials[p];
+            if (Math.floor(Math.random()*10) > 4) { continue; }
+            let longestPartialArr = 0;
             let randI, randJ;
-            randI = Math.floor(Math.random() * w);
-            randJ = Math.floor(Math.random() * h);
-            let randJReset = randJ;
-            let randIReset = randI;
-            //First check if partial can fit...
-            let partial = partials[i];
-            if (partial.length > w) { continue; }
-            let count = 0;
-            let allPartial = 0;
-            //Check to see if the partial can fit...
-            // Doesn't allow wrapping.
-            if (partial.length + randI >= w) { break; }
-            for (let j = 0; j < partial.length; j++) {
-                let partialArr = partial[j];
-                if (partialArr.length > h) { continue; }
-                //Checking for wrapping. Will break if too long.
-                if (partialArr.length + randJ >= h) { break; }
-                for (let k = 0; k < partialArr.length; k++) {
-                    if (!partialMap[randI][randJ]) { count++; }
-                    allPartial++;
-                    randJ++;
-                    //TODO: This is for the wrapping of the paritals... might want
-                    // to turn it back on later.
-                    // if (randJ >= h) { randJ = 0;}
+            randI = Math.floor(Math.random() * (w - partial.length));
+            for (let i = 0; i < partial.length; i++) {
+                if (longestPartialArr < partial[i].length) {
+                    longestPartialArr = partial[i].length;
                 }
-                // if (randI >= w) { randI = 0;}
-                randJ = randJReset; 
             }
-            randI = randIReset;
-            randJ = randJReset;
-            // If it fits then place the tiles!
-            if (count === allPartial) {
-                for (let j = 0; j < partial.length; j++) {
-                    let partialArr = partial[j];
+            randJ = Math.floor(Math.random() * (h - longestPartialArr));
+            let randRowReset = randI;
+            let randColReset = randJ;
+            let shouldContinue = false;
+            let shouldDraw = false;
+            if (partial.length >= w) { continue; }
+            if (partial.length + randI >= w) { continue; }
+            for (let i = 0; i < partial.length; i++) {
+                let partialArr = partial[i];
+                if (partialArr.length >= h) { shouldContinue = true; break;}
+                //Checking for wrapping. Will break if too long.
+                if (partialArr.length + randJ >= h) { shouldContinue = true; break;}
+                for (let j = 0; j < partialArr.length; j++) {
+                    if (partialMap[randI+i][randJ+j] !== false )  { shouldContinue = true; break;}
+                }
+            }
+            if (shouldContinue) { continue; } 
+            else { shouldDraw = true; }
+            //First check if partial can fit...
+            if (shouldDraw) {
+                for (let i = 0; i < partial.length; i++) {
+                    let partialArr = partial[i];
                     if (partialArr === undefined) { continue;}
-                    for (let k = 0; k < partialArr.length; k++) {
-                        partialMap[randI][randJ] = partialArr[k];
-                        randJ++;
-                        if (randJ >= h) { randJ = 0;}
+                    for (let j = 0; j < partialArr.length; j++) {
+                        partialMap[randI+i][randJ+j] = partialArr[j];
                     }
-                    randI++;
-                    if (randI >= w) { randI = 0;}
-                    randJ = randJReset; 
                 }
             }
         }
@@ -234,6 +230,7 @@ function generatePartial(partials, w, h) {
     }
     partialMap[0][0] = 10;
     partialMap[w-1][h-1] = 10;
+    console.log(partialMap);
     return partialMap;
 }
 let short = 0;
@@ -260,9 +257,15 @@ let features = null;
 // }
 // console.log(wfc);
 loopCount = 0;
-while ((wfc=== undefined ||paths === false) && loopCount < 10) {
+while ((wfc=== undefined ||paths === false) && loopCount < 100) {
     console.log("in loop");
+    if (partialFlag) {
+        partial = generatePartial(partials, width, height);
+    } else {
+        partial = null;
+    }
     try {
+        
         wfc = WFC(0, tilemapData, partial, strict, shouldGenerateNeighbors, banList); 
         if (wfc.length === 0) {
             wfc = undefined;
@@ -315,29 +318,70 @@ while ((wfc=== undefined ||paths === false) && loopCount < 10) {
         if (paths[3].slasherScore < paths[4].slasherScore ) { slasher++; }
         if (paths[4].psychologicalScore < paths[3].psychologicalScore ) { psycho++; }
         let pathsToSave = [];
+        let short = {
+            path : [],
+            psychologicalScore : [],
+            slasherScore : [],
+            movesTaken : -1
+        }
+        let long= {
+            path : [],
+            psychologicalScore : [],
+            slasherScore : [],
+            movesTaken : -1
+        }
+        let scaredyCat = {
+            path : [],
+            psychologicalScore : [],
+            slasherScore : [],
+            movesTaken : -1
+        }
+        let slasherPrio= {
+            path : [],
+            psychologicalScore : [],
+            slasherScore : [],
+            movesTaken : -1
+        }
+        let psychologicalPrio = {
+            path : [],
+            psychologicalScore : [],
+            slasherScore : [],
+            movesTaken : -1
+        }
         let pathNames = ["short", "long", "ScaredyCat", "Slasher Prio", "Psychological Prio"];
+        let pathobj = [short, long, scaredyCat, slasherPrio, psychologicalPrio]
         for (let i = 0; i < paths.length; i++) {
             let pathToSave = [];
-            let simpPath = []
+            let simpPath = [];
             let path = paths[i];
-            for (let i = 0; i < path.path.length; i++) {
-                let x = path.path[i].x;
-                let y = path.path[i].y;
-                simpPath.push([x,y])
+            let obj = pathobj[i];
+            for (let j = 0; j < path.path.length; j++) {
+                let x = path.path[j].x;
+                let y = path.path[j].y;
+                obj.path.push([x,y])
             }
-            pathToSave = {
-                path : simpPath,
-                movesTaken : path.movesTaken,
-                slasherScore : path.slasherScore,
-                psychologicalScore : path.psychologicalScore,
-                name : pathNames[i]
-            }
-            pathsToSave.push(pathToSave);
+            obj.psychologicalScore = path.psychologicalScore;
+            obj.slasherScore = path.slasherScore;
+            obj.movesTaken = path.movesTaken;
+            
+            pathsToSave.push(obj);
+            // pathToSave = {
+            //     path : simpPath,
+            //     movesTaken : path.movesTaken,
+            //     slasherScore : path.slasherScore,
+            //     psychologicalScore : path.psychologicalScore,
+            //     name : pathNames[i],
+            //     generation : loopCount
+            // }
         }
         results.tilemaps.push(
             {
                 map : tilemapToSave,
-                paths :pathsToSave 
+                short : short,
+                long : long,
+                scaredyCat : scaredyCat,
+                slasherPrio : slasherPrio,
+                psychologicalPrio : psychologicalPrio
             });
         paths = false;
     }
@@ -389,7 +433,6 @@ function drawAll() {
     Draw(heatmaps, canvasWidth, canvasHeight, tileSize, rescale, tileSet, 
         atlasCol, levelMap, paths);
 }
-let save = false;
 if (save) {
     writeResults(results, fs);
 }
