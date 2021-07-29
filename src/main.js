@@ -70,7 +70,21 @@ let featureMapping = {
     54 : [],
     59 : [],
     60 : [],
-    61 : []
+    61 : [],
+    73 : [],
+    74 : [],
+    75 : [],
+    76 : [],
+    77 : [],
+    46 : [],
+    47 : [],
+    48 : [],
+    55 : [],
+    56 : [],
+    57 : [],
+    64 : [],
+    65 : [],
+    66 : []
 }
 
 
@@ -85,11 +99,18 @@ let partial = null;
 let partialFlag = true;
 let testPaths = false;
 let strict = false;
-let banList = [19,20,21,22,23,24,25];
+let banList = [19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,
+                36,37];
 let shouldGenerateNeighbors = true;
 if (partialFlag) {
     let partials = 
     [
+        [
+            [26,27,28],
+            [29,30,31],
+            [32,33,34],
+            [35,36,37]
+        ],
         [
             [19,24,24,24,24,24,24,20],
             [21,10,10,10,10,10,10,22],
@@ -126,7 +147,7 @@ function generatePartial(partials, w, h) {
     while (partialPass < 2) {
         partialPass++;
         for (let i = 0; i < partials.length; i++) {
-            if (Math.floor(Math.random()*10) > 5) { continue; }
+            // if (Math.floor(Math.random()*10) > 5) { continue; }
             let randI, randJ;
             randI = Math.floor(Math.random() * w);
             randJ = Math.floor(Math.random() * h);

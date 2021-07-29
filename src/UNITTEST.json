@@ -26,7 +26,20 @@
             {"name":"54", "symmetry":"X", "weight":1},
             {"name":"59", "symmetry":"X", "weight":1},
             {"name":"60", "symmetry":"X", "weight":1},
-            {"name":"61", "symmetry":"X", "weight":1}
+            {"name":"61", "symmetry":"X", "weight":1},
+            {"name":"46", "symmetry":"X", "weight":1},
+            {"name":"47", "symmetry":"X", "weight":1},
+            {"name":"48", "symmetry":"X", "weight":1},
+            {"name":"55", "symmetry":"X", "weight":1},
+            {"name":"56", "symmetry":"X", "weight":1},
+            {"name":"57", "symmetry":"X", "weight":1},
+            {"name":"64", "symmetry":"X", "weight":1},
+            {"name":"65", "symmetry":"X", "weight":1},
+            {"name":"66", "symmetry":"X", "weight":1},
+            {"name":"73", "symmetry":"X", "weight":1},
+            {"name":"74", "symmetry":"X", "weight":1},
+            {"name":"75", "symmetry":"X", "weight":1}
+
         ],
         "items_info":[
             {"name":"0", "weight": 3, "frequency": -1},
