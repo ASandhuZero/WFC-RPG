@@ -80,6 +80,9 @@ export function detectJumpscares(input, numRows, numCols)
                         if (neighborList.includes("T"))
                         {
                             // If a neighbor cell is traversable, mark this cell as a spot for a jumpscare.
+                            if (output[index_i][index_j].includes("JS")) {
+                                output[index_i][index_j].push("JS");
+                            }
                             output[index_i][index_j].push("JS");
                         }
                     }
@@ -264,7 +267,17 @@ export function detectIsolation(input, numRows, numCols)
                 }
                 if (lonely === 0) 
                 {
-                    output[i][j].push("I"); 
+                    // output[i][j].push("I"); 
+                    output[i][j].push("L"); 
+                    for (let i = 0; i < neighbors.length; i++) {
+                        let index_i = neighbors[i].i;
+                        let index_j = neighbors[i].j;
+                        if (output[index_i][index_j].includes("L")) {
+                            if (lonely > 0) {continue;}
+                            output[index_i][index_j].push("I"); 
+                            lonely++;
+                        }
+                    }
                 }
             }
         }

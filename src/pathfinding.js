@@ -36,12 +36,10 @@ function ReconstructPath(result, map) {
         path.push(tile);
         JSEval += evaluateMetaTag(tile, map, "JS");
         JSEval += evaluateMetaTag(tile, map, "AC");
-        JSEval += evaluateMetaTag(tile, map, "I");
         JSEval += evaluateMetaTag(tile, map, "LV");
         IEval += evaluateMetaTag(tile, map, "I");
-        IEval += evaluateMetaTag(tile, map, "JS");
-        IEval += evaluateMetaTag(tile, map, "AC");
-        IEval += evaluateMetaTag(tile, map, "I");
+        IEval += evaluateMetaTag(tile, map, "AC") ;
+        IEval += evaluateMetaTag(tile, map, "I") ;
         IEval += evaluateMetaTag(tile, map, "LV");
         totalMoves++;
     }
@@ -143,9 +141,10 @@ function scoreSlasher(neighbor, goal, map, current) {
     let creep = neighbor.ac;
     let scare = neighbor.js * 4;
     let vis = neighbor.lv * 2;
-    let iso = neighbor.iso * 0.5;
+    let iso = neighbor.iso * 0.1;
     let dist = scoreDistance(neighbor, goal, map, current);
     let totalHorrorScore = iso + creep + vis + scare;
+    totalHorrorScore = iso + creep + vis + scare;
     totalHorrorScore = (totalHorrorScore > 1 ? totalHorrorScore : 1);
     let combined = dist + totalHorrorScore;
     return (dist)/totalHorrorScore;
@@ -153,7 +152,7 @@ function scoreSlasher(neighbor, goal, map, current) {
 
 function scorePsych(neighbor, goal, map, current) {
     let creep = neighbor.ac * 2;
-    let scare = neighbor.js * 0.5;
+    let scare = neighbor.js * 0.1;
     let vis = neighbor.lv;
     let iso = neighbor.iso * 4;
     let dist = scoreDistance(neighbor, goal, map, current);

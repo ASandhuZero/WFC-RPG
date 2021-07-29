@@ -9,11 +9,14 @@ import { generateHeatmaps } from "./Evals/Visualization";
 import { pathfinding } from "./pathfinding";
 import { Draw } from "./View";
 
+const fs = require("fs");
 const height = 30;
 const width = 30;
 
 
-
+let results = {
+    "tilemaps" : []
+}
 let tileRules = {}
 let itemRules = {}
 let tilemapData = {
@@ -64,11 +67,11 @@ let featureMapping = {
     37 : [],
     38 : [],
     39 : [],
-    41 : [],
-    45 : [],
-    50 : [],
-    54 : [],
-    59 : [],
+    41 : ["AC", "LV"],
+    45 : ["AC", "LV"],
+    50 : ["AC", "LV"],
+    54 : ["AC", "LV"],
+    59 : ["AC", "LV"],
     60 : [],
     61 : [],
     73 : ["AC", "LV"],
@@ -97,13 +100,40 @@ let featureMapping = {
 // found :)
 let partial = null;
 let partialFlag = true;
-let testPaths = false;
+let testPaths = true;
 let strict = false;
 let banList = [19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37];
 let shouldGenerateNeighbors = true;
 if (partialFlag) {
     let partials = 
     [
+        [
+            [19,24,24,24,24,24,24,24,24,24,20],
+            [21,-1,10,10,10,10,10,10,10,-1,22],
+            [21,-1,10,10,10,10,10,10,10,-1,22],
+            [21,10,10,19,24,24,20,10,10,10,22],
+            [21,10,10,21,-1,10,22,10,10,10,22],
+            [21,24,24,25,10,10,22,10,10,10,22],
+        ],
+        [
+            [10,10,8,8,10,10],
+            [10,10,10,8,8,10,10,8,8,10,10,10],
+            [10,10,10,8,8,10,-1,10,-1,8,8,10,10,10],
+            [10,10,10,8,15,16,15,-1,17,10,8,10,10]
+        ],
+        [
+            [-1,-1,4,-1,-1],
+            [-1,-1,4,-1,-1],
+            [4,4,4,4,4],
+            [-1,-1,4,-1,-1],
+            [-1,-1,4,-1,-1]
+        ],
+        [
+            [20],
+            [22],
+            [20],
+            [22]
+        ],
         [
             [26,27,28],
             [29,30,31],
@@ -117,9 +147,10 @@ if (partialFlag) {
             [21,10,10,10,10,10,10,22]
         ], 
         [
-            [12,10,12,10,12],
-            [12,10,12,10,12],
-            [12,10,12,10,12]
+            [12,10,13,10,12],
+            [12,10,13,10,12],
+            [12,10,13,10,12],
+            [12,10,13,10,12]
         ],
         [
             [12,10,12],
@@ -127,8 +158,9 @@ if (partialFlag) {
         ],
         [
             [19,24,24,24,24,24,24,24,20],
+            [21,10,10,10,10,10,10,10,22],
             [21,10,12,10,12,10,12,10,22],
-            [21,10,12,10,12,10,12,10,22],
+            [19,10,12,10,12,10,12,10,20],
             [21,10,12,10,12,10,12,10,22]
         ], 
     ];
@@ -146,7 +178,7 @@ function generatePartial(partials, w, h) {
     while (partialPass < 3) {
         partialPass++;
         for (let i = 0; i < partials.length; i++) {
-            if (Math.floor(Math.random()*10) > 5) { continue; }
+            if (Math.floor(Math.random()*10) > 7) { continue; }
             let randI, randJ;
             randI = Math.floor(Math.random() * w);
             randJ = Math.floor(Math.random() * h);
@@ -213,7 +245,22 @@ let loopCount = 0;
 let paths = false;
 let heatmaps = null;
 let features = null; 
-while (wfc === undefined && loopCount < 10) {
+// while (wfc === undefined && loopCount < 10) {
+//     console.log("in loop");
+//     try {
+//         wfc = WFC(0, tilemapData, partial, strict, shouldGenerateNeighbors, banList); 
+//         if (wfc.length === 0) {
+//             wfc = undefined;
+//         }
+//     } catch (error) {
+//         console.log(error);
+//         wfc = undefined;
+//     }
+//     loopCount++;
+// }
+// console.log(wfc);
+loopCount = 0;
+while ((wfc=== undefined ||paths === false) && loopCount < 10) {
     console.log("in loop");
     try {
         wfc = WFC(0, tilemapData, partial, strict, shouldGenerateNeighbors, banList); 
@@ -224,16 +271,13 @@ while (wfc === undefined && loopCount < 10) {
         console.log(error);
         wfc = undefined;
     }
-    loopCount++;
-}
-console.log(wfc);
-loopCount = 0;
-while (paths === false && loopCount < 10) {
     // TODO: Really, just figure out if WFC should be a flattened array or not.
     let lowLevelFeatureMap = Array.from(Array(width), () => new Array(height));
+    let tilemapToSave = Array.from(Array(width), () => new Array(height));
     for (let i = 0; i < width; i++) {
         for (let j = 0; j < height; j++) {
             let tile = wfc.tiles[i][j];
+            tilemapToSave[i][j] = parseInt(wfc.tiles[i][j].name);
             lowLevelFeatureMap[i][j] = featureMapping[tile.name];
         }
     }
@@ -246,7 +290,7 @@ while (paths === false && loopCount < 10) {
     // console.log(features.iso);
     let combinedFeatureMap = combineFeatures(features);
     heatmaps = generateHeatmaps(combinedFeatureMap, width, height);
-    console.log(combinedFeatureMap);
+    // console.log(combinedFeatureMap);
     // console.log(heatmaps.ac);
     // console.log(heatmaps.lv);
     // console.log(heatmaps.js);
@@ -262,16 +306,41 @@ while (paths === false && loopCount < 10) {
         y : height -1
     };
     paths = pathfinding(combinedFeatureMap, start, goal);
-    console.log(lowLevelFeatureMap);
-    console.log(tilemapEval);
+    // console.log(lowLevelFeatureMap);
+    // console.log(tilemapEval);
     if (testPaths && paths) {
-            if (paths[0].movesTaken > paths[2].movesTaken) { short++; }
-            if (paths[0].slasherScore < paths[2].slasherScore ) { slash++; }
-            if (paths[0].psychologicalScore < paths[2].psychologicalScore ) { psych++; }
-            if (paths[3].slasherScore < paths[4].slasherScore ) { slasher++; }
-            if (paths[4].psychologicalScore < paths[3].psychologicalScore ) { psycho++; }
+        if (paths[0].movesTaken > paths[2].movesTaken) { short++; }
+        if (paths[0].slasherScore < paths[2].slasherScore ) { slash++; }
+        if (paths[0].psychologicalScore < paths[2].psychologicalScore ) { psych++; }
+        if (paths[3].slasherScore < paths[4].slasherScore ) { slasher++; }
+        if (paths[4].psychologicalScore < paths[3].psychologicalScore ) { psycho++; }
+        let pathsToSave = [];
+        let pathNames = ["short", "long", "ScaredyCat", "Slasher Prio", "Psychological Prio"];
+        for (let i = 0; i < paths.length; i++) {
+            let pathToSave = [];
+            let simpPath = []
+            let path = paths[i];
+            for (let i = 0; i < path.path.length; i++) {
+                let x = path.path[i].x;
+                let y = path.path[i].y;
+                simpPath.push([x,y])
+            }
+            pathToSave = {
+                path : simpPath,
+                movesTaken : path.movesTaken,
+                slasherScore : path.slasherScore,
+                psychologicalScore : path.psychologicalScore,
+                name : pathNames[i]
+            }
+            pathsToSave.push(pathToSave);
+        }
+        results.tilemaps.push(
+            {
+                map : tilemapToSave,
+                paths :pathsToSave 
+            });
         paths = false;
-    }    
+    }
     loopCount++;
 }
 console.log("scaredy cat found shortest path:", short);
@@ -319,4 +388,19 @@ function drawAll() {
     let canvases = document.getElementsByTagName('canvas');
     Draw(heatmaps, canvasWidth, canvasHeight, tileSize, rescale, tileSet, 
         atlasCol, levelMap, paths);
+}
+let save = false;
+if (save) {
+    writeResults(results, fs);
+}
+function writeResults(results, fs) {
+    console.log("writing results", results);
+    let data = JSON.stringify(results, null);
+    let parsed = JSON.parse(data);
+    console.log(parsed);
+    // let fileName = "results" + new Date().toString;
+    fs.writeFile('results.json', data, (err) => {
+        if (err) { throw err; }
+        console.log('Results have been exported!');
+    });
 }
