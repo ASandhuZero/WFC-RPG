@@ -9,8 +9,8 @@ import { generateHeatmaps } from "./Evals/Visualization";
 import { pathfinding } from "./pathfinding";
 import { Draw } from "./View";
 
-const height = 20;
-const width = 20;
+const height = 30;
+const width = 30;
 
 
 
@@ -99,8 +99,7 @@ let partial = null;
 let partialFlag = true;
 let testPaths = false;
 let strict = false;
-let banList = [19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,
-                36,37];
+let banList = [19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37];
 let shouldGenerateNeighbors = true;
 if (partialFlag) {
     let partials = 
@@ -144,10 +143,10 @@ function generatePartial(partials, w, h) {
     }
     let partialPass = 0;
     // partials is a tensor. First degree indicies are the partials.
-    while (partialPass < 2) {
+    while (partialPass < 3) {
         partialPass++;
         for (let i = 0; i < partials.length; i++) {
-            // if (Math.floor(Math.random()*10) > 5) { continue; }
+            if (Math.floor(Math.random()*10) > 5) { continue; }
             let randI, randJ;
             randI = Math.floor(Math.random() * w);
             randJ = Math.floor(Math.random() * h);
