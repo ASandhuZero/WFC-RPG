@@ -90,12 +90,12 @@ let shouldGenerateNeighbors = true;
 if (partialFlag) {
     let partials = 
     [
-        // [
-        //     [19,24,24,24,24,24,24,20],
-        //     [21,10,-1,-1,-1,-1,10,22],
-        //     [21,10,-1,-1,-1,-1,10,22],
-        //     [21,10,-1,-1,-1,-1,10,22]
-        // ], 
+        [
+            [19,24,24,24,24,24,24,20],
+            [21,10,10,10,10,10,10,22],
+            [21,10,10,10,10,10,10,22],
+            [21,10,10,10,10,10,10,22]
+        ], 
         [
             [12,10,12,10,12],
             [12,10,12,10,12],
@@ -106,10 +106,10 @@ if (partialFlag) {
             [12,-1,12],
         ],
         [
-            [19,24,24,24,24,24,20],
-            [21,12,10,12,10,12,22],
-            [21,12,10,12,10,12,22],
-            [21,12,10,12,10,12,22]
+            [19,24,24,24,24,24,24,24,20],
+            [21,10,12,10,12,10,12,10,22],
+            [21,10,12,10,12,10,12,10,22],
+            [21,10,12,10,12,10,12,10,22]
         ], 
     ];
     partial = generatePartial(partials, width, height);
@@ -159,7 +159,8 @@ function generatePartial(partials, w, h) {
             // If it fits then place the tiles!
             if (count === allPartial) {
                 for (let j = 0; j < partial.length; j++) {
-                    let partialArr = partial[i];
+                    let partialArr = partial[j];
+                    if (partialArr === undefined) { continue;}
                     for (let k = 0; k < partialArr.length; k++) {
                         partialMap[randI][randJ] = partialArr[k];
                         randJ++;
