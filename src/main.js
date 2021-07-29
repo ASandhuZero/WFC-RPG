@@ -90,23 +90,26 @@ let shouldGenerateNeighbors = true;
 if (partialFlag) {
     let partials = 
     [
-        [
-            [19,24,24,24,24,24,24,20],
-            [21,10,-1,-1,-1,-1,10,22],
-            [21,10,-1,-1,-1,-1,10,22],
-            [21,10,-1,-1,-1,-1,10,22]
-        ], 
+        // [
+        //     [19,24,24,24,24,24,24,20],
+        //     [21,10,-1,-1,-1,-1,10,22],
+        //     [21,10,-1,-1,-1,-1,10,22],
+        //     [21,10,-1,-1,-1,-1,10,22]
+        // ], 
         [
             [12,10,12,10,12],
             [12,10,12,10,12],
             [12,10,12,10,12]
         ],
         [
+            [12,10,12],
+            [12,-1,12],
+        ],
+        [
             [19,24,24,24,24,24,20],
             [21,12,10,12,10,12,22],
             [21,12,10,12,10,12,22],
-            [21,12,10,12,10,12,22],
-            [21,12,10,12,10,12,22],
+            [21,12,10,12,10,12,22]
         ], 
     ];
     partial = generatePartial(partials, width, height);
@@ -118,45 +121,54 @@ function generatePartial(partials, w, h) {
     for (let i = 0; i < w; i++) {
         partialMap[i] = new Array(h).fill(false);
     }
+    let partialPass = 0;
     // partials is a tensor. First degree indicies are the partials.
-    for (let i = 0; i < partials.length; i++) {
-        let randI, randJ;
-        randI = Math.floor(Math.random() * w);
-        randJ = Math.floor(Math.random() * h);
-        let randJReset = randJ;
-        let randIReset = randI;
-        //First check if partial can fit...
-        let partial = partials[i];
-        if (partial.length > w) { continue; }
-        let count = 0;
-        let allPartial = 0;
-        //Check to see if the partial can fit...
-        for (let j = 0; j < partial.length; j++) {
-            let partialArr = partial[j];
-            if (partialArr.length > h) { continue; }
-            for (let k = 0; k < partialArr.length; k++) {
-                if (!partialMap[randI][randJ]) { count++; }
-                allPartial++;
-                randJ++;
-                if (randJ >= h) { randJ = 0;}
-            }
-            if (randI >= w) { randI = 0;}
-            randJ = randJReset; 
-        }
-        randI = randIReset;
-        randJ = randJReset;
-        // If it fits then place the tiles!
-        if (count === allPartial) {
+    while (partialPass < 2) {
+        partialPass++;
+        for (let i = 0; i < partials.length; i++) {
+            if (Math.floor(Math.random()*10) > 5) { continue; }
+            let randI, randJ;
+            randI = Math.floor(Math.random() * w);
+            randJ = Math.floor(Math.random() * h);
+            let randJReset = randJ;
+            let randIReset = randI;
+            //First check if partial can fit...
+            let partial = partials[i];
+            if (partial.length > w) { continue; }
+            let count = 0;
+            let allPartial = 0;
+            //Check to see if the partial can fit...
             for (let j = 0; j < partial.length; j++) {
-                let partialArr = partial[i];
+                let partialArr = partial[j];
+                if (partialArr.length > h) { continue; }
                 for (let k = 0; k < partialArr.length; k++) {
-                    partialMap[randI][randJ] = partialArr[k];
+                    if (!partialMap[randI][randJ]) { count++; }
+                    allPartial++;
                     randJ++;
-                    if (randJ >= h) { randJ = 0;}
+                    //TODO: This is for the wrapping of the paritals... might want
+                    // to turn it back on later.
+                    // if (randJ >= h) { randJ = 0;}
+                    if (randJ >= h) { count++; }
                 }
-                randI++;
-                if (randI >= w) { randI = 0;}
+                // if (randI >= w) { randI = 0;}
+                if (randI >= w) { continue; }
                 randJ = randJReset; 
+            }
+            randI = randIReset;
+            randJ = randJReset;
+            // If it fits then place the tiles!
+            if (count === allPartial) {
+                for (let j = 0; j < partial.length; j++) {
+                    let partialArr = partial[i];
+                    for (let k = 0; k < partialArr.length; k++) {
+                        partialMap[randI][randJ] = partialArr[k];
+                        randJ++;
+                        if (randJ >= h) { randJ = 0;}
+                    }
+                    randI++;
+                    if (randI >= w) { randI = 0;}
+                    randJ = randJReset; 
+                }
             }
         }
     }

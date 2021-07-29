@@ -135,6 +135,7 @@ function scoreScaredyCat(neighbor, goal, map, current) {
     let iso = neighbor.iso;
     let dist = scoreDistance(neighbor, goal, map, current);
     let totalHorrorScore = scare + iso + vis + creep;
+    totalHorrorScore = (totalHorrorScore > 1 ? totalHorrorScore : 1);
     return ((0.1*dist) * totalHorrorScore);
 }
 
@@ -145,6 +146,7 @@ function scoreSlasher(neighbor, goal, map, current) {
     let iso = neighbor.iso * 0.5;
     let dist = scoreDistance(neighbor, goal, map, current);
     let totalHorrorScore = iso + creep + vis + scare;
+    totalHorrorScore = (totalHorrorScore > 1 ? totalHorrorScore : 1);
     let combined = dist + totalHorrorScore;
     return (dist)/totalHorrorScore;
 }
@@ -156,6 +158,7 @@ function scorePsych(neighbor, goal, map, current) {
     let iso = neighbor.iso * 4;
     let dist = scoreDistance(neighbor, goal, map, current);
     let totalHorrorScore = iso + creep + vis + scare;
+    totalHorrorScore = (totalHorrorScore > 1 ? totalHorrorScore : 1);
     let combined = dist + totalHorrorScore;
     return (dist)/totalHorrorScore;
 }
