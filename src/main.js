@@ -10,19 +10,20 @@ import { pathfinding } from "./pathfinding";
 import { Draw } from "./View";
 
 const fs = require("fs");
-const height = 30;
-const width = 30;
+const filePath = require('path');
+const height = 40;
+const width = 40;
 
 let partialFlag = true;
-let testPaths = false;
+let testPaths = true;
 let save = false;
 let strict = false;
 let shouldGenerateNeighbors = true;
 let banList = [19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37];
 
 
-let results = {
-    "tilemaps" : []
+let resultData = {
+    "results" : []
 }
 let tileRules = {}
 let itemRules = {}
@@ -180,11 +181,11 @@ function generatePartial(partials, w, h) {
     }
     let partialPass = 0;
     // partials is a tensor. First degree indicies are the partials.
-    while (partialPass < 10) {
+    while (partialPass < 4) {
         partialPass++;
         for (let p = 0; p < partials.length; p++) {
             let partial = partials[p];
-            if (Math.floor(Math.random()*10) > 4) { continue; }
+            if (Math.floor(Math.random()*10) > 6) { continue; }
             let longestPartialArr = 0;
             let randI, randJ;
             randI = Math.floor(Math.random() * (w - partial.length));
@@ -230,7 +231,6 @@ function generatePartial(partials, w, h) {
     }
     partialMap[0][0] = 10;
     partialMap[w-1][h-1] = 10;
-    console.log(partialMap);
     return partialMap;
 }
 let short = 0;
@@ -242,22 +242,8 @@ let loopCount = 0;
 let paths = false;
 let heatmaps = null;
 let features = null; 
-// while (wfc === undefined && loopCount < 10) {
-//     console.log("in loop");
-//     try {
-//         wfc = WFC(0, tilemapData, partial, strict, shouldGenerateNeighbors, banList); 
-//         if (wfc.length === 0) {
-//             wfc = undefined;
-//         }
-//     } catch (error) {
-//         console.log(error);
-//         wfc = undefined;
-//     }
-//     loopCount++;
-// }
-// console.log(wfc);
 loopCount = 0;
-while ((wfc=== undefined ||paths === false) && loopCount < 100) {
+while ((wfc=== undefined ||paths === false) && loopCount < 10) {
     console.log("in loop");
     if (partialFlag) {
         partial = generatePartial(partials, width, height);
@@ -287,17 +273,8 @@ while ((wfc=== undefined ||paths === false) && loopCount < 100) {
     //TODO: Yeah so the above code is horrible. Either flatten everything down to
     //      an array. OR just turn everything into a matrix.
     features = detectFeatures(lowLevelFeatureMap, width, height);
-    // console.log(features.ac);
-    // console.log(features.lv);
-    // console.log(features.js);
-    // console.log(features.iso);
     let combinedFeatureMap = combineFeatures(features);
     heatmaps = generateHeatmaps(combinedFeatureMap, width, height);
-    // console.log(combinedFeatureMap);
-    // console.log(heatmaps.ac);
-    // console.log(heatmaps.lv);
-    // console.log(heatmaps.js);
-    // console.log(heatmaps.iso);
     let tilemapEval = evaluateHorrorPotential(combinedFeatureMap, width, height, 
         "slasher");
     let start = {
@@ -309,9 +286,7 @@ while ((wfc=== undefined ||paths === false) && loopCount < 100) {
         y : height -1
     };
     paths = pathfinding(combinedFeatureMap, start, goal);
-    // console.log(lowLevelFeatureMap);
-    // console.log(tilemapEval);
-    if (testPaths && paths) {
+    if (testPaths && save && paths) {
         if (paths[0].movesTaken > paths[2].movesTaken) { short++; }
         if (paths[0].slasherScore < paths[2].slasherScore ) { slash++; }
         if (paths[0].psychologicalScore < paths[2].psychologicalScore ) { psych++; }
@@ -319,80 +294,57 @@ while ((wfc=== undefined ||paths === false) && loopCount < 100) {
         if (paths[4].psychologicalScore < paths[3].psychologicalScore ) { psycho++; }
         let pathsToSave = [];
         let short = {
-            path : [],
             psychologicalScore : [],
             slasherScore : [],
             movesTaken : -1
         }
         let long= {
-            path : [],
             psychologicalScore : [],
             slasherScore : [],
             movesTaken : -1
         }
         let scaredyCat = {
-            path : [],
             psychologicalScore : [],
             slasherScore : [],
             movesTaken : -1
         }
         let slasherPrio= {
-            path : [],
             psychologicalScore : [],
             slasherScore : [],
             movesTaken : -1
         }
         let psychologicalPrio = {
-            path : [],
             psychologicalScore : [],
             slasherScore : [],
             movesTaken : -1
         }
         let pathNames = ["short", "long", "ScaredyCat", "Slasher Prio", "Psychological Prio"];
         let pathobj = [short, long, scaredyCat, slasherPrio, psychologicalPrio]
+
         for (let i = 0; i < paths.length; i++) {
-            let pathToSave = [];
-            let simpPath = [];
             let path = paths[i];
             let obj = pathobj[i];
-            for (let j = 0; j < path.path.length; j++) {
-                let x = path.path[j].x;
-                let y = path.path[j].y;
-                obj.path.push([x,y])
-            }
             obj.psychologicalScore = path.psychologicalScore;
             obj.slasherScore = path.slasherScore;
             obj.movesTaken = path.movesTaken;
-            
-            pathsToSave.push(obj);
-            // pathToSave = {
-            //     path : simpPath,
-            //     movesTaken : path.movesTaken,
-            //     slasherScore : path.slasherScore,
-            //     psychologicalScore : path.psychologicalScore,
-            //     name : pathNames[i],
-            //     generation : loopCount
-            // }
         }
-        results.tilemaps.push(
+        resultData.results.push(
             {
-                map : tilemapToSave,
                 short : short,
                 long : long,
                 scaredyCat : scaredyCat,
                 slasherPrio : slasherPrio,
                 psychologicalPrio : psychologicalPrio
             });
+        if (loopCount%100===0) {
+            writeResults(resultData, fs, filePath);
+            resultData.results = [];
+        }
+        console.log("Results have been pushed!", loopCount);
         paths = false;
     }
     loopCount++;
 }
-console.log("scaredy cat found shortest path:", short);
-console.log("shortest path had less slasher scares:", slash);
-console.log("shortest path had less psych scares:", psych);
-console.log("Slasher had more psych scare:", psycho);
-console.log("Psycho had more Slasher scare:", slasher);
-// debugger;
 
 function combineFeatures(features) {
     let horrorFeatures = [];
@@ -417,7 +369,7 @@ tileSet.src = './assets/tilesets/graveyard.png';
 tileSet.onload = drawAll;
 
 let tileSize = 16;
-let rescale = 1.6; // can set to 1 for 32px or higher
+let rescale = 1; // can set to 1 for 32px or higher
 
 let atlasCol = 9;
 let mapCols = width+1;
@@ -434,16 +386,29 @@ function drawAll() {
         atlasCol, levelMap, paths);
 }
 if (save) {
-    writeResults(results, fs);
+    writeResults(resultData, fs, filePath);
+
 }
-function writeResults(results, fs) {
-    console.log("writing results", results);
-    let data = JSON.stringify(results, null);
-    let parsed = JSON.parse(data);
-    console.log(parsed);
-    // let fileName = "results" + new Date().toString;
-    fs.writeFile('results.json', data, (err) => {
+function writeResults(results, fs, filePath) {
+    let fileName = "results.json";
+    let resolved = filePath.resolve(__dirname, fileName);
+    let rawdata = '';
+    let savedResults = {
+        "results" : []
+    };
+    if (fs.existsSync(resolved)) {
+        rawdata = fs.readFileSync(resolved);
+        if (rawdata.length !== 0 ) {
+            savedResults = JSON.parse(rawdata);
+        }
+    }
+    results.results = results.results.concat(savedResults.results);
+    let data = JSON.stringify(results, null, 2);  
+    // let parsed = JSON.parse(data);
+    // console.log(parsed, "Parsed data");
+    fs.writeFileSync(fileName, data, (err) => {
         if (err) { throw err; }
-        console.log('Results have been exported!');
     });
+    console.log(results.results.length);
+    console.log('Results have been exported!');
 }

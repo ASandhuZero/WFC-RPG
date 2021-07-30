@@ -1,7 +1,7 @@
 
 
 export function pathfinding(featureMap, start, goal) {
-    console.log("Solving for path!")
+    // console.log("Solving for path!")
     featureMap[start.x][start.y].push('START');
     featureMap[goal.x][goal.y].push('GOAL');
     let cardinalFlag = true; // IF TRUE, ONLY GET CARDINAL DIRECTIONS. NO DIAGONALS.
@@ -19,7 +19,7 @@ export function pathfinding(featureMap, start, goal) {
     return paths;
 }
 function ReconstructPath(result, map) {
-    console.log("starting path reconstruction");
+    // console.log("starting path reconstruction");
     let tile = result.pop(); //Pop gets the last item in a list. Basically the goal.
     let temp = []
     let path = []
@@ -48,7 +48,7 @@ function ReconstructPath(result, map) {
         psychologicalScore : IEval,
         movesTaken : totalMoves
     }
-    console.log(pathData);
+    // console.log(pathData);
     return pathData;
 }
 

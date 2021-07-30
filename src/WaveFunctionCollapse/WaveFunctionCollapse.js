@@ -113,7 +113,6 @@ export function WFC(periodic, tilemapData, partial = null, strict=false, neighbo
     }
     let tileNames = waveData.tiles.names;
     let itemNames = waveData.items.names;
-    console.log(tileNames);
     let generated_tilemap = GenerateTileMap(waves, tileAmount, itemAmount, 
         tileNames, itemNames, w, h); // O(n^4)... Yep. This one is the one TODO: Fix this please, in some way.
     return generated_tilemap
