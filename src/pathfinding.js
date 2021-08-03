@@ -7,7 +7,7 @@ export function pathfinding(featureMap, start, goal) {
     let cardinalFlag = true; // IF TRUE, ONLY GET CARDINAL DIRECTIONS. NO DIAGONALS.
     let map = GenerateMap(featureMap);
     let paths = [];
-    let scoringFunctions = [scoreShortest, scoreLongest, scoreScaredyCat,
+    let scoringFunctions = [scoreSpeedRunner, scoreCompletionist, scoreScaredyCat,
         scoreSlasher, scorePsych];
     for (let i = 0; i < scoringFunctions.length; i++) {
         map = ResetMap(map, goal);
@@ -116,11 +116,10 @@ function evaluateMetaTag(tile, map, metatag) {
     }
     return count;
 }
-function scoreShortest(neighbor) {
+function scoreSpeedRunner(neighbor) {
     return neighbor.score;
 }
-
-function scoreLongest(neighbor, goal, map, current) {
+function scoreCompletionist(neighbor, goal, map, current) {
     dist = scoreDistance(neighbor, goal, map, current);
     return  1/dist;
 }

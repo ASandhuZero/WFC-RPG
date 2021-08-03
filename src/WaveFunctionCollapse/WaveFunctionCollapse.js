@@ -9,7 +9,7 @@ import * as Constraints from "./Constraints/Constraints"
  */
 //TODO: Pass everything as a param object rahter than individual variables.
 //  then break it out.
-function Log() {
+function WFCLog() {
     if (false) {
         console.log(arguments);
     }
@@ -82,7 +82,7 @@ export function WFC(periodic, tilemapData, partial = null, strict=false, neighbo
     }
     if (partial !== null) {
         FillPartial(waves.tiles, partial, periodic, waveData, w, h, tileAmount);
-        Log("partial has been filled!", debugging)
+        WFCLog("partial has been filled!", debugging)
     }
     banBeforeHand(waves.tiles, banList, periodic, waveData, w, h);
     elemsToRemove = [];
@@ -102,7 +102,7 @@ export function WFC(periodic, tilemapData, partial = null, strict=false, neighbo
         while (elemsToRemove.length !== 0) {
             let toRemove = elemsToRemove.pop();
             if (typeof toRemove === typeof 1) { debugger; }
-            Log("Removing", toRemove);
+            WFCLog("Removing", toRemove);
             let removed  = Ban(waves[type], waveData[type], toRemove[0],
                 toRemove[1], elemsToRemove, "main loop");
             if (removed === null) { continue; }
@@ -189,7 +189,7 @@ function FillPartial(wave, partial, periodic, WaveData, w, h, tileAmount) {
             }
         }
     }
-    Log(wave);
+    WFCLog(wave);
 }
 
 
@@ -235,8 +235,8 @@ function GenerateTileMap(waves, tileAmount, itemAmount, tileNames, itemNames, w,
         tiles : new Array(w),
         items : new Array(w)
     }
-    Log(waves["tiles"]);
-    Log(tileNames); 
+    WFCLog(waves["tiles"]);
+    WFCLog(tileNames); 
 
 
     for (let i = 0; i < w; i++) {
@@ -264,7 +264,7 @@ function GenerateTileMap(waves, tileAmount, itemAmount, tileNames, itemNames, w,
         }
     }
     //TODO: Maybe we want to throw something if there is no tilemap outputted?
-    Log(tilemap);
+    WFCLog(tilemap);
     return tilemap;
     
 }
@@ -445,7 +445,6 @@ function GenerateWaves(tileData, itemData, w, h) {
     waves.items = wave1;
     waves.tiles = newWave;
     waves.items = newWave1;
-
     return waves;
 }
 function Observe(wave, waveData, periodic, w, h, designRules, init) {
@@ -728,6 +727,9 @@ function GetEntropySort(indexes){
     return ordered_index;
 }
 
+// function PropagateRefactor(wave, removed, )
+
+
 function Propagate(wave, typeData, removed, periodic, w, h, propagator) {
     let elemsToRemove = new Array();
     let waveElem = removed[0];
@@ -741,7 +743,7 @@ function Propagate(wave, typeData, removed, periodic, w, h, propagator) {
         let neighbor = wave[iNeighbor][jNeighbor]
         
         if (neighbor.choices.filter(x => x===true).length === 1) {
-            Log("Propagate: Neighbor is stable!", x, y,);
+            WFCLog("Propagate: Neighbor is stable!", x, y,);
             return elemsToRemove;
         }
         if (coordinates[1] === jNeighbor) {
@@ -762,19 +764,19 @@ function Propagate(wave, typeData, removed, periodic, w, h, propagator) {
         for (let i = 0; i < p.length; i++) {
             let tile = p[i]   // position of neighbor tile to remove
             if (!wave[x][y].choices[tile]) { 
-                Log("Propagate: this tile is already banned!", x, y, tile);
+                WFCLog("Propagate: this tile is already banned!", x, y, tile);
                 continue; 
             }
             let compatibleCount = neighborCompatibleArr[tile];  // array of number of compatible tiles with neighbor tile to be removed
             compatibleCount[d] = compatibleCount[d] - 1;  // decrease number of compatible tiles according to d
             if (compatibleCount[d] === 0) {
-                Log("Propagate: A neighbor tile must be banned!", x, y, tile);
+                WFCLog("Propagate: A neighbor tile must be banned!", x, y, tile);
                 elemsToRemove.push([neighbor, tile]);
             }
             
             //TODO: comptible can go below zero. Figure out what this means.
             if (compatibleCount[d] < 0) { 
-                Log("The tile", x, y, tile, "should have been banned!", wave[x][y].choices[tile]);
+                WFCLog("The tile", x, y, tile, "should have been banned!", wave[x][y].choices[tile]);
                 debugger;
                 throw "A compatible cell has reached zero. Here they are ", i, j, tile; } 
         }
@@ -782,7 +784,7 @@ function Propagate(wave, typeData, removed, periodic, w, h, propagator) {
     if (elemsToRemove.length > 0) {
         debugger;
     }
-    Log("Propagate: The banned choice has been propagated!", elemsToRemove);
+    WFCLog("Propagate: The banned choice has been propagated!", elemsToRemove);
     return elemsToRemove;
 }
 // TODO: Check all of the Ban calls. You might be able to simplify this.
@@ -832,7 +834,7 @@ function Ban(wave, typeData, waveElem, bannedTile, origin) {
     let weightSum = waveElem.weightSum;    // get sum of weights for element with false tile
     let logWeightSum = waveElem.logWeightSum;
     waveElem.entropy -= logWeightSum / weightSum - Math.log(weightSum); // recalculate entropy
-    Log("Ban: The tile", waveElem, bannedTile, "has been banned!", origin);
+    WFCLog("Ban: The tile", waveElem, bannedTile, "has been banned!", origin);
     return [waveElem, bannedTile];
 }
 function BinarySearch(array, value, start, end) {

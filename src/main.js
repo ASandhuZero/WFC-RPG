@@ -3,22 +3,28 @@
 //      DATA. MIGHT BE WORTH TO SEE HOW MAKE IT MORE DYNAMIC. IF NEED BE.
 import { WFC } from "./WaveFunctionCollapse/WaveFunctionCollapse";
 import * as testjson from "./UNITTEST.json!json";
+import * as partialsJSON from "./partials.json!json";
 import evaluateHorrorPotential from "./Evals/TilemapEvaluation";
 import { detectFeatures } from "./Evals/FeatureDetection";
 import { generateHeatmaps } from "./Evals/Visualization";
 import { pathfinding } from "./pathfinding";
 import { Draw } from "./View";
+import { Test }  from "./BitWFC"
+
+
+// Test();
 
 const fs = require("fs");
 const filePath = require('path');
-const height = 40;
-const width = 40;
+const height = 50;
+const width = 50;
 
 let partialFlag = true;
 let testPaths = true;
 let save = false;
 let strict = false;
 let shouldGenerateNeighbors = true;
+// TODO: This feels dumb... Why can't we just turn off a tile?
 let banList = [19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37];
 
 
@@ -34,70 +40,18 @@ let tilemapData = {
     itemRules : itemRules,
     tilesetInfo : testjson
 }
-// TODO: ... what can I say. This is bad... and maybe needs something else in
-//      in here.
 let wfc = undefined;
 
 // Feature mapping of tiles to their horror low level feature.
 // TODO: Make sure that tiles without anything come back as traverseable as 
 //  well. So, tiles are being drawn and their features aren't being accounted
 // for. Maybe we make this into it's own object?
-let featureMapping = {
-    1 : ["T"],
-    2 : ["T"],
-    3 : ["T"],
-    4 : [],
-    6 : ["T"],
-    7 : ["T"], 
-    8 : ["T"],
-    9 : ["T"],
-    10 : ["AC"],
-    11 : ["AC", "LV"],
-    12 : ["AC"],
-    13 : ["AC", "LV"],
-    14 : ["AC", "LV"],
-    15 : ["T"],
-    16 : ["AC"],
-    17 : ["T"],
-    18 : ["T"],
-    19 : ["AC"],
-    20 : ["AC", "LV"],
-    21 : ["AC"],
-    22 : ["AC", "LV"],
-    24 : ["T"],
-    25 : ["T"],
-    26 : ["T"],
-    27 : ["T"],
-    28 : ["AC", "T"],
-    29 : ["AC", "T"],
-    30 : ["AC", "T"],
-    31 : ["AC", "T"],
-    37 : [],
-    38 : [],
-    39 : [],
-    41 : ["AC", "LV"],
-    45 : ["AC", "LV"],
-    50 : ["AC", "LV"],
-    54 : ["AC", "LV"],
-    59 : ["AC", "LV"],
-    60 : [],
-    61 : [],
-    73 : ["AC", "LV"],
-    74 : ["AC", "LV"],
-    75 : ["AC", "LV"],
-    76 : ["AC", "LV"],
-    77 : ["AC", "LV"],
-    46 : ["AC", "LV"],
-    47 : ["AC", "LV"],
-    48 : ["AC", "LV"],
-    55 : ["AC", "LV"],
-    56 : ["AC", "LV"],
-    57 : ["AC", "LV"],
-    64 : ["AC", "LV"],
-    65 : ["AC", "LV"],
-    66 : ["AC", "LV"]
+let featureMapping = {};
+for (let i = 0; i < testjson.data.tiles_info.length; i++) {
+    let tile = testjson.data.tiles_info[i];
+    let name = tile.name;
+    featureMapping[name] = tile.features;
 }
-
 
 // Good lord, the partial is a weird boy. So, set a tile to false if WFC should
 // solve for that tile.
@@ -107,73 +61,7 @@ let featureMapping = {
 //number, put a random tile in, and search around until the correct tile is 
 // found :)
 let partial = null;
-
-let partials = 
-[
-    [
-        [19,24,24,24,24,24,24,24,24,24,20],
-        [21,-1,10,10,10,10,10,10,10,-1,22],
-        [21,-1,10,10,10,10,10,10,10,-1,22],
-        [21,10,10,19,24,24,20,10,10,10,22],
-        [21,10,10,21,-1,10,22,10,10,10,22],
-        [21,24,24,25,10,10,22,10,10,10,22],
-    ],
-    [
-        [10,10,8,8,10,10],
-        [10,10,10,8,8,10,10,8,8,10,10,10],
-        [10,10,10,8,8,10,-1,10,-1,8,8,10,10,10],
-        [10,10,10,8,15,16,15,-1,17,10,8,10,10]
-    ],
-    [
-        [-1,-1,4,-1,-1],
-        [-1,-1,4,-1,-1],
-        [4,4,4,4,4],
-        [-1,-1,4,-1,-1],
-        [-1,-1,4,-1,-1]
-    ],
-    [
-        [20],
-        [22],
-        [20],
-        [22]
-    ],
-    [
-        [26,27,28],
-        [29,30,31],
-        [32,33,34],
-        [35,36,37]
-    ],
-    [
-        [19,24,24,24,24,24,24,20],
-        [21,10,10,10,10,10,10,22],
-        [21,10,10,10,10,10,10,22],
-        [21,10,10,10,10,10,10,22]
-    ], 
-    [
-        [10,10,10,10,10,10,10,10],
-        [10,10,10,10,10,10,10,10],
-        [10,10,10,10,10,10,10,10],
-        [10,10,10,10,10,10,10,10]
-    ], 
-    [
-        [12,10,13,10,12],
-        [12,10,13,10,12],
-        [12,10,13,10,12],
-        [12,10,13,10,12]
-    ],
-    [
-        [12,-1,12],
-        [12,-1,12],
-    ],
-    [
-        [19,24,24,24,24,24,24,24,20],
-        [21,10,10,10,10,10,10,10,22],
-        [21,10,12,10,12,10,12,10,22],
-        [19,10,12,10,12,10,12,10,20],
-        [21,10,12,10,12,10,12,10,22]
-    ], 
-];
-
+let partials = partialsJSON.partials;
 function generatePartial(partials, w, h) {
     let partialMap = new Array(w);
     for (let i = 0; i < w; i++) {
@@ -260,7 +148,6 @@ while ((wfc=== undefined ||paths === false) && loopCount < 10) {
         console.log(error);
         wfc = undefined;
     }
-    // TODO: Really, just figure out if WFC should be a flattened array or not.
     let lowLevelFeatureMap = Array.from(Array(width), () => new Array(height));
     let tilemapToSave = Array.from(Array(width), () => new Array(height));
     for (let i = 0; i < width; i++) {
@@ -270,8 +157,6 @@ while ((wfc=== undefined ||paths === false) && loopCount < 10) {
             lowLevelFeatureMap[i][j] = featureMapping[tile.name];
         }
     }
-    //TODO: Yeah so the above code is horrible. Either flatten everything down to
-    //      an array. OR just turn everything into a matrix.
     features = detectFeatures(lowLevelFeatureMap, width, height);
     let combinedFeatureMap = combineFeatures(features);
     heatmaps = generateHeatmaps(combinedFeatureMap, width, height);
