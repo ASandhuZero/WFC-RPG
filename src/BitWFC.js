@@ -5,15 +5,15 @@ function Test() {
     let fillbit = 1;
     let count = 0;
     tileAmount = 0;
-    let testConst = 40;
-    let testTileCount = 64;
+    let testConst = 3;
+    let testTileCount = 150;
     let weights = {};
     for (let i = 0; i <= testTileCount; i++) {
         mapping[i] = {
             bit : fillbit, 
             shift : count
         }
-        weights[i] = 1 + i;
+        weights[i] = 1;
         fillbit = fillbit << 1;
         if ((fillbit | 0) === 0) { fillbit = 1; count++; }
         tileAmount++;
@@ -31,7 +31,9 @@ function Test() {
     console.log("mapping", mapping);
     // Making random neighbors...
     let constraints = [];
-    for (let i = 0; i < testConst * testConst; i++) {
+    // TODO: if the constraints are less than teh tiles, there can be a big 
+    //error that occurs. Which you should figure out how to deal with LOL.
+    for (let i = 0; i < testTileCount * testTileCount; i++) {
         let randRight = Math.ceil(Math.random() * testTileCount);
         let randLeft = Math.ceil(Math.random() * testTileCount);
         constraints.push({
@@ -54,7 +56,7 @@ function Test() {
         let mappedNeighbor = mapping[right];
         let neighborBits = mappedNeighbors[left][mappedNeighbor.shift];
         // mappedNeighbors[left][mappedNeighbor.shift] = neighborBits | mappedNeighbor.bit;
-        mappedNeighbors[left][mappedNeighbor.shift] = -1;
+        mappedNeighbors[left][2] = -1;
     }
     console.log("mappedNeighbors", mappedNeighbors);
     // Making test matrix...
@@ -66,7 +68,8 @@ function Test() {
                 adjacents : setAdjacents(i,j,testConst, testConst),
                 tiles : new Array(count).fill(-1),
                 neighbors : {}, 
-                banned : 0
+                banned : 0,
+                stable : false
             }
             bitMatrix[i][j].tiles[count-1] &= fillbit;
         }
@@ -136,16 +139,17 @@ function setAdjacents(x, y, w, h) {
 
 function getBits(x) { return (x >>> 0).toString(2); }
 
+//TODO: Make sure this is right.
 function getInt(x, shift) {
-    if (x === 0) { return 0;}
-    return (32 * shift) + getBits(x >>> 0).length - 1;
+    if (x === 0) { debugger; return 0;}
+    return (31 * shift) + getBits(x >>> 0).length;
 }
 // Reflect entropy choosing... TODO:
 function chooseCell(bitMatrix) {
     let xRand = 0;
     let yRand = 0;
     let cell = bitMatrix[xRand][yRand];
-    while (typeof cell.tiles === typeof 1) {
+    while (cell.stable) {
         xRand = Math.floor(Math.random() * bitMatrix.length);
         yRand = Math.floor(Math.random() * bitMatrix[xRand].length);
         cell = bitMatrix[xRand][yRand];
@@ -155,26 +159,28 @@ function chooseCell(bitMatrix) {
 //TODO: reflect entropy choice.
 function chooseChoice(bitMatrix, cell, tileAmount, count, weights) {
     // Make sure the CHOICE is coming from one of the on bits.
-    // return 1;
     let choices = {}
     let choicesKey = [];
     let total = 0;
     for (let i = 0; i < count; i++) {
         let tileShift = cell.tiles[i];
         while ((tileShift | 0) !== 0) {
-
             let pushedBit = 1<<getBits(tileShift).length-1;
-            let choice = getInt(tileShift, i)
+            let choice = getInt(tileShift, i);
+            if (choice === 0 ) { debugger; }
             choices[choice] = weights[choice];
             choicesKey.push(choice);
             total += weights[choice];
             tileShift &= ~pushedBit;
         }
     }
-    let randChoice = Math.floor(Math.random() * total);
-    for (let i = 1; i < choicesKey.length; i++) {
-        randChoice -= choices[choicesKey[i]];
-        if (randChoice <= 0) {
+    let threshold = Math.floor(Math.random() * total);
+    let limit = 0;
+    for (let i = 0; i < choicesKey.length; i++) {
+        limit += choices[choicesKey[i]];
+        if (limit >= threshold) {
+            if (choicesKey[i] === 0) { debugger; }
+            console.log(choicesKey[i]);
             return choicesKey[i];
         }
     }
@@ -182,39 +188,38 @@ function chooseChoice(bitMatrix, cell, tileAmount, count, weights) {
     return 1
 }
 
+function removeNoncompats(nonCompats, cell ) {
+    while ((nonCompats | 0) !== 0) {
+    let removedBit = 1 << getBits(nonCompats).length-1;
+    let removed = getInt(removedBit, j);
+    nonCompats &= ~removedBit; 
+    if (cell.neighbors[removed] !== false) {
+        cell.neighbors[removed] = false;
+        let removedInfo = mapping[removed];
+        if (removedInfo === undefined) { continue; }
+        cell.tiles[removedInfo.shift] &= ~removedInfo.bit;
+        cell.banned++;
+        shouldPropagate = true;
+    }
+}
+}
+
 function ChooseBit(bitMatrix, count, mappedNeighbors, tileAmount, mapping, weights) {
     let cell = chooseCell(bitMatrix);
     if (typeof cell.tiles === typeof 1) { return null; }
-    // chooseChoice
     let choice = chooseChoice(bitMatrix, cell, tileAmount, count, weights);
-    //Making a choice.
     cell['tiles'] = choice;
-    // Don't care about possible neighbors now.
     if (cell.neighbors === undefined) { debugger; };
     let compat = mappedNeighbors[choice]; // Might have to do a deep copy
-    // Removing this for garbage collection.
     cell.neighbors = 0;
     let compatArray = [];
-    // Making sure adjacent neighbors ONLY have compatible neighbors.
-    for (let j = 0; j < count; j++) {
-        if (compat === undefined) { debugger; }
-        // adjCell['tiles'][j] = compat[j];
-        // When we set this compatibilty, we NEED to remove all the tiles
-        // that are not compatible.
-        // Get noncompats, set each neighbor to false, and move to next c
-        let nonCompats = ~compat[j];
-        while ((nonCompats | 0) !== 0) {
-            let removedBit = 1 << getBits(nonCompats).length-1;
-            let removed = getInt(removedBit, j);
-            nonCompats &= ~removedBit; 
-        }
-    }
     for (let i = 0; i < cell.adjacents.length; i++) {
         compatArray.push({
             compat : compat,
             cell : cell.adjacents[i]
         });
     }
+    cell.stable = true;
     return compatArray;
 }
 
