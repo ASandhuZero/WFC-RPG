@@ -21,6 +21,7 @@ System.config({
     "colorjs.io": "npm:colorjs.io@0.0.3",
     "core-js": "npm:core-js@1.2.7",
     "css": "github:systemjs/plugin-css@0.1.37",
+    "d3": "npm:d3@7.0.0",
     "electron": "npm:electron@3.1.13",
     "image": "github:systemjs/plugin-image@0.1.0",
     "jquery": "npm:jquery@2.2.4",
@@ -250,6 +251,14 @@ System.config({
       "stream": "github:jspm/nodelibs-stream@0.1.0",
       "util": "github:jspm/nodelibs-util@0.1.0"
     },
+    "npm:commander@7.2.0": {
+      "buffer": "github:jspm/nodelibs-buffer@0.1.1",
+      "child_process": "github:jspm/nodelibs-child_process@0.1.0",
+      "events": "github:jspm/nodelibs-events@0.1.1",
+      "fs": "github:jspm/nodelibs-fs@0.1.2",
+      "path": "github:jspm/nodelibs-path@0.1.0",
+      "process": "github:jspm/nodelibs-process@0.1.2"
+    },
     "npm:concat-stream@1.6.2": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.1",
       "buffer-from": "npm:buffer-from@1.1.1",
@@ -311,6 +320,119 @@ System.config({
       "array-find-index": "npm:array-find-index@1.0.2",
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
+    "npm:d3-array@3.0.1": {
+      "internmap": "npm:internmap@2.0.1"
+    },
+    "npm:d3-brush@3.0.0": {
+      "d3-dispatch": "npm:d3-dispatch@3.0.1",
+      "d3-drag": "npm:d3-drag@3.0.0",
+      "d3-interpolate": "npm:d3-interpolate@3.0.1",
+      "d3-selection": "npm:d3-selection@3.0.0",
+      "d3-transition": "npm:d3-transition@3.0.1"
+    },
+    "npm:d3-chord@3.0.1": {
+      "d3-path": "npm:d3-path@3.0.1"
+    },
+    "npm:d3-contour@3.0.1": {
+      "d3-array": "npm:d3-array@3.0.1"
+    },
+    "npm:d3-delaunay@6.0.2": {
+      "delaunator": "npm:delaunator@5.0.0"
+    },
+    "npm:d3-drag@3.0.0": {
+      "d3-dispatch": "npm:d3-dispatch@3.0.1",
+      "d3-selection": "npm:d3-selection@3.0.0"
+    },
+    "npm:d3-dsv@3.0.1": {
+      "commander": "npm:commander@7.2.0",
+      "iconv-lite": "npm:iconv-lite@0.6.3",
+      "rw": "npm:rw@1.3.3"
+    },
+    "npm:d3-fetch@3.0.1": {
+      "d3-dsv": "npm:d3-dsv@3.0.1"
+    },
+    "npm:d3-force@3.0.0": {
+      "d3-dispatch": "npm:d3-dispatch@3.0.1",
+      "d3-quadtree": "npm:d3-quadtree@3.0.1",
+      "d3-timer": "npm:d3-timer@3.0.1",
+      "process": "github:jspm/nodelibs-process@0.1.2"
+    },
+    "npm:d3-geo@3.0.1": {
+      "buffer": "github:jspm/nodelibs-buffer@0.1.1",
+      "d3-array": "npm:d3-array@3.0.1"
+    },
+    "npm:d3-interpolate@3.0.1": {
+      "d3-color": "npm:d3-color@3.0.1"
+    },
+    "npm:d3-scale-chromatic@3.0.0": {
+      "d3-color": "npm:d3-color@3.0.1",
+      "d3-interpolate": "npm:d3-interpolate@3.0.1"
+    },
+    "npm:d3-scale@4.0.0": {
+      "d3-array": "npm:d3-array@3.0.1",
+      "d3-format": "npm:d3-format@3.0.1",
+      "d3-interpolate": "npm:d3-interpolate@3.0.1",
+      "d3-time": "npm:d3-time@3.0.0",
+      "d3-time-format": "npm:d3-time-format@4.0.0"
+    },
+    "npm:d3-shape@3.0.1": {
+      "d3-path": "npm:d3-path@3.0.1"
+    },
+    "npm:d3-time-format@4.0.0": {
+      "d3-time": "npm:d3-time@3.0.0"
+    },
+    "npm:d3-time@3.0.0": {
+      "d3-array": "npm:d3-array@3.0.1"
+    },
+    "npm:d3-transition@3.0.1": {
+      "d3-color": "npm:d3-color@3.0.1",
+      "d3-dispatch": "npm:d3-dispatch@3.0.1",
+      "d3-ease": "npm:d3-ease@3.0.1",
+      "d3-interpolate": "npm:d3-interpolate@3.0.1",
+      "d3-selection": "npm:d3-selection@3.0.0",
+      "d3-timer": "npm:d3-timer@3.0.1"
+    },
+    "npm:d3-zoom@3.0.0": {
+      "d3-dispatch": "npm:d3-dispatch@3.0.1",
+      "d3-drag": "npm:d3-drag@3.0.0",
+      "d3-interpolate": "npm:d3-interpolate@3.0.1",
+      "d3-selection": "npm:d3-selection@3.0.0",
+      "d3-transition": "npm:d3-transition@3.0.1"
+    },
+    "npm:d3@7.0.0": {
+      "buffer": "github:jspm/nodelibs-buffer@0.1.1",
+      "d3-array": "npm:d3-array@3.0.1",
+      "d3-axis": "npm:d3-axis@3.0.0",
+      "d3-brush": "npm:d3-brush@3.0.0",
+      "d3-chord": "npm:d3-chord@3.0.1",
+      "d3-color": "npm:d3-color@3.0.1",
+      "d3-contour": "npm:d3-contour@3.0.1",
+      "d3-delaunay": "npm:d3-delaunay@6.0.2",
+      "d3-dispatch": "npm:d3-dispatch@3.0.1",
+      "d3-drag": "npm:d3-drag@3.0.0",
+      "d3-dsv": "npm:d3-dsv@3.0.1",
+      "d3-ease": "npm:d3-ease@3.0.1",
+      "d3-fetch": "npm:d3-fetch@3.0.1",
+      "d3-force": "npm:d3-force@3.0.0",
+      "d3-format": "npm:d3-format@3.0.1",
+      "d3-geo": "npm:d3-geo@3.0.1",
+      "d3-hierarchy": "npm:d3-hierarchy@3.0.1",
+      "d3-interpolate": "npm:d3-interpolate@3.0.1",
+      "d3-path": "npm:d3-path@3.0.1",
+      "d3-polygon": "npm:d3-polygon@3.0.1",
+      "d3-quadtree": "npm:d3-quadtree@3.0.1",
+      "d3-random": "npm:d3-random@3.0.1",
+      "d3-scale": "npm:d3-scale@4.0.0",
+      "d3-scale-chromatic": "npm:d3-scale-chromatic@3.0.0",
+      "d3-selection": "npm:d3-selection@3.0.0",
+      "d3-shape": "npm:d3-shape@3.0.1",
+      "d3-time": "npm:d3-time@3.0.0",
+      "d3-time-format": "npm:d3-time-format@4.0.0",
+      "d3-timer": "npm:d3-timer@3.0.1",
+      "d3-transition": "npm:d3-transition@3.0.1",
+      "d3-zoom": "npm:d3-zoom@3.0.0",
+      "process": "github:jspm/nodelibs-process@0.1.2"
+    },
     "npm:dashdash@1.14.1": {
       "assert-plus": "npm:assert-plus@1.0.0",
       "fs": "github:jspm/nodelibs-fs@0.1.2",
@@ -329,6 +451,9 @@ System.config({
     },
     "npm:deep-extend@0.6.0": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.1"
+    },
+    "npm:delaunator@5.0.0": {
+      "robust-predicates": "npm:robust-predicates@3.0.1"
     },
     "npm:delayed-stream@1.0.0": {
       "stream": "github:jspm/nodelibs-stream@0.1.0",
@@ -520,6 +645,13 @@ System.config({
     },
     "npm:https-browserify@0.0.0": {
       "http": "github:jspm/nodelibs-http@1.7.1"
+    },
+    "npm:iconv-lite@0.6.3": {
+      "buffer": "github:jspm/nodelibs-buffer@0.1.1",
+      "process": "github:jspm/nodelibs-process@0.1.2",
+      "safer-buffer": "npm:safer-buffer@2.1.2",
+      "string_decoder": "github:jspm/nodelibs-string_decoder@0.1.0",
+      "systemjs-json": "github:systemjs/plugin-json@0.1.2"
     },
     "npm:indent-string@2.1.0": {
       "repeating": "npm:repeating@2.0.1"
@@ -846,6 +978,11 @@ System.config({
       "buffer": "github:jspm/nodelibs-buffer@0.1.1",
       "hash-base": "npm:hash-base@3.0.4",
       "inherits": "npm:inherits@2.0.4"
+    },
+    "npm:rw@1.3.3": {
+      "buffer": "github:jspm/nodelibs-buffer@0.1.1",
+      "fs": "github:jspm/nodelibs-fs@0.1.2",
+      "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:safe-buffer@5.1.2": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.1"

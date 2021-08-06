@@ -1,24 +1,28 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>UCD-WFC Nightmare project.</title>
-    <!-- <meta name='viewport' content='width=device-width, initial-scale=1'> -->
-    <script src="jspm_packages/system.js"></script>
-  </head>
-  <body>
-    <script src='config.js'></script>
-    <script>
-      System.import('src/main');
-    </script>
-      <label>Tile Number</label>
-      <input id="tileNumInput" type="number" value="10"/>
-      <label>Tile Size</label>
-      <input id="tileSizeInput" type="number" value="16"/>
-    <!-- <button type="button" id="numButton" class="editButtons">Generate Map</button>
-    <button type="button" id="exportButton" class="editButtons">Export</button>
-    <button type="button" id="updateButton" class="editButtons">Updated Tile Map</button>
-    <button type="button" id="itemToggle" class="editButtons">Toggle Items</button>
-    <button type="button" id="testRuns" class="editButtons">Test Runs</button> -->
-  </body>
-</html>
+<style>
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+#btnDiv {
+    position: absolute;
+    z-index: 2;
+}
+</style>
+<script src="jspm_packages/system.js"></script>
+<script src='config.js'></script>
+<script>
+    System.import('src/main');
+</script>
+<! -- HTML code -->
+<body>
+    <div>
+        <canvas id="tilemap"></canvas>
+        <canvas id="ac_heatmap"></canvas>
+        <canvas id="lv_heatmap"></canvas>
+        <canvas id="js_heatmap"></canvas>
+        <canvas id="iso_heatmap"></canvas>
+    </div>
+    <div id="btnDiv"></div>
+</body>

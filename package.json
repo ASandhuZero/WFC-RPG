@@ -17,6 +17,7 @@
     "babel-runtime": "npm:babel-runtime@^5.8.24",
     "colorjs.io": "npm:colorjs.io@^0.0.3",
     "core-js": "npm:core-js@^1.1.4",
+    "d3": "npm:d3@^7.0.0",
     "electron": "npm:electron@^3.0.4"
   }
 }

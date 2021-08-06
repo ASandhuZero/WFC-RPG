@@ -19,7 +19,8 @@ function createWindow () {
     // y: externalDisplay.bounds.y + 50,
   })
   // and load the index.html of the app.
-  mainWindow.loadFile('vanilla.html')
+  mainWindow.loadFile('index.html')
+
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
