@@ -28,10 +28,7 @@ Problems:
     Figure out the error that is stopping a 129 choice for the tileset (low)
 
     Dealing with multi-layer tiles, like trees.
-    GET RID OF PHASER.
-    Pull WFC outside of this MVC. It's kind of a nightmare.
-    MAKE A BAREBONES FRONTEND.
-    AND A BAREBRONES BACKEND. 
+    A BAREBRONES BACKEND. 
     PULL OUT WFC. 
     VIEW TILEMAP. 
     EDIT TILEMAP.

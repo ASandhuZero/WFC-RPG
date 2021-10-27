@@ -48,7 +48,7 @@ function ReconstructPath(result, map) {
         psychologicalScore : IEval,
         movesTaken : totalMoves
     }
-    // console.log(pathData);
+    console.log(pathData);
     return pathData;
 }
 
@@ -117,6 +117,7 @@ function evaluateMetaTag(tile, map, metatag) {
     return count;
 }
 function scoreSpeedRunner(neighbor) {
+    // Returning the distance function. Please look at ResetMap.
     return neighbor.score;
 }
 function scoreCompletionist(neighbor, goal, map, current) {

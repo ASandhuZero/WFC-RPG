@@ -16,11 +16,11 @@ import { Test }  from "./BitWFC"
 
 const fs = require("fs");
 const filePath = require('path');
-const height = 50;
-const width = 50;
+const height = 40;
+const width = 40;
 
 let partialFlag = true;
-let testPaths = true;
+let testPaths = false;
 let save = false;
 let strict = false;
 let shouldGenerateNeighbors = true;
@@ -254,7 +254,7 @@ tileSet.src = './assets/tilesets/graveyard.png';
 tileSet.onload = drawAll;
 
 let tileSize = 16;
-let rescale = 1; // can set to 1 for 32px or higher
+let rescale = 2; // can set to 1 for 32px or higher
 
 let atlasCol = 9;
 let mapCols = width+1;
