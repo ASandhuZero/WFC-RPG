@@ -33,11 +33,12 @@ export function Draw(heatmaps, w, h, tileSize, rescale, tileSet, tileSetCol, map
 
             drawTile(tilemapCanvas, tileSet, row, col, rescale, updatedSize, 
                 tileSize, atlasCol, map, index);
-
-            for (let i = 0; i < heatmapNames.length; i++) {
-                let heatmap = heatmaps[heatmapNames[i]];
-                drawHeatmap(heatmapCanvases[i], heatmap, row, col, rescale, 
-                    updatedSize, tileSize);
+            if (heatmaps != null) {
+                for (let i = 0; i < heatmapNames.length; i++) {
+                    let heatmap = heatmaps[heatmapNames[i]];
+                    drawHeatmap(heatmapCanvases[i], heatmap, row, col, rescale, 
+                        updatedSize, tileSize);
+                }
             }
             
             drawName(tileNameCanvas, map, index, row, col, atlasCol, rescale, 

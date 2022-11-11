@@ -1,4 +1,4 @@
-
+ 
 import * as Constraints from "./Constraints/Constraints"
 
 /**
@@ -542,7 +542,6 @@ function Observe(wave, waveData, periodic, w, h, designRules, init) {
 //  love of god.
 function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, tile_data, elemsData, elemsToRemove, periodic, width, height) {
 
-    let wave_elem;
     let sorted_entropies;
     let xmin, xmax, ymin, ymax;
     let collapse_indexes;
@@ -726,9 +725,6 @@ function GetEntropySort(indexes){
     let ordered_index = sortEnt.map(a => a.index);
     return ordered_index;
 }
-
-// function PropagateRefactor(wave, removed, )
-
 
 function Propagate(wave, typeData, removed, periodic, w, h, propagator) {
     let elemsToRemove = new Array();

@@ -1,21 +1,25 @@
 //TODO: REMOVED TILE COUNT, CURRENTLY HARDCODING TILE COUNT TO 128. FIX THIS 
 //      LATER. ALSO THERE IS A BUNCH OF HARDCODED VALUES WITHIN THE TILED 
 //      DATA. MIGHT BE WORTH TO SEE HOW MAKE IT MORE DYNAMIC. IF NEED BE.
+// TODO: have some way to turn heatmaps on and off. like a flag or something
 import { WFC } from "./WaveFunctionCollapse/WaveFunctionCollapse";
 import * as testjson from "./UNITTEST.json!json";
 import * as partialsJSON from "./partials.json!json";
 import evaluateHorrorPotential from "./Evals/TilemapEvaluation";
 import { detectFeatures } from "./Evals/FeatureDetection";
-import { generateHeatmaps } from "./Evals/Visualization";
+// import { generateHeatmaps } from "./Evals/Visualization";
 import { pathfinding } from "./pathfinding";
 import { Draw } from "./View";
-import { Test }  from "./BitWFC"
+// import { Test }  from "./BitWFC"
 
 
 // Test();
-
-const fs = require("fs");
-const filePath = require('path');
+define(['require', 'fs', 'path'], function(require) {
+    const fs = require('fs');
+    const path = require('path');
+})
+// const fs = require('fs');
+// const path = require('path');
 const height = 40;
 const width = 40;
 
@@ -159,7 +163,7 @@ while ((wfc=== undefined ||paths === false) && loopCount < 10) {
     }
     features = detectFeatures(lowLevelFeatureMap, width, height);
     let combinedFeatureMap = combineFeatures(features);
-    heatmaps = generateHeatmaps(combinedFeatureMap, width, height);
+    // heatmaps = generateHeatmaps(combinedFeatureMap, width, height);
     let tilemapEval = evaluateHorrorPotential(combinedFeatureMap, width, height, 
         "slasher");
     let start = {
@@ -222,7 +226,7 @@ while ((wfc=== undefined ||paths === false) && loopCount < 10) {
                 psychologicalPrio : psychologicalPrio
             });
         if (loopCount%100===0) {
-            writeResults(resultData, fs, filePath);
+            writeResults(resultData, fs, path);
             resultData.results = [];
         }
         console.log("Results have been pushed!", loopCount);
@@ -230,6 +234,7 @@ while ((wfc=== undefined ||paths === false) && loopCount < 10) {
     }
     loopCount++;
 }
+
 
 function combineFeatures(features) {
     let horrorFeatures = [];
@@ -271,12 +276,12 @@ function drawAll() {
         atlasCol, levelMap, paths);
 }
 if (save) {
-    writeResults(resultData, fs, filePath);
+    writeResults(resultData, fs, path);
 
 }
-function writeResults(results, fs, filePath) {
+function writeResults(results, fs, path) {
     let fileName = "results.json";
-    let resolved = filePath.resolve(__dirname, fileName);
+    let resolved = path.resolve(__dirname, fileName);
     let rawdata = '';
     let savedResults = {
         "results" : []
