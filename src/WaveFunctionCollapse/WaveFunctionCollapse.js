@@ -1,23 +1,18 @@
  
 import * as Constraints from "./Constraints/Constraints"
 
+function WFCLog() {
+    if (true) {
+        console.log(arguments);
+    }
+}
 /**
  * WaveFunctionCollapse
  * @param {*} periodic 
  * @param {*} tilemapData - All the data needed for WFC to work.
  * @returns 
  */
-//TODO: Pass everything as a param object rahter than individual variables.
-//  then break it out.
-function WFCLog() {
-    if (false) {
-        console.log(arguments);
-    }
-}
 export function WFC(periodic, tilemapData, partial = null, strict=false, neighborFlag=false, banList=[]) {
-    //TODO: THERE IS SOME NIGHTMARES RIGHT HERE THAT NEED TO BE WORKED THROUGH.
-    //      AS IN THE TILE_RULE AND ITEM_RULE ARE UNDEFINED I THINK AND THAT IS 
-    //      WHAT IS CAUSING THE BLANK SCREEN. FIX THIS.
     let w = tilemapData.w ? tilemapData.w : 0;
     let h = tilemapData.h ? tilemapData.h : 0;
     let tilesetInfo = tilemapData.tilesetInfo;
@@ -29,7 +24,6 @@ export function WFC(periodic, tilemapData, partial = null, strict=false, neighbo
     if (neighborFlag) {
         neighborData = [];
     }
-    let elemNumber = 0;
     // Getting the constraints for each type of data    
     // This really isn't robust TODO: Fix this later.
     // Extra data is being created here that can be broken out. It's shared.
@@ -769,8 +763,6 @@ function Propagate(wave, typeData, removed, periodic, w, h, propagator) {
                 WFCLog("Propagate: A neighbor tile must be banned!", x, y, tile);
                 elemsToRemove.push([neighbor, tile]);
             }
-            
-            //TODO: comptible can go below zero. Figure out what this means.
             if (compatibleCount[d] < 0) { 
                 WFCLog("The tile", x, y, tile, "should have been banned!", wave[x][y].choices[tile]);
                 debugger;

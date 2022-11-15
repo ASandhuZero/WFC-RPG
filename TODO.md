@@ -29,11 +29,6 @@ Problems:
     Figure out the error that is stopping a 129 choice for the tileset (low)
 
     Dealing with multi-layer tiles, like trees.
-    A BAREBRONES BACKEND. 
-    PULL OUT WFC. 
-    VIEW TILEMAP. 
-    EDIT TILEMAP.
-    https://github.com/victorqribeiro/tileEditor THAT GOOD BOY INSPO
 
 
     Things to keep:
