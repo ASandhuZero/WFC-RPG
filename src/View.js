@@ -94,7 +94,7 @@ function generateCanvas(name, w, h) {
 }
 
 function drawImage(ctx, tileSet, sourceX, sourceY, sourceSize, destX, destY, updatedSize) {
-    // updatedSize -= 1;
+    updatedSize -= 1; //TODO: figure out how to not make this hardcoded. 
     ctx.drawImage(tileSet, sourceX, sourceY, sourceSize, sourceSize, destX, 
         destY, updatedSize, updatedSize);
 }
@@ -111,7 +111,6 @@ function drawPath(canvas, path, pathOffset, rescale, updatedSize, tileSize) {
     for (let i = 1; i < path.length; i++) {
         if (i == path.length-1) { pathOffset = 0; }
         let tile = path[i];
-        // TODO: THE ONE IS AN OFFSET BECAUSE OF THE TRIM.
         let x = (tile.x + 1) * tileSize;
         let y = (tile.y + 1) * tileSize;
         ctx.lineTo(x * rescale + (2 * pathOffset)  + updatedSize/2, 

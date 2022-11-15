@@ -18,10 +18,8 @@ define(['require', 'fs', 'path'], function(require) {
     const fs = require('fs');
     const path = require('path');
 })
-// const fs = require('fs');
-// const path = require('path');
-const height = 40;
-const width = 40;
+const height = 20;
+const width = 20;
 
 let partialFlag = true;
 let testPaths = false;

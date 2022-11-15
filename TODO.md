@@ -1,3 +1,4 @@
+TODO: make a key and door tile or something akin to that.
 Make README.md more extensive with how to install based on system.
 
 Actually get main.js to properly hook into the index.html.
@@ -6,7 +7,7 @@ There might be some code that needs to be refactored in Model.js
 
 Think of a better way of passing information through MVC.
 
-Look through VIew and give a better explanation of what is going on.
+Look through View and give a better explanation of what is going on.
 
 Checklist for README.md:
     How to start the project.
