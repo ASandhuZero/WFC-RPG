@@ -1,7 +1,7 @@
 {
     "data": {
         "name": "main",
-        "tiles_info": [
+        "tile_info": [
             {"name":"2", "symmetry":"T", "weight":1, "type": "light"},
             {"name":"3", "symmetry":"L", "weight":0.4, "type": "light"},
             {"name":"4", "symmetry":"T", "weight":1, "type": "light"},

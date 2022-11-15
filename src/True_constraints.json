@@ -1,6 +1,6 @@
 {
     "data": {
-        "tiles_info": [
+        "tile_info": [
             {"name":"1", "symmetry":"X", "weight":1},
             {"name":"2", "symmetry":"X", "weight":1},
             {"name":"3", "symmetry":"X", "weight":1},

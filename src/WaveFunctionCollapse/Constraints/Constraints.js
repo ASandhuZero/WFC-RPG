@@ -91,7 +91,7 @@ export function GenerateRules(rules_info) {
     return rules
 }
 
-export function GenerateTiles(tiles_info, width, height) {
+export function GenerateTiles(tile_info, width, height) {
     let tile, tile_name, new_tile, compatible, logWeights, cumulative_weights;
     let carray = [];
     let weightSum = 0;
@@ -110,8 +110,8 @@ export function GenerateTiles(tiles_info, width, height) {
     let rotation = function(x) { return x; }    // calculator rotation value to add to tile ID to get correct tile
     let mirror = function(x) { return x; }  // calculator mirrored tile's value to get correct tile
     
-    for (let i = 0; i < tiles_info.length; i++) {
-        tile = tiles_info[i];
+    for (let i = 0; i < tile_info.length; i++) {
+        tile = tile_info[i];
 
         switch(tile.symmetry) {
             case 'X':

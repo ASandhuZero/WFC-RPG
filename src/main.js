@@ -7,7 +7,8 @@ import { detectFeatures } from "./Evals/FeatureDetection";
 import { pathfinding } from "./pathfinding";
 import { Draw } from "./View";
 import { generatePartials } from "./partialGenerator";
-
+//TODO: add in an item spawn rate. 
+// Figure out some way to actually combine the item spawn to a location spawn.
 const height = 20;
 const width = 20;
 
@@ -16,7 +17,7 @@ let testPaths = false;
 let save = false;
 let strict = false;
 let shouldGenerateNeighbors = true;
-// TODO: This feels dumb... Why can't we just turn off a tile?
+// TODO: This feels silly... Why can't we just turn off a tile?
 let banList = [19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37];
 
 
@@ -39,8 +40,8 @@ let wfc = undefined;
 //  well. So, tiles are being drawn and their features aren't being accounted
 // for. Maybe we make this into it's own object?
 let featureMapping = {};
-for (let i = 0; i < testjson.data.tiles_info.length; i++) {
-    let tile = testjson.data.tiles_info[i];
+for (let i = 0; i < testjson.data.tile_info.length; i++) {
+    let tile = testjson.data.tile_info[i];
     let name = tile.name;
     featureMapping[name] = tile.features;
 }
@@ -71,9 +72,7 @@ while ((wfc=== undefined ||paths === false) && loopCount < 10) {
     try {
         
         wfc = WFC(0, tilemapData, partial, strict, shouldGenerateNeighbors, banList); 
-        if (wfc.length === 0) {
-            wfc = undefined;
-        }
+        if (wfc.length === 0) { wfc = null; }
     } catch (error) {
         console.log(error);
         wfc = undefined;

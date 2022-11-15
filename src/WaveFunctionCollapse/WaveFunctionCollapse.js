@@ -1,5 +1,28 @@
  
-import * as Constraints from "./Constraints/Constraints"
+import * as Constraints from "./Constraints/Constraints";
+
+//TODO: Make a better mapping file for tile and items.
+// Entry being something that is within the matrix itslef.
+let entry = {
+    setTile : false,
+    setItem : false,
+    "item" : [], // item is an array that either has nothing in it or an item. so something like this. [] || [1]
+    "tile" : [], //All of the possible tiles, must have a tile however. TODO: What if there is no tile? What do we do then? 
+    "entropy" : 0
+}
+/**
+ * TODO: A way we could save time with item choice is by having some kind of look up JSON.
+ * Also item choice must come last because first:
+ * Chose tile
+ * Roll to see if there should be item. 
+ *  If no, then go next
+ *  if yes, then:
+ *      Remove all items that can't exist on tile
+ *      If no items —> go next
+ *      if items, then choose randomly.
+ */
+
+
 
 function WFCLog() {
     if (false) {
@@ -9,26 +32,25 @@ function WFCLog() {
 /**
  * WaveFunctionCollapse
  * @param {*} periodic 
- * @param {*} tilemapData - All the data needed for WFC to work.
+ * @param {*} mapData - All the data needed for WFC to work.
  * @returns 
  */
-export function WFC(periodic, tilemapData, partial = null, strict=false, neighborFlag=false, banList=[]) {
-    let w = tilemapData.w ? tilemapData.w : 0;
-    let h = tilemapData.h ? tilemapData.h : 0;
-    let tilesetInfo = tilemapData.tilesetInfo;
-    let tileRules = tilemapData.tileRules;
-    let itemRules = tilemapData.itemRules;
+export function WFC(periodic, mapData, partial = null, strict=false, neighborFlag=false, banList=[]) {
+    let w = mapData.w ? mapData.w : 0;
+    let h = mapData.h ? mapData.h : 0;
+    let tilesetInfo = mapData.tilesetInfo;
+    let tileRules = mapData.tileRules;
+    let itemRules = mapData.itemRules;
     let data = tilesetInfo["data"];
-    let debugging = true;
     let neighborData = data["neighbors"];
     if (neighborFlag) {
         neighborData = [];
     }
-    // Getting the constraints for each type of data    
+    // Getting the constraints for each type of data 
     // This really isn't robust TODO: Fix this later.
     // Extra data is being created here that can be broken out. It's shared.
-    let tiles = Constraints.GenerateTiles(data["tiles_info"], w, h); // O(n^2)
-    let strictArray = Constraints.GenerateStrictArray(data["tiles_info"]);
+    let tiles = Constraints.GenerateTiles(data["tile_info"], w, h); // O(n^2)
+    let strictArray = Constraints.GenerateStrictArray(data["tile_info"]);
     let items = Constraints.GenerateItems(data["items_info"], w, h); // O(n)
     let rules = Constraints.GenerateRules(data["rules_info"]); // O(n)
 
@@ -38,8 +60,8 @@ export function WFC(periodic, tilemapData, partial = null, strict=false, neighbo
     } else {
         neighbors = Constraints.GetNeighbors(tiles); // O(n^2)
     }
-    let propagator = GeneratePropagator(neighbors, tiles, items, strictArray); // O(n^3) ...TODO: this is dumb
 
+    let propagator = GeneratePropagator(neighbors, tiles, items, strictArray); // O(n^3) ...TODO: this is dumb
         tiles["rules"] = rules.tiles;
         tiles["propagator"] = propagator;
         items["rules"] = rules.items;
@@ -53,40 +75,32 @@ export function WFC(periodic, tilemapData, partial = null, strict=false, neighbo
     let tileAmount = tiles.amount;
     let itemAmount = items.amount;
 
-    let observables = ["tiles", "items"]
-    let waves = GenerateWaves(tiles, items, w, h); // O(n)
+    let wave = GenerateWaves(tiles, items, w, h); // O(n)
     
     let result = null;
-    let definiteState = 0;
     let init = (partial===null); //Basically if there is a partial, don't try to randomly choose the first element.
-
-    Clear(waves,  waveData); // O(n^3) TODO: I was a broken man when I wrote this function. 
+    //TODO: Make this function pure. Currently using a side effect to do the 
+    //      change which isn't that great..
+    Clear(wave,  waveData); // O(n^3) TODO: I was a broken man when I wrote this function. 
     
-    let removeObservables = {};
     let designRules = {
         tileRules : tileRules,
         itemRules : itemRules
     }
     let type = "tiles";
-    let elemsToRemove = []
-    for (let type of observables) {
-        // removeObservables[type] = []
-        // elemsToRemove = [];
-        // waveData[type].elemsToRemove = removeObservables[type]
-    }
     if (partial !== null) {
-        FillPartial(waves.tiles, partial, periodic, waveData, w, h, tileAmount);
-        WFCLog("partial has been filled!", debugging)
+        FillPartial(wave, partial, periodic, waveData, w, h, tileAmount);
+        WFCLog("partial has been filled!")
     }
-    banBeforeHand(waves.tiles, banList, periodic, waveData, w, h);
-    elemsToRemove = [];
+    banBeforeHand(wave, banList, periodic, waveData, w, h);
+    let elemsToRemove = [];
     while (result !== true) {
         // result returns [chosen tile, chosen index], true (argmin == -1), false (possiblities == 0), or null
-        result = Observe(waves[type], waveData[type], periodic, w, h, 
+        result = Observe(wave, waveData[type], periodic, w, h, 
             designRules, init); // TODO: Fix observe. Like once in your life, please. I can't begin to describe how bad this function is.
         if (init) { init = false; }
         if (result.length !== undefined) {
-            let waveElem = waves[type][result[0]][result[1]];
+            let waveElem = wave[result[0]][result[1]];
             for (let i = 0; i < tileAmount; i++) {
                 if (!waveElem.choices[i]) {
                     elemsToRemove.push([waveElem, i]);
@@ -97,17 +111,17 @@ export function WFC(periodic, tilemapData, partial = null, strict=false, neighbo
             let toRemove = elemsToRemove.pop();
             if (typeof toRemove === typeof 1) { debugger; }
             WFCLog("Removing", toRemove);
-            let removed  = Ban(waves[type], waveData[type], toRemove[0],
+            let removed  = Ban(wave, waveData[type], toRemove[0],
                 toRemove[1], elemsToRemove, "main loop");
             if (removed === null) { continue; }
-            let newRemoves = Propagate(waves[type], 
+            let newRemoves = Propagate(wave[type], 
                 waveData[type], removed, periodic, w, h, propagator)
             elemsToRemove = newRemoves.concat(elemsToRemove);
         }
     }
     let tileNames = waveData.tiles.names;
     let itemNames = waveData.items.names;
-    let generated_tilemap = GenerateTileMap(waves, tileAmount, itemAmount, 
+    let generated_tilemap = GenerateTileMap(wave, tileAmount, itemAmount, 
         tileNames, itemNames, w, h); // O(n^4)... Yep. This one is the one TODO: Fix this please, in some way.
     return generated_tilemap
 }
@@ -120,37 +134,25 @@ export function WFC(periodic, tilemapData, partial = null, strict=false, neighbo
  * @param {int} tileAmount 
  * @param {json} waveData 
  */
+//TODO: This should be a pure function, just return back the wave from this.
 function Clear(waves, waveData) {
     let opposite = [2, 3, 0, 1];
     let tileData = waveData.tiles;
-    let itemData = waveData.items;
     let tileAmount = tileData.amount
-    let itemAmount = itemData.amount;
 
-    for (let i = 0; i < waves.tiles.length; i++) {
-        for (let j = 0; j < waves.tiles[i].length; j++) {
-            let elem = waves.tiles[i][j];
+    for (let i = 0; i < waves.length; i++) {
+        for (let j = 0; j < waves[i].length; j++) {
+            let entry = waves[i][j];
             for (let t = 0; t < tileAmount; t++) {
-                elem.choices[t] = true;
-                elem.logWeightSum = tileData.logWeightSum;
-                elem.weightSum = tileData.weightSum;
-                elem.entropy = tileData.entropy;
+                entry.choices[t] = true;
+                entry.logWeightSum = tileData.logWeightSum;
+                entry.weightSum = tileData.weightSum;
+                entry.entropy = tileData.entropy;
                 let compatible = [0, 0, 0, 0];
                 for (let d = 0; d < 4; d++) {
                     compatible[d] = tileData.propagator[opposite[d]][t].length; // compatible is the compatible tiles of t. NOT t itself. Which is why opposite is involved.
                 }
-                elem.compatible[t] = compatible;
-            }
-        }
-    }
-    for (let i = 0; i < waves.items.length; i++) {
-        for (let j = 0; j < waves.items[i].length; j++) {
-            for (let t = 0; t < itemAmount; t++) {
-                let elem = waves.items[i][j];
-                elem.choices[t] = true;
-                elem.logWeightSum = itemData.logWeightSum;
-                elem.weightSum = itemData.weightSum;
-                elem.entropy = itemData.entropy;
+                entry.compatible[t] = compatible;
             }
         }
     }
@@ -163,6 +165,7 @@ function FillPartial(wave, partial, periodic, WaveData, w, h, tileAmount) {
         for (let j = 0; j < partial[i].length; j++) {
             let value = partial[i][j];
             if (wave[i][j] === undefined) { debugger; }
+
             if (value && wave[i][j].choices[value]) { 
                 wave[i][j].choices[value] = true; 
                 for (let k = 0; k < tileAmount; k++) {
@@ -237,7 +240,7 @@ function GenerateTileMap(waves, tileAmount, itemAmount, tileNames, itemNames, w,
         tilemap.tiles[i] = new Array(h);
         tilemap.items[i] = new Array(h);
         for (let j = 0; j < h; j++) {
-            let choices = waves.tiles[j][i].choices;
+            let choices = waves[j][i].choices;
             let choice = 0;
             for (let k = 0; k < tileAmount; k++) {
                 if (choices[k]) { choice = k; }
@@ -247,14 +250,6 @@ function GenerateTileMap(waves, tileAmount, itemAmount, tileNames, itemNames, w,
                 name : tile[0],
                 rotation : tile[1]
             };
-            // ITEMS are not being chosen right now... figure that out TODO:
-            // choices = waves.items[i][j].choices;
-            // choice = 0;
-            // for (let k = 0; k < itemAmount; k++) {
-            //     if (choices[k]) { choice = k; }
-            // }
-            // let item = choice;
-            // tilemap.items[i][j] = item;
         }
     }
     //TODO: Maybe we want to throw something if there is no tilemap outputted?
@@ -379,7 +374,7 @@ function getNearNeighbors(i, j, w, h) {
         for (let j = -1; j < 2; j++) {
             let xOffset = x+i;
             let yOffset = y+j;
-            if (xOffset < 0 || xOffset >= w) { continue }
+            if (xOffset < 0 || xOffset >= w) { continue; }
             if (xOffset ===  x && yOffset === y) { continue; }
             if (yOffset < 0 || yOffset >= h) { continue; }
             neighbors.push([xOffset, yOffset]);
@@ -395,25 +390,19 @@ function getNearNeighbors(i, j, w, h) {
  * @param {*} w 
  * @param {*} h
  * @returns matrix with each element being a true boolean array size of tiles. 
+ * Note: A wave is just a tensor with each entry being a true tile-space, 
+ *       and all of the entropies and weights. 
  */
-function GenerateWaves(tileData, itemData, w, h) {
+ function GenerateWaves(tileData, itemData, w, h) {
     let waves = {
-        "tiles" : [],
-        "items" : []
+        "tiles" : []
     }
-    //TODO: Using wave and wave1 to avoid having to deep copy problem. 
-    // Figure out a better solution.
     let tileAmount = tileData.amount;
-    let itemAmount = itemData.amount;
-    let newWave = new Array(w);
-    let newWave1 = new Array(w);
     let wave = new Array(w);
-    let wave1 = new Array(w);
     for (let i = 0; i < w; i++) {
-        newWave[i] = new Array(h);
-        newWave1[i] = new Array(h);
+        wave[i] = new Array(h);
         for (let j = 0; j < h; j++) {
-            newWave[i][j] = {
+            wave[i][j] = {
                 choices : new Array(tileAmount).fill(true),
                 weightSum : tileData.weightSum,
                 logWeightSum : tileData.logWeightSum,
@@ -422,31 +411,17 @@ function GenerateWaves(tileData, itemData, w, h) {
                 neighbors : getNearNeighbors(i, j, w, h),
                 coordinates : [i, j]
             }
-
-            newWave1[i][j] = {
-                choices : new Array(itemAmount).fill(true),
-                currentEntropy : 0,
-                weightSum : 0,
-                logWeightSum : 0,
-            }
         }
     }
-    for (let i = 0; i < w * h; i++) {
-        wave[i] = new Array(tileAmount).fill(true);
-        wave1[i] = new Array(tileAmount).fill(true);
-    }
     waves.tiles = wave;
-    waves.items = wave1;
-    waves.tiles = newWave;
-    waves.items = newWave1;
-    return waves;
+    return wave;
+    // return waves;
 }
 function Observe(wave, waveData, periodic, w, h, designRules, init) {
     let noise, entropy, possiblities, r;
     let min = 1000;
     let iMin = -1;    // wave_element_index
     let jMin = -1;
-    let elemsToRemove = [];
     let tileRules = designRules.tileRules;
     let itemRules = designRules.itemRules;
     // update min to reflect highest entropy and noise
@@ -546,6 +521,7 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, til
         case 'tiles':
             switch(tile_rule) {
                 case 'observe':
+                    WFCLog("Currently in observe.");
                     /** area collapse */
                     // calculate distance 
                     // debugger
@@ -588,6 +564,7 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, til
                     
                 break;
                 case 'propagate':
+                    WFCLog("Currently area propagating.")
                     /** area propagation */
                     // NOTE: adding tiles to the generative space is not implemented so this rule will not be able to produce results easily
                     if(elem_rules[tile_rule] == undefined) {break;}
@@ -615,6 +592,7 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, til
                     }
                 break;
                 case 'weight':
+                    WFCLog("Currently in weight readjustment.")
                     // if(elem_rules[tile_rule] == undefined) {break;}
                     let weight;
                     let old_weight = elemsData.weights[r];

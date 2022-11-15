@@ -1,7 +1,7 @@
 {
     "data": {
         "name": "main",
-        "tiles_info": [
+        "tile_info": [
             {"name":"0", "symmetry":"X", "tag": ["thing"]},
             {"name":"1", "symmetry":"X"},
             {"name":"2", "symmetry":"X"},
