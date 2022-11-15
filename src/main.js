@@ -1,9 +1,5 @@
-//TODO: REMOVED TILE COUNT, CURRENTLY HARDCODING TILE COUNT TO 128. FIX THIS 
-//      LATER. ALSO THERE IS A BUNCH OF HARDCODED VALUES WITHIN THE TILED 
-//      DATA. MIGHT BE WORTH TO SEE HOW MAKE IT MORE DYNAMIC. IF NEED BE.
-// TODO: have some way to turn heatmaps on and off. like a flag or something
 import { WFC } from "./WaveFunctionCollapse/WaveFunctionCollapse";
-import * as testjson from "./UNITTEST.json!json";
+import * as testjson from "./TileTerrorConstraints.json!json";
 import * as partialsJSON from "./partials.json!json";
 import evaluateHorrorPotential from "./Evals/TilemapEvaluation";
 import { detectFeatures } from "./Evals/FeatureDetection";
