@@ -12,11 +12,6 @@ import { pathfinding } from "./pathfinding";
 import { Draw } from "./View";
 import { generatePartials } from "./partialGenerator";
 
-
-define(['require', 'fs', 'path'], function(require) {
-    const fs = require('fs');
-    const path = require('path');
-})
 const height = 20;
 const width = 20;
 

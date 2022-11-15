@@ -2,7 +2,7 @@
 import * as Constraints from "./Constraints/Constraints"
 
 function WFCLog() {
-    if (true) {
+    if (false) {
         console.log(arguments);
     }
 }
