@@ -15,7 +15,6 @@ const width = 20;
 let partialFlag = true;
 let testPaths = false;
 let save = false;
-let strict = false;
 let shouldGenerateNeighbors = true;
 // TODO: This feels silly... Why can't we just turn off a tile?
 let banList = [19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37];
@@ -26,14 +25,14 @@ let resultData = {
 }
 let tileRules = {}
 let itemRules = {}
-let tilemapData = {
+let mapData = {
     h : height,
     w : width,
     tileRules : tileRules,
     itemRules : itemRules,
     tilesetInfo : testjson
 }
-let wfc = undefined;
+let wfcOutput = undefined;
 
 // Feature mapping of tiles to their horror low level feature.
 // TODO: Make sure that tiles without anything come back as traverseable as 
@@ -62,7 +61,7 @@ let heatmaps = null;
 let features = null; 
 loopCount = 0;
 
-while ((wfc=== undefined ||paths === false) && loopCount < 10) {
+while ((wfcOutput=== undefined ||paths === false) && loopCount < 10) {
     console.log("in loop");
     if (partialFlag) {
         partial = generatePartial(partials, width, height);
@@ -71,18 +70,18 @@ while ((wfc=== undefined ||paths === false) && loopCount < 10) {
     }
     try {
         
-        wfc = WFC(0, tilemapData, partial, strict, shouldGenerateNeighbors, banList); 
-        if (wfc.length === 0) { wfc = null; }
+        wfcOutput = WFC(mapData, partial, shouldGenerateNeighbors, banList); 
+        if (wfcOutput.length === 0) { wfcOutput = null; }
     } catch (error) {
         console.log(error);
-        wfc = undefined;
+        wfcOutput = undefined;
     }
     let lowLevelFeatureMap = Array.from(Array(width), () => new Array(height));
     let tilemapToSave = Array.from(Array(width), () => new Array(height));
     for (let i = 0; i < width; i++) {
         for (let j = 0; j < height; j++) {
-            let tile = wfc.tiles[i][j];
-            tilemapToSave[i][j] = parseInt(wfc.tiles[i][j].name);
+            let tile = wfcOutput[i][j];
+            tilemapToSave[i][j] = parseInt(wfcOutput[i][j].name);
             lowLevelFeatureMap[i][j] = featureMapping[tile.name];
         }
     }
@@ -192,7 +191,7 @@ let mapCols = width+1;
 let mapRows = height+1;
 let mapHeight = mapRows * tileSize;
 let mapWidth = mapCols * tileSize
-let levelMap = wfc.tiles;
+let levelMap = wfcOutput;
 
 function drawAll() {
     let canvasWidth = mapWidth * rescale;

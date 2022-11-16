@@ -1,8 +1,19 @@
- 
 import * as Constraints from "./Constraints/Constraints";
+//TODO: Actually write out the pseudocode.
+/**
+ * Fill Partials
+ *      Ban all tiles or just use
+ *      some kind of partials.
+ * ————————————————
+ * Choose
+ * Observe
+ *      Design Observe
+ * Propagate
+ */
 
 //TODO: Make a better mapping file for tile and items.
 // Entry being something that is within the matrix itslef.
+
 let entry = {
     setTile : false,
     setItem : false,
@@ -13,7 +24,7 @@ let entry = {
 /**
  * TODO: A way we could save time with item choice is by having some kind of look up JSON.
  * Also item choice must come last because first:
- * Chose tile
+ * Choose tile
  * Roll to see if there should be item. 
  *  If no, then go next
  *  if yes, then:
@@ -25,102 +36,80 @@ let entry = {
 
 
 function WFCLog() {
-    if (false) {
-        console.log(arguments);
-    }
+    if (false) { console.log(arguments); }
 }
 /**
  * WaveFunctionCollapse
- * @param {*} periodic 
- * @param {*} mapData - All the data needed for WFC to work.
+ * @param {*} map - All the data needed for WFC to work.
  * @returns 
  */
-export function WFC(periodic, mapData, partial = null, strict=false, neighborFlag=false, banList=[]) {
-    let w = mapData.w ? mapData.w : 0;
-    let h = mapData.h ? mapData.h : 0;
-    let tilesetInfo = mapData.tilesetInfo;
-    let tileRules = mapData.tileRules;
-    let itemRules = mapData.itemRules;
+export function WFC(map, partial=null, neighborFlag=false, banList=[]) {
+    let w = map.w ? map.w : 0;
+    let h = map.h ? map.h : 0;
+    let tilesetInfo = map.tilesetInfo;
     let data = tilesetInfo["data"];
     let neighborData = data["neighbors"];
-    if (neighborFlag) {
-        neighborData = [];
-    }
+    if (neighborFlag) {  neighborData = []; }
     // Getting the constraints for each type of data 
     // This really isn't robust TODO: Fix this later.
     // Extra data is being created here that can be broken out. It's shared.
     let tiles = Constraints.GenerateTiles(data["tile_info"], w, h); // O(n^2)
-    let strictArray = Constraints.GenerateStrictArray(data["tile_info"]);
     let items = Constraints.GenerateItems(data["items_info"], w, h); // O(n)
     let rules = Constraints.GenerateRules(data["rules_info"]); // O(n)
+    // Get neighbors
+    let neighbors = null;
+    if (neighborData.length != 0) { neighbors = neighborData; } 
+    else { neighbors = Constraints.GetNeighbors(tiles); } // O(n^2)
 
-    let neighbors;
-    if (neighborData.length != 0) {
-        neighbors = neighborData;
-    } else {
-        neighbors = Constraints.GetNeighbors(tiles); // O(n^2)
-    }
+    let propagator = GeneratePropagator(neighbors, tiles); // O(n^3) ...TODO: this is dumb
 
-    let propagator = GeneratePropagator(neighbors, tiles, items, strictArray); // O(n^3) ...TODO: this is dumb
-        tiles["rules"] = rules.tiles;
-        tiles["propagator"] = propagator;
-        items["rules"] = rules.items;
-        let waveData = {
-        "tiles": tiles,
-        "items": items,
-        "rules": rules,
-        "neighbors": neighbors,
-        "propagator": propagator
-    }
+    tiles["rules"] = rules.tiles;
+    tiles["propagator"] = propagator;
     let tileAmount = tiles.amount;
     let itemAmount = items.amount;
 
     let wave = GenerateWaves(tiles, items, w, h); // O(n)
     
     let result = null;
-    let init = (partial===null); //Basically if there is a partial, don't try to randomly choose the first element.
+    let init = (partial===null); // if there is a partial, don't randomly choose the first element.
     //TODO: Make this function pure. Currently using a side effect to do the 
     //      change which isn't that great..
-    Clear(wave,  waveData); // O(n^3) TODO: I was a broken man when I wrote this function. 
-    
-    let designRules = {
-        tileRules : tileRules,
-        itemRules : itemRules
-    }
+    Clear(wave,  tiles); // O(n^3)
+
     let type = "tiles";
     if (partial !== null) {
-        FillPartial(wave, partial, periodic, waveData, w, h, tileAmount);
+        //TODO: FillPartial doesn't have a debugger or a logger that fires when it fails...
+        // We should fix this.
+        FillPartial(wave, partial, tiles, propagator, w, h, tileAmount);
         WFCLog("partial has been filled!")
     }
-    banBeforeHand(wave, banList, periodic, waveData, w, h);
-    let elemsToRemove = [];
+    banBeforeHand(wave, banList, tiles, propagator, w, h);
+    let entriesToRemove = [];
     while (result !== true) {
-        // result returns [chosen tile, chosen index], true (argmin == -1), false (possiblities == 0), or null
-        result = Observe(wave, waveData[type], periodic, w, h, 
-            designRules, init); // TODO: Fix observe. Like once in your life, please. I can't begin to describe how bad this function is.
+        result = Observe(wave, tiles, w, h, init); 
         if (init) { init = false; }
         if (result.length !== undefined) {
             let waveElem = wave[result[0]][result[1]];
             for (let i = 0; i < tileAmount; i++) {
                 if (!waveElem.choices[i]) {
-                    elemsToRemove.push([waveElem, i]);
+                    entriesToRemove.push([waveElem, i]);
                 }
             }
         }
-        while (elemsToRemove.length !== 0) {
-            let toRemove = elemsToRemove.pop();
+        while (entriesToRemove.length !== 0) {
+            let toRemove = entriesToRemove.pop();
             if (typeof toRemove === typeof 1) { debugger; }
             WFCLog("Removing", toRemove);
-            let removed  = Ban(wave, waveData[type], toRemove[0],
-                toRemove[1], elemsToRemove, "main loop");
+            let removed  = Ban(tiles, toRemove[0],
+                toRemove[1], entriesToRemove, "main loop");
             if (removed === null) { continue; }
             let newRemoves = Propagate(wave[type], 
-                waveData[type], removed, periodic, w, h, propagator)
-            elemsToRemove = newRemoves.concat(elemsToRemove);
+                tiles, removed, w, h, propagator)
+            entriesToRemove = newRemoves.concat(entriesToRemove);
         }
     }
-    let tileNames = waveData.tiles.names;
-    let itemNames = waveData.items.names;
+    let tileNames = tiles.names;
+    let itemNames = items.names;
     let generated_tilemap = GenerateTileMap(wave, tileAmount, itemAmount, 
         tileNames, itemNames, w, h); // O(n^4)... Yep. This one is the one TODO: Fix this please, in some way.
     return generated_tilemap
@@ -130,19 +119,19 @@ export function WFC(periodic, mapData, partial = null, strict=false, neighborFla
  * Will reset the wave to an unobserved state (as in all true).
  * Reset the compatible tiles by going backward through the propgator data collection.
  * Reset all entropies for all data that can be observed (tiles, items, etc)
- * @param {matrix} waves 
+ * @param {matrix} wave 
  * @param {int} tileAmount 
- * @param {json} waveData 
+ * @param {json} tiles 
  */
 //TODO: This should be a pure function, just return back the wave from this.
-function Clear(waves, waveData) {
+function Clear(wave, tiles) {
     let opposite = [2, 3, 0, 1];
-    let tileData = waveData.tiles;
+    let tileData = tiles;
     let tileAmount = tileData.amount
 
-    for (let i = 0; i < waves.length; i++) {
-        for (let j = 0; j < waves[i].length; j++) {
-            let entry = waves[i][j];
+    for (let i = 0; i < wave.length; i++) {
+        for (let j = 0; j < wave[i].length; j++) {
+            let entry = wave[i][j];
             for (let t = 0; t < tileAmount; t++) {
                 entry.choices[t] = true;
                 entry.logWeightSum = tileData.logWeightSum;
@@ -156,9 +145,10 @@ function Clear(waves, waveData) {
             }
         }
     }
+
 }
-function FillPartial(wave, partial, periodic, WaveData, w, h, tileAmount) {
-    let tileData = WaveData.tiles;
+
+function FillPartial(wave, partial, tiles, propagator, w, h, tileAmount) {
     let length = partial.length;
     let removeArr = [];
     for (let i = 0; i < length; i++) {
@@ -174,13 +164,12 @@ function FillPartial(wave, partial, periodic, WaveData, w, h, tileAmount) {
                     removeArr.push([wave[i][j], k]);
                     while (removeArr.length !== 0) {
                         let toRemove = removeArr.pop();
-                        let removed = Ban(wave, tileData, toRemove[0], toRemove[1],
+                        let removed = Ban(tiles, toRemove[0], toRemove[1],
                             'fill partial');
                         if (removed === null) {  continue; }
                         // PROPAGATE SENDS OUT THOSE CHANGES.
                         removeArr = removeArr.concat(Propagate(wave, 
-                            WaveData['tiles'], removed, periodic, w, h, 
-                            WaveData.propagator));
+                            tiles, removed, w, h, propagator));
                     }
                 }
             }
@@ -190,8 +179,7 @@ function FillPartial(wave, partial, periodic, WaveData, w, h, tileAmount) {
 }
 
 
-function banBeforeHand(wave, banList, periodic, WaveData, w, h) {
-    let tileData = WaveData.tiles;
+function banBeforeHand(wave, banList, tiles, propagator, w, h) {
     for (let i = 0; i < banList.length; i++) {
         let removeArr = [];
         let bannedTile = banList[i];
@@ -203,13 +191,13 @@ function banBeforeHand(wave, banList, periodic, WaveData, w, h) {
                 removeArr.push([wave[j][k], bannedTile]);
                 while (removeArr.length !== 0) {
                     let toRemove = removeArr.pop();
-                    let removed = Ban(wave, tileData, toRemove[0], toRemove[1], 
+                    let removed = Ban(tiles, toRemove[0], toRemove[1], 
                         'fill partial');
                     if (removed === null) {  continue; }
                     // PROPAGATE SENDS OUT THOSE CHANGES.
                     removeArr = removeArr.concat(Propagate(wave, 
-                        WaveData['tiles'], removed, periodic, w, h, 
-                        WaveData.propagator));
+                        tiles, removed, w, h, 
+                        propagator));
                 }
             }
         }
@@ -217,9 +205,9 @@ function banBeforeHand(wave, banList, periodic, WaveData, w, h) {
 }
 
 /**
- * GnereateTileMap
+ * GenerateTileMap
  * Uses wave booleans to create a new array from the data indexes.
- * @param {matrix} waves 
+ * @param {matrix} wave 
  * @param {int} tileAmount 
  * @param {int} itemAmount 
  * @param {json} tileNames 
@@ -227,32 +215,24 @@ function banBeforeHand(wave, banList, periodic, WaveData, w, h) {
  * @param {int} w 
  * @param {int} h 
  */
-function GenerateTileMap(waves, tileAmount, itemAmount, tileNames, itemNames, w, h) {
-    let tilemap = {
-        tiles : new Array(w),
-        items : new Array(w)
-    }
-    WFCLog(waves["tiles"]);
-    WFCLog(tileNames); 
-
-
+function GenerateTileMap(wave, tileAmount, itemAmount, tileNames, itemNames, w, h) {
+    let tilemap = new Array(w);
+    
     for (let i = 0; i < w; i++) {
-        tilemap.tiles[i] = new Array(h);
-        tilemap.items[i] = new Array(h);
+        tilemap[i] = new Array(h);
         for (let j = 0; j < h; j++) {
-            let choices = waves[j][i].choices;
+            let choices = wave[j][i].choices;
             let choice = 0;
             for (let k = 0; k < tileAmount; k++) {
                 if (choices[k]) { choice = k; }
             }
             let tile = tileNames[choice].split(/[ ]+/);
-            tilemap.tiles[i][j] = {
+            tilemap[i][j] = {
                 name : tile[0],
                 rotation : tile[1]
             };
         }
     }
-    //TODO: Maybe we want to throw something if there is no tilemap outputted?
     WFCLog(tilemap);
     return tilemap;
     
@@ -261,12 +241,11 @@ function GenerateTileMap(waves, tileAmount, itemAmount, tileNames, itemNames, w,
  * GeneratePropagator
  * @param {*} neighbors 
  * @param {*} tiles 
- * @param {*} items 
  * Returns a matrix of possible neighboring tiles.
  * @returns {object} locality_propagator    
  */
-function GeneratePropagator(neighbors, tiles, items, strictArr) {
-    let strict = false;
+function GeneratePropagator(neighbors, tiles) {
+    let strict = false; //TODO: Figure out what Strict does exactly... As in can we remove it?
     let tile_amount = tiles.names.length
     let propagator = new Array(4);
     for (let direction = 0; direction < 4; direction++) {
@@ -293,10 +272,6 @@ function GeneratePropagator(neighbors, tiles, items, strictArr) {
             L = tiles.rotations[D[3]]
             R = tiles.rotations[U[3]]
             tileToCheck = neighborPair.up;
-            for (let i = 0; i < strictArr.length; i++) {
-                if (up.split(/[ ]+/)[0] === strictArr[i].name) { continue; }
-                if (down.split(/[ ]+/)[0] === strictArr[i].name) { continue; }
-            }
             propagator[1][D[0]][U[0]] = U[0];
         } else {
             left = neighborPair.left;  // user defined rotation for right tile
@@ -306,10 +281,7 @@ function GeneratePropagator(neighbors, tiles, items, strictArr) {
             D = tiles.rotations[L[1]];
             U = tiles.rotations[R[1]];
             tileToCheck = neighborPair.left;
-            for (let i = 0; i < strictArr.length; i++) {
-                if (left.split(/[ ]+/)[0] === strictArr[i].name) { continue; }
-                if (right.split(/[ ]+/)[0] === strictArr[i].name) { continue; }
-            }
+       
             propagator[0][L[0]][R[0]] = R[0];   // propagator[R, U, L, D]
         }
         
@@ -417,13 +389,11 @@ function getNearNeighbors(i, j, w, h) {
     return wave;
     // return waves;
 }
-function Observe(wave, waveData, periodic, w, h, designRules, init) {
+function Observe(wave, tiles, w, h, init) {
     let noise, entropy, possiblities, r;
     let min = 1000;
-    let iMin = -1;    // wave_element_index
+    let iMin = -1; // wave_element_index
     let jMin = -1;
-    let tileRules = designRules.tileRules;
-    let itemRules = designRules.itemRules;
     // update min to reflect highest entropy and noise
     if (init) {
         iMin = Math.floor(Math.random()*wave.length);
@@ -431,15 +401,12 @@ function Observe(wave, waveData, periodic, w, h, designRules, init) {
     } else {
         for (let i = 0; i < wave.length; i++) {
             for (let j = 0; j < wave[i].length; j++) {
-                if (OnBoundary(i % w, i / w, periodic, w, h)) { continue; }
-                let elem = wave[i][j];
-                possiblities = elem.choices.filter(x => x===true).length;
+                if (OnBoundary(i % w, i / w, w, h)) { continue; }
+                let entry = wave[i][j];
+                possiblities = entry.choices.filter(x => x===true).length;
                 if (possiblities === 1) { continue; }
                 if (possiblities === 0) { return false; }
-    
-    
-                entropy = elem.entropy;
-                // if (possiblities === 1) {debugger;} //SOMETHING IS WRONG HERE.
+                entropy = entry.entropy;
                 if (possiblities > 1 && entropy <= min) {
                     // let noise = 0.000001 * this.random();
                     noise = 0.000001;
@@ -455,49 +422,27 @@ function Observe(wave, waveData, periodic, w, h, designRules, init) {
     if (iMin === -1 && jMin === -1) {
         return true;
     }
-    
-
-
     // Creates distribution array that reflects the weight of each tile according to the number of tiles in an element of the wave
-    let distribution = new Array(waveData.amount);
-    for (let t = 0; t < waveData.amount; t++) {
-        distribution[t] = wave[iMin][jMin].choices[t] ? waveData.weights[t] : 0;
+    let distribution = new Array(tiles.amount);
+    for (let t = 0; t < tiles.amount; t++) {
+        distribution[t] = wave[iMin][jMin].choices[t] ? tiles.weights[t] : 0;
     }
     
     // {int} r: randomly choosen tile index using weighted selection
-    r = _NonZeroIndex(distribution, waveData.carray, waveData.csumweight);
-    //TODO: This focuses on item banning... Add this back in later.
-    // frequency adjustment
-    // if(type == 'items' && waveData.frequencies[r] == 0) { 
-    //     // defaults to no tile
-    //     // return Ban(waves[type], waveData, argmin, r, elemsToRemove, 'frequency')
-        
-    // } else if(type == 'items' && waveData.frequencies[r] > 0) {
-    //     waveData.frequencies[r] -= 1;
-    // }    
-
+    r = _NonZeroIndex(distribution, tiles.carray, tiles.csumweight);
     /**
      * Decides which tiles to ban
      * loop through number of tiles
      * if counter is equal to randomly chosen tile AND wave already knows its false then ban the tile
      */
     
-    for (let t = 0; t < waveData.amount; t++) {
+    for (let t = 0; t < tiles.amount; t++) {
         if (t !== r) { 
             wave[iMin][jMin].choices[t] = false;
         }
     }
-
-    // waveData.elemsToRemove = elemsToRemove;
-    let chosen_tile = waveData.names[r];
+    let chosen_tile = tiles.names[r];
     let chosen_name = chosen_tile.split(/[ ]+/)[0];
-    //TODO: removed rulesObverseation because, uh, I want to debug everything
-    // else, and this will be a nightmare to refactor.
-    // if (waveData["rules"][chosen_name] != undefined) {
-    //     let elem_rules = waveData["rules"][type][chosen_name];
-    //     Force(waves[type], r, argmin,tileRules, itemRules, elem_rules, 
-    //         type, waveData, waveData, elemsToRemove, periodic, w, h);
-    // } 
     return [iMin, jMin];
 }
 /**
@@ -509,7 +454,8 @@ function Observe(wave, waveData, periodic, w, h, designRules, init) {
  */
 // TODO: You ever seen bad code? Well it's right here. Clean this up for the 
 //  love of god.
-function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, tile_data, elemsData, elemsToRemove, periodic, width, height) {
+function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, 
+    elem_type, tile_data, elemsData, elemsToRemove, width, height) {
 
     let sorted_entropies;
     let xmin, xmax, ymin, ymax;
@@ -517,7 +463,7 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, til
     let w;
     // TODO: This is really gross... Maybe just want to break these up into 
     // Further functions so we can clean things up :)
-    switch(elem_type){
+    switch(elem_type) {
         case 'tiles':
             switch(tile_rule) {
                 case 'observe':
@@ -554,11 +500,11 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, til
                             if (w[t] != (t == r)) {
                                 // argmin = wave element index
                                 // t = tile index
-                                elemsToRemove = Ban(wave, elemsData, elem, 
+                                elemsToRemove = Ban(elemsData, elem, 
                                     argmin, t, elemsToRemove, 'tile force');
                             } 
                         }
-                        Propagate(wave, elements_data, periodic, width, height, 
+                        Propagate(wave, elements_data, width, height, 
                             tile_data['propagator']);
                     }
                     
@@ -584,11 +530,13 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, til
                         w = wave[argmin][elem];
                         for (let i = 0; i < elemsData.amount; i++) {
                             if((elemsData.types[i] == elem_rules[tile_rule]['type']) == false) {
-                                elemsToRemove = Ban(wave, elemsData, elem, argmin, i, elemsToRemove, 'item force');;
+                                elemsToRemove = Ban(elemsData, elem, argmin, i, 
+                                    elemsToRemove, 'item force');;
                             }
                         }
 
-                        Propagate(wave, elemsToRemove, periodic, width, height, elemsData, tile_data['propagator']);
+                        Propagate(wave, elemsToRemove, width, height, elemsData, 
+                            tile_data['propagator']);
                     }
                 break;
                 case 'weight':
@@ -644,7 +592,7 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, til
                         if (w[t] != (t == r)) {
                             // argmin = wave element index
                             // t = tile index
-                            elemsToRemove = Ban(wave, elemsData, elem, argmin, t, elemsToRemove, 'item force');
+                            elemsToRemove = Ban(elemsData, elem, argmin, t, elemsToRemove, 'item force');
                         } 
                     }
                     elemsData.frequencies[r] -= 1;
@@ -657,7 +605,6 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules, elem_type, til
         default:
             break;
     }
-
     return null;
 }
 function GetCollapseArea(xmin,xmax,ymin,ymax,width,height,elemsData,chosen_index) {
@@ -688,7 +635,6 @@ function GetCollapseArea(xmin,xmax,ymin,ymax,width,height,elemsData,chosen_index
             prev_index = index;
         }
     }
-
     return indexes;
 }
 function GetEntropySort(indexes){
@@ -698,7 +644,7 @@ function GetEntropySort(indexes){
     return ordered_index;
 }
 
-function Propagate(wave, typeData, removed, periodic, w, h, propagator) {
+function Propagate(wave, typeData, removed, w, h, propagator) {
     let elemsToRemove = new Array();
     let waveElem = removed[0];
     let bannedTile = removed[1];
@@ -764,8 +710,8 @@ function Propagate(wave, typeData, removed, periodic, w, h, propagator) {
  * @param {array} elemsToRemove 
  * @returns {array} elements to remove in wave
  */
-// function Ban(wave, typeData, row, col, waveElem, elemsToRemove, origin) {
-function Ban(wave, typeData, waveElem, bannedTile, origin) {
+// function Ban(typeData, row, col, waveElem, elemsToRemove, origin) {
+function Ban(typeData, waveElem, bannedTile, origin) {
 
     // Log(origin);
     // If this is true, then the tile has become stable.
@@ -775,8 +721,7 @@ function Ban(wave, typeData, waveElem, bannedTile, origin) {
     }
     // This is where Ban actually bans the undesired tile
     if ( waveElem === undefined) { debugger; }
-    // This is where Ban takes it a step further to get rid of the banned tile's number of compatible tiles
-    
+    // This is where Ban takes it a step further to get rid of the banned tile's number of compatible tiles   
     waveElem.choices[bannedTile] = false;  // set tile to false according to wave_elem passed in
     if (waveElem.choices[bannedTile]) { debugger; }  
     
@@ -828,9 +773,8 @@ function _NonZeroIndex(distribution, cweights, csumweight) {
         index = cweights.indexOf(tile_choice);
         elem = distribution[index];
     }
-    
     return index;
 }  
-function OnBoundary(x, y, periodic, width, height) {
+function OnBoundary(x, y, width, height) {
     return (x < 0 || y < 0 || x >= width || y >= height);
 }
