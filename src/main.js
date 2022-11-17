@@ -69,7 +69,6 @@ while ((wfcOutput=== undefined ||paths === false) && loopCount < 10) {
         partial = null;
     }
     try {
-        
         wfcOutput = WFC(mapData, partial, shouldGenerateNeighbors, banList); 
         if (wfcOutput.length === 0) { wfcOutput = null; }
     } catch (error) {
