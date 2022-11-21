@@ -1,45 +1,15 @@
 import * as Constraints from "./Constraints/Constraints";
-//TODO: Actually write out the pseudocode.
-/**
- * Fill Partials
- *      Ban all tiles or just use
- *      some kind of partials.
- * ————————————————
- * Choose
- * Observe
- *      Design Observe
- * Propagate
- */
-
-//TODO: Make a better mapping file for tile and items.
-// Entry being something that is within the matrix itslef.
-
-let entry = {
-    setTile : false,
-    setItem : false,
-    "item" : [], // item is an array that either has nothing in it or an item. so something like this. [] || [1]
-    "tile" : [], //All of the possible tiles, must have a tile however. TODO: What if there is no tile? What do we do then? 
-    "entropy" : 0
-}
-/**
- * TODO: A way we could save time with item choice is by having some kind of look up JSON.
- * Also item choice must come last because first:
- * Choose tile
- * Roll to see if there should be item. 
- *  If no, then go next
- *  if yes, then:
- *      Remove all items that can't exist on tile
- *      If no items —> go next
- *      if items, then choose randomly.
- */
-
 function WFCLog() {
     if (false) { console.log(arguments); }
+}
+
+let entry = {
+    tiles : [],
+    itmes : []
 }
 /**
  * WaveFunctionCollapse
  * @param {*} map - All the data needed for WFC to work.
- * @returns 
  */
 export function WFC(map, partial=null, neighborFlag=false, banList=[]) {
     let w = map.w ? map.w : 0;
@@ -50,7 +20,6 @@ export function WFC(map, partial=null, neighborFlag=false, banList=[]) {
     let neighborData = data["neighbors"];
     if (neighborFlag) {  neighborData = []; }
     // Getting the constraints for each type of data 
-    // This really isn't robust TODO: Fix this later.
     let tiles = Constraints.GenerateTiles(data["tile_info"], w, h); // O(n^2)
     let rules = Constraints.GenerateRules(data["rules_info"]); // O(n)
     // Get neighbors
@@ -132,12 +101,13 @@ function FillPartial(wave, partial, tiles, propagator, tileAmount) {
     for (let i = 0; i < length; i++) {
         for (let j = 0; j < partial[i].length; j++) {
             let value = partial[i][j];
-            if (wave[i][j] === undefined) { debugger; }
-            if (value && wave[i][j].choices[value]) { 
-                wave[i][j].choices[value] = true; 
+            let entry = wave[i][j];
+            if (entry === undefined) { debugger; }
+            if (value && entry.choices[value]) { 
+                entry.choices[value] = true; 
                 for (let k = 0; k < tileAmount; k++) {
                     if (k === value) { continue; }
-                    removeArr.push([wave[i][j], k]);
+                    removeArr.push([entry, k]);
                     while (removeArr.length !== 0) {
                         let toRemove = removeArr.pop();
                         let removed = Ban(tiles, toRemove[0], toRemove[1]);
@@ -208,10 +178,8 @@ function GenerateTileMap(waves, tileAmount, tileNames, w, h) {
  * @param {*} neighbors 
  * @param {*} tiles 
  * Returns a matrix of possible neighboring tiles.
- * @returns {object} locality_propagator
  */
 function GeneratePropagator(neighbors, tiles) {
-    let strict = false; //TODO: Figure out what Strict does exactly... As in can we remove
     let tileAmount = tiles.names.length
     let propagator = new Array(4);
     for (let direction = 0; direction < 4; direction++) {
@@ -245,17 +213,6 @@ function GeneratePropagator(neighbors, tiles) {
             D = tiles.rotations[L[1]];
             U = tiles.rotations[R[1]];
             propagator[0][L[0]][R[0]] = R[0];   // propagator[R, U, L, D]
-        }
-        // TODO: This is one of the most frustrating bugs. Basically
-        // determines which neighbor tiles can exist
-        if (!strict) {
-            propagator[0][L[6]][R[6]] = R[6];
-            propagator[0][R[4]][L[4]] = L[4];
-            propagator[0][R[2]][L[2]] = L[2];
-            propagator[1][D[0]][U[0]] = U[0];
-            propagator[1][U[6]][D[6]] = D[6];
-            propagator[1][D[4]][U[4]] = U[4];
-            propagator[1][U[2]][D[2]] = D[2];
         }
     }
     for (let tile_1 = 0; tile_1 < tileAmount; tile_1++) {
@@ -306,7 +263,6 @@ function getNearNeighbors(i, j, w, h) {
 /**
  * GenerateWave
  * @param {*} tileAmount 
- * @param {*} itemAmount 
  * @param {*} w 
  * @param {*} h
  * @returns matrix with each element being a true boolean array size of tiles. 
@@ -410,8 +366,6 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules,
                 case 'observe':
                     WFCLog("Currently in observe.");
                     /** area collapse */
-                    // calculate distance 
-                    // debugger
                     if(elem_rules[tile_rule] == undefined) {break;}
                     if(elem_rules[tile_rule]["distance"] != undefined){
                         xmin = elem_rules[tile_rule]["distance"][0];
@@ -421,7 +375,6 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules,
                     } else {
                         throw "no distance constraint given"
                     }
-                    // debugger
                     // get tile index of lowest entropy
                     collapse_indexes = GetCollapseArea(xmin, xmax, ymin, ymax, width, height, elemsData, argmin);
                     sorted_entropies = GetEntropySort(collapse_indexes);
@@ -545,21 +498,21 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules,
     return null;
 }
 // TODO: Refactor this function, please.
-function GetCollapseArea(xmin,xmax,ymin,ymax,width,height,elemsData,chosen_index) {
+function GetCollapseArea(xmin,xmax,ymin,ymax,width,height,elemsData,chosenIndex) {
     let index;
     let indexes=[];
     let xcomp, ycomp;
     let indexx,indexy;
     let prev_index;
     for(let i = (-1)*ymax; i <= ymax; i++){
-        indexy = Math.floor(chosen_index/width) + i;
+        indexy = Math.floor(chosenIndex/width) + i;
         if (indexy < 0 || indexy > height) { continue; }
         for(let j = (-1)*xmax; j <= xmax; j++){
-            indexx = chosen_index%width + j;
+            indexx = chosenIndex%width + j;
             if(indexx < 0 || indexx > width) { continue; }
             index = indexx+indexy*width; // calculate index to observe
-            xcomp = Math.abs((index%width) - (chosen_index%width));
-            ycomp = Math.abs(Math.floor(index/width) - Math.floor(chosen_index/width));
+            xcomp = Math.abs((index%width) - (chosenIndex%width));
+            ycomp = Math.abs(Math.floor(index/width) - Math.floor(chosenIndex/width));
             // TODO: This seems horrible, please remove or do something different.
             if( (xcomp < xmin &&  ycomp < ymin) || xcomp > xmax || ycomp > ymax) { continue;}
             if( index == prev_index) { continue;}

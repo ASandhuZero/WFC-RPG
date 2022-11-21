@@ -1,0 +1,26 @@
+/**
+ * Fill Partials
+ *      Ban all tiles or just use
+ *      some kind of partials.
+ * ————————————————
+ * Choose
+ * Observe
+ *  Design Observe
+ * Propagate
+ */
+/**
+ * TODO: A way we could save time with item choice is by having some kind of look up JSON.
+ * Also item choice must come last because first:
+ * Choose tile
+ * Roll to see if there should be item. 
+ *  If no, then go next
+ *  if yes, then:
+ *      Remove all items that can't exist on tile
+ *      If no items —> go next
+ *      if items, then choose randomly.
+ */
+
+ Always generate tile neighbor constraints so you save some offline processing 
+    power.
+
+    Think about the actual structure of the paper.

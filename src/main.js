@@ -5,12 +5,15 @@ import evaluateHorrorPotential from "./Evals/TilemapEvaluation";
 import { detectFeatures } from "./Evals/FeatureDetection";
 // import { generateHeatmaps } from "./Evals/Visualization";
 import { pathfinding } from "./pathfinding";
-import { Draw } from "./View";
+import { Draw, drawImage } from "./View";
 import { generatePartials } from "./partialGenerator";
 //TODO: add in an item spawn rate. 
 // Figure out some way to actually combine the item spawn to a location spawn.
 const height = 20;
 const width = 20;
+
+//TODO: You might have to add in the fs require stuff because it seems like that's related to your saving functionality... 
+//      ... Also you should maybe break out your saving functionality into it's own file or something.
 
 let partialFlag = true;
 let testPaths = false;
@@ -159,7 +162,6 @@ while ((wfcOutput=== undefined ||paths === false) && loopCount < 10) {
     loopCount++;
 }
 
-
 function combineFeatures(features) {
     let horrorFeatures = [];
     for (let i = 0; i < features.iso.length; i++) 
@@ -180,8 +182,7 @@ function combineFeatures(features) {
 // Also, got this from this helpful link https://medium.com/geekculture/make-your-own-tile-map-with-vanilla-javascript-a627de67b7d9 
 const tileSet = new Image();
 tileSet.src = './assets/tilesets/graveyard.png';
-tileSet.onload = drawAll;
-
+tileSet.onload = drawAll; // there is a function below defined as drawAll; this function draws the tile map.
 let tileSize = 16;
 let rescale = 2; // can set to 1 for 32px or higher
 
@@ -190,19 +191,16 @@ let mapCols = width+1;
 let mapRows = height+1;
 let mapHeight = mapRows * tileSize;
 let mapWidth = mapCols * tileSize
-let levelMap = wfcOutput;
-
+wfcOutput[0][0].item = "KEY";
+wfcOutput[1][0].item = "DOOR";
 function drawAll() {
     let canvasWidth = mapWidth * rescale;
     let canvasHeight = mapHeight * rescale;
-    let canvases = document.getElementsByTagName('canvas');
     Draw(heatmaps, canvasWidth, canvasHeight, tileSize, rescale, tileSet, 
-        atlasCol, levelMap, paths);
+        atlasCol, wfcOutput, paths);
 }
-if (save) {
-    writeResults(resultData, fs, path);
+if (save) { writeResults(resultData, fs, path); }
 
-}
 function writeResults(results, fs, path) {
     let fileName = "results.json";
     let resolved = path.resolve(__dirname, fileName);
