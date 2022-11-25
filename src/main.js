@@ -16,8 +16,8 @@ import { generatePartial } from "./partialGenerator.js";
 //TODO: almost everything here is globally defined... We shouldn't do that.
 //TODO: add in an item spawn rate. 
 // Figure out some way to actually combine the item spawn to a location spawn.
-const height = 20;
-const width = 20;
+const height = 10;
+const width = 10;
 
 //TODO: You might have to add in the fs require stuff because it seems like that's related to your saving functionality... 
 //      ... Also you should maybe break out your saving functionality into it's own file or something.
@@ -76,7 +76,7 @@ let heatmaps = null;
 let features = null; 
 let loops = 0;
 let totalTestLoops = 1;
-let partialCoverage = 0.1;
+let partialCoverage = 0.0;
 let [tempPartPercent, highestPartPercent, lowestPartPercent] = [0, 0, 999];
 let [keyFail, genFail] = [0, 0];
 let [solvableCount, unsolvableCount] = [0, 0];
@@ -229,6 +229,7 @@ while ((wfcOutput === null ||paths === false)) {
     //     console.log("Results have been pushed!", loops);
     //     paths = false;
     // }
+    let movesTakenData = paths[0] !== undefined ? paths[0].movesTaken: 0;
     resultData.results.push({
         width: mapData.w,
         height : mapData.h,
@@ -238,13 +239,14 @@ while ((wfcOutput === null ||paths === false)) {
         pathFail : pathFailed,
         keyFail : keyFailed,
         genFail : genFailed,
+        movesTaken : movesTakenData,
         keys : keys.length,
         doors: doors.length 
     });
     let isNode=new Function("try {return this===global;}catch(e){return false;}");
     if (loops < totalTestLoops) { paths = false; }
     else {
-        if (partialCoverage <= 1) { 
+        if (partialCoverage < 0.95) { 
             totalTestLoops+=1;
             partialCoverage += 0.1;
             paths = false;
@@ -252,7 +254,7 @@ while ((wfcOutput === null ||paths === false)) {
             if (isNode() && save) { writeResults(resultData, fs, path); } 
             
             //TODO: do the file writing right here
-        } else if (mapData.w < 50) {
+        } else if (mapData.w < 40) {
             totalTestLoops+=1;
             mapData.w += 10;
             mapData.h += 10;
@@ -262,7 +264,8 @@ while ((wfcOutput === null ||paths === false)) {
         }  
         else if (loops >= totalTestLoops) { 
             console.log(mapData.w, mapData.h, partialCoverage);
-            break; }
+            break; 
+        }
     }
 }
 // console.log(`Highest Partial Percent per runs: %c${

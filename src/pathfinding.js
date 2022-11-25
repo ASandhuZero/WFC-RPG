@@ -63,7 +63,6 @@ function reconstructPath(result, map) {
         psychScore : IEval,
         movesTaken : totalMoves
     }
-    console.log(pathData);
     return pathData;
 }
 // TODO: Deal with the fact that there can be more than just one key. 
