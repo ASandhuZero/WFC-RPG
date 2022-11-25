@@ -1,11 +1,6 @@
-import * as Constraints from "./Constraints/Constraints";
+import * as Constraints from "./Constraints/Constraints.js";
 function WFCLog() {
     if (false) { console.log(arguments); }
-}
-
-let entry = {
-    tiles : [],
-    itmes : []
 }
 /**
  * WaveFunctionCollapse
@@ -83,15 +78,17 @@ function Clear(wave, tiles) {
             let entry = wave[i][j];
             for (let t = 0; t < tileAmount; t++) {
                 entry.choices[t] = true;
-                entry.logWeightSum = tileData.logWeightSum;
-                entry.weightSum = tileData.weightSum;
-                entry.entropy = tileData.entropy;
                 let compatible = [0, 0, 0, 0];
                 for (let d = 0; d < 4; d++) {
                     compatible[d] = tileData.propagator[opposite[d]][t].length; // compatible is the compatible tiles of t. NOT t itself. Which is why opposite is involved.
                 }
                 entry.compatible[t] = compatible;
             }
+            entry.key = false;
+            entry.door = false;
+            entry.logWeightSum = tileData.logWeightSum;
+            entry.weightSum = tileData.weightSum;
+            entry.entropy = tileData.entropy;
         }
     }
 }
@@ -103,8 +100,12 @@ function FillPartial(wave, partial, tiles, propagator, tileAmount) {
             let value = partial[i][j];
             let entry = wave[i][j];
             if (entry === undefined) { debugger; }
-            if (value && entry.choices[value]) { 
-                entry.choices[value] = true; 
+            if (value === "DOOR") { 
+                entry.door = true; 
+                continue;
+            } 
+            else if (entry.choices[value]) {
+                if (typeof value !== typeof 1) { debugger; }
                 for (let k = 0; k < tileAmount; k++) {
                     if (k === value) { continue; }
                     removeArr.push([entry, k]);
@@ -127,9 +128,8 @@ function banBeforeHand(wave, banList, tiles, propagator) {
         let bannedTile = banList[i];
         for (let j = 0; j < wave.length; j++) {
             for (let k = 0; k < wave[j].length; k++) {
-                if (wave[j][k].choices.filter(x => x===true).length === 1) {
-                    continue;
-                }
+                let choices = wave[j][k].choices.filter(x => x===true).length;
+                if (choices === 1) { continue; }
                 removeArr.push([wave[j][k], bannedTile]);
                 while (removeArr.length !== 0) {
                     let toRemove = removeArr.pop();
@@ -156,7 +156,8 @@ function GenerateTileMap(waves, tileAmount, tileNames, w, h) {
     for (let i = 0; i < w; i++) {
         tilemap[i] = new Array(h);
         for (let j = 0; j < h; j++) {
-            let choices = waves[j][i].choices;
+            let entry = waves[j][i];
+            let choices = entry.choices;
             let choice = 0;
             for (let k = 0; k < tileAmount; k++) {
                 if (choices[k]) { 
@@ -167,8 +168,10 @@ function GenerateTileMap(waves, tileAmount, tileNames, w, h) {
             let tile = tileNames[choice].split(/[ ]+/);
             tilemap[i][j] = {
                 name : tile[0],
-                rotation : tile[1]
+                rotation : tile[1],
+                item : entry.key ? "KEY" : null
             };
+            if (entry.door && !entry.key) { tilemap[i][j].item = "DOOR"; }
         }
     }
     return tilemap;
@@ -307,7 +310,6 @@ function Observe(wave, tiles, w, h, init) {
                 if (possiblities === 0) { return false; }
                 entropy = entry.entropy;
                 if (possiblities > 1 && entropy <= min) {
-                    // let noise = 0.000001 * this.random();
                     noise = 0.000001;
                     if (entropy + noise < min) {
                         min = entropy + noise;
@@ -318,28 +320,29 @@ function Observe(wave, tiles, w, h, init) {
             }
         }
     }
-    if (iMin === -1 && jMin === -1) {
-        return true;
-    }
+    if (iMin === -1 && jMin === -1) { return true; }
     // Creates distribution array that reflects the weight of each tile according to the number of tiles in an element of the wave
     let distribution = new Array(tiles.amount);
     for (let t = 0; t < tiles.amount; t++) {
         distribution[t] = wave[iMin][jMin].choices[t] ? tiles.weights[t] : 0;
     }
-    
     // {int} r: randomly choosen tile index using weighted selection
     r = _NonZeroIndex(distribution, tiles.carray, tiles.csumweight);
     /**
      * Decides which tiles to ban
      * loop through number of tiles
-     * if counter is equal to randomly chosen tile AND wave already knows its false then ban the tile
+     * if counter is equal to randomly chosen tile 
+     * AND wave already knows its false then ban the tile
      */
-    
+    let entry = wave[iMin][jMin];
     for (let t = 0; t < tiles.amount; t++) {
-        if (t !== r) { 
-            wave[iMin][jMin].choices[t] = false;
-        }
+        if (t !== r) { entry.choices[t] = false; }
     }
+    // Do an item choice at this point.
+    let itemProbablity = 1;
+    let randFloat = Math.random()*100;
+    let randInt = Math.floor(randFloat);
+    if (itemProbablity > randInt) { entry.key = true; }
     return [iMin, jMin];
 }
 /**
@@ -379,21 +382,16 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules,
                     collapse_indexes = GetCollapseArea(xmin, xmax, ymin, ymax, width, height, elemsData, argmin);
                     sorted_entropies = GetEntropySort(collapse_indexes);
                     while(sorted_entropies.length > 0){
-                        // debugger
                         argmin = sorted_entropies.shift();  // chosen wave element
                         let distribution = new Array(elemsData.amount);
                         w = wave[argmin][elem];
                         for (let i = 0; i < elemsData.amount; i++) {
                             distribution[i] = w[i] ? elemsData.weights[i] : 0;
-                            // distribution[t] /= elemsData.amount;
                         }
                         r = _NonZeroIndex(distribution, elemsData.carray, 
                             elemsData.csumweight);    // chosen tile index within wave element
                         for (let t = 0; t < elemsData.amount; t++) {
-        
                             if (w[t] != (t == r)) {
-                                // argmin = wave element index
-                                // t = tile index
                                 elemsToRemove = Ban(elemsData, elem, 
                                     argmin, t, elemsToRemove);
                             } 
@@ -427,7 +425,6 @@ function Force(wave, r, argmin, tile_rule, item_rule, elem_rules,
                                     elemsToRemove);;
                             }
                         }
-
                         Propagate(wave, elemsToRemove, tile_data['propagator']);
                     }
                 break;
@@ -514,7 +511,9 @@ function GetCollapseArea(xmin,xmax,ymin,ymax,width,height,elemsData,chosenIndex)
             xcomp = Math.abs((index%width) - (chosenIndex%width));
             ycomp = Math.abs(Math.floor(index/width) - Math.floor(chosenIndex/width));
             // TODO: This seems horrible, please remove or do something different.
-            if( (xcomp < xmin &&  ycomp < ymin) || xcomp > xmax || ycomp > ymax) { continue;}
+            if( (xcomp < xmin &&  ycomp < ymin) || xcomp > xmax || ycomp > ymax) { 
+                continue;
+            }
             if( index == prev_index) { continue;}
 
             if(elemsData.entropies[index] > 0){
@@ -529,7 +528,7 @@ function GetCollapseArea(xmin,xmax,ymin,ymax,width,height,elemsData,chosenIndex)
     return indexes;
 }
 function GetEntropySort(indexes){
-    var sortEnt = indexes.slice(0);
+    let sortEnt = indexes.slice(0);
     sortEnt.sort(function(a,b) { return a.entropy - b.entropy;});
     let ordered_index = sortEnt.map(a => a.index);
     return ordered_index;
@@ -540,7 +539,9 @@ function Propagate(wave, removed, propagator) {
     let waveElem = removed[0];
     let bannedTile = removed[1];
     let coordinates = waveElem.coordinates;
-    if (waveElem.compatible == undefined) { throw waveElem, "undefined compatability"; }
+    if (waveElem.compatible == undefined) { 
+        throw waveElem, "undefined compatability"; 
+    }
     for (let d = 0; d < waveElem.neighbors; d++) {
         let neighborCoordinates = waveElem.neighbors[d];
         let iNeighbor = neighborCoordinates[0];
@@ -598,9 +599,7 @@ function Ban(typeData, entry, bannedTile) {
 
     // If this is true, then the tile has become stable.
     if (entry === undefined) { debugger;}
-    if (entry.choices.filter(x => x===true).length === 1) { 
-        return null;
-    }
+    if (entry.choices.filter(x => x===true).length === 1) { return null; }
     // This is where Ban actually bans the undesired tile
     if ( entry === undefined) { debugger; }
     // This is where Ban takes it a step further to get rid of the banned tile's number of compatible tiles   
@@ -608,7 +607,7 @@ function Ban(typeData, entry, bannedTile) {
     if (entry.choices[bannedTile]) { debugger; }  
     
     if (entry.compatible != undefined) {
-        entry.compatible[bannedTile] = [0,0,0,0];    // set the false tile's corresponding set of compatible tiles to 0
+entry.compatible[bannedTile] = [0,0,0,0];    // set the false tile's corresponding set of compatible tiles to 0
     }
     let weight = typeData.weights[bannedTile];
     entry.weightSum -= weight;  
@@ -619,13 +618,23 @@ function Ban(typeData, entry, bannedTile) {
     WFCLog("Ban: The tile", entry, bannedTile, "has been banned!");
     return [entry, bannedTile];
 }
+// TODO: Make each operation on it's own line
+//      As there is a lot of stuff in this function that doesn't feel good.
 function BinarySearch(array, value, start, end) {
     if (array === undefined) { debugger;}
     const middle = Math.floor((start + end)/2);
-    if (value == array[middle] || (value < array[middle] && value > array[middle-1])) return array[middle];
-    if (end - 1 === start) return Math.abs(array[start] - value) > Math.abs(array[end] - value) ? array[end] : array[start]; 
-    if (value > array[middle]) return BinarySearch(array, value, middle, end);
-    if (value < array[middle]) return BinarySearch(array, value, start, middle);
+    if (value == array[middle] || (value < array[middle] && value > array[middle-1])) {
+        return array[middle];
+    } 
+    if (end - 1 === start) {
+        return Math.abs(array[start] - value) > Math.abs(array[end] - value) ? array[end] : array[start];
+    }
+    if (value > array[middle]) {
+        return BinarySearch(array, value, middle, end);
+    }
+    if (value < array[middle]) {
+        return BinarySearch(array, value, start, middle);
+    }
 }
 /**
  * Weighted choosing of tiles

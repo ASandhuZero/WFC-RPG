@@ -1,6 +1,7 @@
 {
   "registry": "jspm",
   "main": "app.js",
+  "type": "module",
   "scripts": {
     "start": "electron ."
   },

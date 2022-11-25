@@ -5,7 +5,7 @@
 //   subgenre - a string denoting what configuration of weights should be considered in scoring
 // Output: a Score object
 // Metadata being used in scoring: AC (ambient creep), JS (jumpscare potential), TaR (tension and release), I (isolation), LV (low visibility)
-function evaluateHorrorPotential(input, numRows, numCols, subgenre)
+export default function evaluateHorrorPotential(input, numRows, numCols, subgenre)
 {
     // Constant array of metatags to use. The order here is used throughout this file.
     let metatags = ["AC", "JS", "TaR", "I", "LV"];

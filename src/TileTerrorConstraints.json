@@ -5,7 +5,7 @@
             {"name":"1", "symmetry":"X", "weight":1, "features": ["T"]},
             {"name":"2", "symmetry":"X", "weight":1, "features": ["T"]},
             {"name":"3", "symmetry":"X", "weight":1, "features": ["T"]},
-            {"name":"4", "symmetry":"X", "weight":1, "features": ["KEY"], "type": "KEY"},
+            {"name":"4", "symmetry":"X", "weight":1, "features": []},
             {"name":"10", "symmetry":"X", "weight":1, "features": ["AC"]},
             {"name":"11", "symmetry":"X", "weight":1, "features": ["AC", "LV"]},
             {"name":"12", "symmetry":"X", "weight":1, "features": ["AC"]},

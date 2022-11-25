@@ -5,18 +5,28 @@
 //remapping of IDS... which causes this offset. To figure out the correct tile
 //number, put a random tile in, and search around until the correct tile is 
 // found :)
-function generatePartial(partials, w, h) {
+export function generatePartial(partials, w, h, coverage) {
     let partialMap = new Array(w);
-    for (let i = 0; i < w; i++) {
-        partialMap[i] = new Array(h).fill(false);
-    }
-    let partialPass = 0;
+    let loops = 0;
+    let temp = 0;
+    let partialTiles = 0;
+    for (let i = 0; i < w; i++) { partialMap[i] = new Array(h).fill(false); }
     // partials is a tensor. First degree indicies are the partials.
-    while (partialPass < 4) {
-        partialPass++;
+    let partialPercent = 0;
+    // TODO: You need to figure out how to make sure that this always 
+    // creates a full partial with the percentage you are looking for...
+    while (partialPercent < coverage ) {
+        if (partialPercent === temp) { loops++ }
+        if (loops > 1000) {
+            console.log("%c%s", "color:red",
+                "Failed to reach partial percent threshold.");
+            break; 
+        }
+        temp = partialPercent
+        partialPercent = partialTiles/(w*h);
         for (let p = 0; p < partials.length; p++) {
             let partial = partials[p];
-            if (Math.floor(Math.random()*10) > 6) { continue; }
+            if (Math.random() > 0.5) { continue; }
             let longestPartialArr = 0;
             let randI, randJ;
             randI = Math.floor(Math.random() * (w - partial.length));
@@ -26,30 +36,40 @@ function generatePartial(partials, w, h) {
                 }
             }
             randJ = Math.floor(Math.random() * (h - longestPartialArr));
-            let randRowReset = randI;
-            let randColReset = randJ;
             let shouldContinue = false;
-            let shouldDraw = false;
+            let shouldPlace = false;
             if (partial.length >= w) { continue; }
             if (partial.length + randI >= w) { continue; }
             for (let i = 0; i < partial.length; i++) {
                 let partialArr = partial[i];
-                if (partialArr.length >= h) { shouldContinue = true; break;}
+                if (partialArr.length >= h) { 
+                    shouldContinue = true; 
+                    break;
+                }
                 //Checking for wrapping. Will break if too long.
-                if (partialArr.length + randJ >= h) { shouldContinue = true; break;}
+                if (partialArr.length + randJ >= h) { 
+                    shouldContinue = true; 
+                    break;
+                }
                 for (let j = 0; j < partialArr.length; j++) {
-                    if (partialMap[randI+i][randJ+j] !== false )  { shouldContinue = true; break;}
+                    if (partialMap[randI+i][randJ+j] !== false )  { 
+                        shouldContinue = true; 
+                        break;
+                    }
                 }
             }
+            // The reason why there is a continue here and not within the 
+            // loop, is because the program should continue to the next partial.
             if (shouldContinue) { continue; } 
-            else { shouldDraw = true; }
+            else { shouldPlace = true; }
             //First check if partial can fit...
-            if (shouldDraw) {
+            if (shouldPlace) {
                 for (let i = 0; i < partial.length; i++) {
                     let partialArr = partial[i];
                     if (partialArr === undefined) { continue;}
                     for (let j = 0; j < partialArr.length; j++) {
                         partialMap[randI+i][randJ+j] = partialArr[j];
+                        partialTiles++;
                     }
                 }
             }
@@ -60,7 +80,37 @@ function generatePartial(partials, w, h) {
             if (partialMap[i][j] === -1) { partialMap[i][j] = false; }
         }
     }
+    generateDoor(partialMap, w, h);
     partialMap[0][0] = 10;
     partialMap[w-1][h-1] = 10;
-    return partialMap;
+    console.log("%c%s", "color:yellow", 
+        "percent of tiles that come from partials", partialPercent);
+    return [partialMap, partialPercent];
+}
+function generateDoor(map, w, h) {
+    let blockingDoor = [
+        [19,24,24,24,"DOOR",24,24,24,20],
+        [21,10,10,10,10,10,10,10],
+        [21,10,10,10,10,10,10,10],
+        [21,10,10,10,10, 10,10,10]
+    ]
+    let longestPartArr = [];
+    for (let i = 0; i < blockingDoor.length; i++) {
+        let arr = blockingDoor[i];
+        if (longestPartArr.length < arr.length) {
+            longestPartArr = arr;
+        }
+    }
+    let doorArrLen = blockingDoor.length;
+    let longArrLen = longestPartArr.length
+    for (let i = doorArrLen ; i > 0; i--) {
+        for (let j = longArrLen; j > 0; j--) {
+            try {
+                map[w-i][h-j] = blockingDoor[doorArrLen-i][longArrLen-j];
+            } catch (e) {
+                console.log(i, j);
+                debugger
+            }
+        }
+    }
 }

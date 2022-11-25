@@ -8,25 +8,22 @@ export function detectFeatures(input, numRows, numCols) {
     let tar = null;
     let iso = detectIsolation(input, numRows, numCols);
     let lv = detectLowVisibility(input, numRows, numCols);
-    let items = detectItems(input, numRows, numCols);
+    let items = detectItems(input, t, numRows, numCols);
     let features = new Features(t, ac, js, tar, iso, lv, items);
     return features;
 }
-
-export function detectItems(input, numRows, numCols) {
+export function detectItems(input, t, numRows, numCols) {
     let output = generate2DArray(numRows, numCols);
     for (let i = 0; i < input.length; i++) {
         for (let j = 0; j < input[i].length; j++) {
-            // Store the list of metadata we are currently looking at in the corresponding grid cell, along with the output list.
             let currentList = input[i][j];
-            // Check if the current grid cell contains the relevant metadata.
-            if (currentList.includes("KEY")) {
-                // If the current grid cell is traversable, mark as traverseable.
-                output[i][j].push("KEY");
+            let traversable = t[i][j];
+            let outEntry = output[i][j];
+            if (currentList.includes("KEY") && traversable.length > 0) {
+                console.log("Adding a key to", i, j);
+                outEntry.push("KEY");
             }
-            else if(currentList.includes("DOOR")) {
-                output[i][j].push("DOOR");
-            }
+            else if (currentList.includes("DOOR")) { outEntry.push("DOOR"); }
         }
     }
     return output;
@@ -38,10 +35,8 @@ export function detectTraversable(input, numRows, numCols)
     let output = generate2DArray(numRows, numCols);
 
     // Traverse through array.
-    for (let i = 0; i < input.length; i++)
-    {
-        for (let j = 0; j < input[i].length; j++)
-        {
+    for (let i = 0; i < input.length; i++) {
+        for (let j = 0; j < input[i].length; j++) {
             // Store the list of metadata we are currently looking at in the corresponding grid cell, along with the output list.
             let currentList = input[i][j];
             

@@ -3,11 +3,7 @@
 // CANVAS CODE TODO: BREAK THIS OUT INTO ITS OWN JS FILE IF WORK.
 // Also, got this from this helpful link https://medium.com/geekculture/make-your-own-tile-map-with-vanilla-javascript-a627de67b7d9 
 
-import { parseJSON } from "jquery";
-
-// Good good stuff.
 export function Draw(heatmaps, w, h, tileSize, rescale, tileSet, tileSetCol, map, paths) {
-
     let debugging = false;
     let updatedSize = tileSize * rescale;
     let atlasCol = tileSetCol;
@@ -56,7 +52,7 @@ export function Draw(heatmaps, w, h, tileSize, rescale, tileSet, tileSetCol, map
             updatedSize);
     }
     generateButton("paths", pathsCanvas.style, "#FFF", h, updatedSize, 
-        debugging);
+        true);
     drawTrim(tmapcanvas, tileSet, atlasCol, rescale, tileSize, updatedSize, w, h);
 }
 
@@ -195,7 +191,6 @@ function drawKey(ctx, tileSize, destinationX, destinationY,
                 updatedSize) {
     const key = new Image();
     key.src = './assets/sprites/key.png';
-    console.log(key);
     key.onload = function() {
         drawImage(ctx, key, 0, 0, tileSize, destinationX,
                 destinationY, updatedSize);
@@ -257,7 +252,7 @@ function drawTile(canvas, tileSet, row, col, rescale, updatedSize, tileSize,
         // Actual drawing of the tilemap right here.
         drawImage(ctx, tileSet, sourceX, sourceY, tileSize, destinationX,
             destinationY, updatedSize);
-        if (tile.item) { 
+        if (tile.item !== null) { 
             drawItem(tile.item, ctx, tileSize, destinationX, 
                 destinationY, updatedSize); 
         }
