@@ -76,7 +76,7 @@ let paths = true;
 let heatmaps = null;
 let features = null; 
 let loops = 0;
-let totalTestLoops = 100;
+let totalTestLoops = 0;
 let partialCoverage = 0.0;
 let [tempPartPercent, highestPartPercent, lowestPartPercent] = [0, 0, 999];
 let [keyFail, genFail] = [0, 0];
@@ -248,7 +248,7 @@ while ((wfcOutput === null ||paths === false)) {
     if (loops < totalTestLoops) { paths = false; }
     else {
         if (partialCoverage < 0.95) { 
-            totalTestLoops+=2;
+            totalTestLoops+=200;
             partialCoverage += 0.1;
             paths = false;
             console.log(partialCoverage);
@@ -259,16 +259,12 @@ while ((wfcOutput === null ||paths === false)) {
             resultData = {
                 results : []
             };
-            totalTestLoops+=2;
             mapData.w += 10;
             mapData.h += 10;
             partialCoverage = 0;
             console.log(mapData.w, mapData.h);
         }  
-        else if (loops >= totalTestLoops) { 
-            console.log(mapData.w, mapData.h, partialCoverage);
-            break; 
-        }
+        else if (loops >= totalTestLoops) { break; }
     }
 }
 //Things that we need to do. 
@@ -341,6 +337,6 @@ function writeResults(results, name, fs, path) {
             console.log(err); 
             return false;
         }
-        console.log("file has been saved!")
+        console.log(name, "file has been saved!")
     });
 }
