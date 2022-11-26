@@ -5,7 +5,7 @@
 //remapping of IDS... which causes this offset. To figure out the correct tile
 //number, put a random tile in, and search around until the correct tile is 
 // found :)
-export function generatePartial(partials, w, h, coverage) {
+export function generatePartial(partials, w, h, coverage, shouldGenItems) {
     let partialMap = new Array(w);
     let loops = 0;
     let temp = 0;
@@ -86,7 +86,10 @@ export function generatePartial(partials, w, h, coverage) {
             if (partialMap[i][j] === -1) { partialMap[i][j] = false; }
         }
     }
-    generateDoor(partialMap, w, h);
+    if (shouldGenItems) {
+        console.log("generating blockign door");
+        generateDoor(partialMap, w, h);
+    }
     partialMap[0][0] = 10;
     partialMap[w-1][h-1] = 10;
     console.log("%c%s", "color:yellow", 

@@ -13,6 +13,7 @@ import { detectFeatures } from "./Evals/FeatureDetection.js";
 import { pathfinding } from "./pathfinding.js";
 import { Draw } from "./View.js";
 import { generatePartial } from "./partialGenerator.js";
+import internal from 'stream';
 //TODO: almost everything here is globally defined... We shouldn't do that.
 //TODO: add in an item spawn rate. 
 // Figure out some way to actually combine the item spawn to a location spawn.
@@ -73,11 +74,13 @@ let slash = 0;
 let slasher = 0;
 let psycho = 0;
 let paths = true;
+let shouldGenItems = false;
 let heatmaps = null;
 let features = null; 
 let loops = 0;
-let totalTestLoops = 0;
-let partialCoverage = 0.1;
+let incTest = 3;
+let totalTestLoops = incTest;
+let partialCoverage = 0.0;
 let [tempPartPercent, highestPartPercent, lowestPartPercent] = [0, 0, 999];
 let [keyFail, genFail] = [0, 0];
 let [solvableCount, unsolvableCount] = [0, 0];
@@ -104,7 +107,7 @@ while ((wfcOutput === null ||paths === false)) {
         Number of loops:`, loops);
     if (partialFlag) { 
         [partial, tempPartPercent] = generatePartial(
-            partials, mapData.w, mapData.h, partialCoverage); 
+            partials, mapData.w, mapData.h, partialCoverage, shouldGenItems); 
         if (tempPartPercent > highestPartPercent) { 
             highestPartPercent = tempPartPercent;
         }
@@ -137,7 +140,8 @@ while ((wfcOutput === null ||paths === false)) {
             if (tile.item) { lowLevelFeatureMap[i][j].push(tile.item); }
         }
     }
-    features = detectFeatures(lowLevelFeatureMap, mapData.w, mapData.h);
+    features = detectFeatures(lowLevelFeatureMap, mapData.w, mapData.h, 
+        shouldGenItems);
     let combinedFeatureMap = combineFeatures(features);
     // heatmaps = generateHeatmaps(combinedFeatureMap, width, height);
     // let tilemapEval = evaluateHorrorPotential(combinedFeatureMap, width, height, 
@@ -157,6 +161,7 @@ while ((wfcOutput === null ||paths === false)) {
     if (paths === false) {debugger; }
     if (paths.length === 0) { 
         if (failureReason === "NO_KEY") { 
+            solved = false;
             keyFailed = true;
             keyFail++; 
         }
@@ -173,63 +178,7 @@ while ((wfcOutput === null ||paths === false)) {
         console.log("%c%s", "background-color:green", "MAP CAN BE COMPLETED.",
         "Times completed:", solvableCount); 
     }
-    // if (testPaths && save && paths) {
-    //     if (paths[0].movesTaken > paths[2].movesTaken) { short++; }
-    //     if (paths[0].slasherScore < paths[2].slasherScore ) { slash++; }
-    //     if (paths[0].psychScore < paths[2].psychScore ) { psych++; }
-    //     if (paths[3].slasherScore < paths[4].slasherScore ) { slasher++; }
-    //     if (paths[4].psychScore < paths[3].psychScore ) { psycho++; }
-    //     let pathsToSave = [];
-    //     let short = {
-    //         psychScore : [],
-    //         slasherScore : [],
-    //         movesTaken : -1
-    //     }
-    //     let long= {
-    //         psychScore : [],
-    //         slasherScore : [],
-    //         movesTaken : -1
-    //     }
-    //     let scaredyCat = {
-    //         psychScore : [],
-    //         slasherScore : [],
-    //         movesTaken : -1
-    //     }
-    //     let slasherPrio= {
-    //         psychScore : [],
-    //         slasherScore : [],
-    //         movesTaken : -1
-    //     }
-    //     let psychoPrio = {
-    //         psychScore : [],
-    //         slasherScore : [],
-    //         movesTaken : -1
-    //     }
-    //     let pathNames = ["short", "long", "ScaredyCat", "Slasher Prio", 
-    //         "Psychological Prio"];
-    //     let pathobj = [short, long, scaredyCat, slasherPrio, psychoPrio]
 
-    //     for (let i = 0; i < paths.length; i++) {
-    //         let path = paths[i];
-    //         let obj = pathobj[i];
-    //         obj.psychScore = path.psychScore;
-    //         obj.slasherScore = path.slasherScore;
-    //         obj.movesTaken = path.movesTaken;
-    //     }
-    //     resultData.results.push({
-    //             short : short,
-    //             long : long,
-    //             scaredyCat : scaredyCat,
-    //             slasherPrio : slasherPrio,
-    //             psychologicalPrio : psychoPrio
-    //         });
-    //     if (loops%100===0) {
-    //         writeResults(resultData, fs, path);
-    //         resultData.results = [];
-    //     }
-    //     console.log("Results have been pushed!", loops);
-    //     paths = false;
-    // }
     let movesTakenData = paths[0] !== undefined ? paths[0].movesTaken: 0;
     resultData.results.push({
         width: mapData.w,
@@ -244,24 +193,32 @@ while ((wfcOutput === null ||paths === false)) {
         keys : keys.length,
         doors: doors.length 
     });
+
     let isNode=new Function("try {return this===global;}catch(e){return false;}");
     if (loops < totalTestLoops) { paths = false; }
     else {
-        if (partialCoverage < 0.95) { 
-            totalTestLoops+=10;
+        if (shouldGenItems === false) {
+            shouldGenItems = true;
+            totalTestLoops+=incTest
+            paths = false;
+        } else if (partialCoverage < 0.95) { 
+            totalTestLoops+=incTest;
             partialCoverage += 0.1;
             paths = false;
             //TODO: do the file writing right here
-        } else if (mapData.w < 40) {
-            if (isNode() && save) { writeResults(resultData, `${mapData.w}x${mapData.h}`,fs, path); } 
+        } else if (mapData.w < 20) {
+            shouldGenItems = false;
             totalData += structuredClone(resultData);
             resultData = {
                 results : []
             };
+            totalTestLoops+=incTest;
             mapData.w += 10;
             mapData.h += 10;
             partialCoverage = 0;
+            paths = false;
             console.log(mapData.w, mapData.h);
+            if (isNode() && save) { writeResults(resultData, `${mapData.w}x${mapData.h}`,fs, path); } 
         }  
         else if (loops >= totalTestLoops) { break; }
     }
@@ -339,3 +296,63 @@ function writeResults(results, name, fs, path) {
         console.log(name, "file has been saved!")
     });
 }
+// TODO: this code is for the tileterror evaluation. This should be 
+//      broken out into its own function or something and made more 
+//      genertic I think.
+    // if (testPaths && save && paths) {
+    //     if (paths[0].movesTaken > paths[2].movesTaken) { short++; }
+    //     if (paths[0].slasherScore < paths[2].slasherScore ) { slash++; }
+    //     if (paths[0].psychScore < paths[2].psychScore ) { psych++; }
+    //     if (paths[3].slasherScore < paths[4].slasherScore ) { slasher++; }
+    //     if (paths[4].psychScore < paths[3].psychScore ) { psycho++; }
+    //     let pathsToSave = [];
+    //     let short = {
+    //         psychScore : [],
+    //         slasherScore : [],
+    //         movesTaken : -1
+    //     }
+    //     let long= {
+    //         psychScore : [],
+    //         slasherScore : [],
+    //         movesTaken : -1
+    //     }
+    //     let scaredyCat = {
+    //         psychScore : [],
+    //         slasherScore : [],
+    //         movesTaken : -1
+    //     }
+    //     let slasherPrio= {
+    //         psychScore : [],
+    //         slasherScore : [],
+    //         movesTaken : -1
+    //     }
+    //     let psychoPrio = {
+    //         psychScore : [],
+    //         slasherScore : [],
+    //         movesTaken : -1
+    //     }
+    //     let pathNames = ["short", "long", "ScaredyCat", "Slasher Prio", 
+    //         "Psychological Prio"];
+    //     let pathobj = [short, long, scaredyCat, slasherPrio, psychoPrio]
+
+    //     for (let i = 0; i < paths.length; i++) {
+    //         let path = paths[i];
+    //         let obj = pathobj[i];
+    //         obj.psychScore = path.psychScore;
+    //         obj.slasherScore = path.slasherScore;
+    //         obj.movesTaken = path.movesTaken;
+    //     }
+    //     resultData.results.push({
+    //             short : short,
+    //             long : long,
+    //             scaredyCat : scaredyCat,
+    //             slasherPrio : slasherPrio,
+    //             psychologicalPrio : psychoPrio
+    //         });
+    //     if (loops%100===0) {
+    //         writeResults(resultData, fs, path);
+    //         resultData.results = [];
+    //     }
+    //     console.log("Results have been pushed!", loops);
+    //     paths = false;
+    // }

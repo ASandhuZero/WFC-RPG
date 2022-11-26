@@ -1,26 +1,32 @@
 // A class containing methods and objects for use in detecting higher-order features of WFC-generated tilemaps.
 
 // A main function that runs all detectors and stores them in a Features object.
-export function detectFeatures(input, numRows, numCols) {
+export function detectFeatures(input, numRows, numCols, shouldGenItems) {
     let t = detectTraversable(input, numRows, numCols);
     let ac = detectAmbientCreep(input, numRows, numCols);
     let js = detectJumpscares(input, numRows, numCols);
     let tar = null;
     let iso = detectIsolation(input, numRows, numCols);
     let lv = detectLowVisibility(input, numRows, numCols);
-    let items = detectItems(input, t, numRows, numCols);
+    let items = generate2DArray(numRows, numCols)
+    if (shouldGenItems) {
+        items = detectItems(input, t, numRows, numCols);
+    }
     let features = new Features(t, ac, js, tar, iso, lv, items);
     return features;
 }
 export function detectItems(input, t, numRows, numCols) {
     let output = generate2DArray(numRows, numCols);
+    let keyCount = 0;
     for (let i = 0; i < input.length; i++) {
         for (let j = 0; j < input[i].length; j++) {
             let currentList = input[i][j];
             let traversable = t[i][j];
             let outEntry = output[i][j];
-            if (currentList.includes("KEY") && traversable.length > 0) {
+            if (currentList.includes("KEY") && traversable.length > 0
+                && keyCount < 5) {
                 console.log("Adding a key to", i, j);
+                keyCount++;
                 outEntry.push("KEY");
             }
             else if (currentList.includes("DOOR")) { outEntry.push("DOOR"); }
