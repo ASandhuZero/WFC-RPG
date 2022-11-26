@@ -20,7 +20,7 @@ export function pathfinding(featureMap, start, goal) {
             let goalEntry = map[goal.x][goal.y];
             //TODO: Grab data of aStar completing the levels
             [path, failureReason] = doorStar(startEntry, goalEntry, map, 
-                cardinalFlag, scoringFunctions[i]);    
+                cardinalFlag, scoringFunctions[i]);
             if (path.length === 0) { 
                 return [[], failureReason, keys, doors]; 
             }
@@ -34,7 +34,7 @@ export function pathfinding(featureMap, start, goal) {
     return [paths, failureReason, keys, doors];
 }
 function reconstructPath(result, map) {
-    // console.log("starting path reconstruction.");
+    console.log("starting path reconstruction.");
     let tile = result.pop(); //Pop gets the last item in a list. Basically the goal.
     let temp = []
     let path = []
@@ -135,8 +135,8 @@ function generateMapAndKeys(featureMap) {
             let tile = new Tile(i, j, featEntry);
             if (featEntry.includes("KEY")) {
                 keys.push(structuredClone(tile)); 
-                console.log("%c%s", "color:yellow", 
-                    "Number of keys:", keys.length);
+                // console.log("%c%s", "color:yellow", 
+                //     "Number of keys:", keys.length);
             }
             if (featEntry.includes("DOOR")) { 
                 doors.push(structuredClone(tile));
@@ -226,11 +226,11 @@ function doorStar(start, goal, map, cardinalFlag, scoringFunction) {
         currentTile.checked = true;
         if (!currentTile.features.includes("T")) { continue; }
         moves.push(structuredClone(currentTile)); 
-        if (currentTile === goal) { return [moves, "SUCCESS"]; }
-        if (currentTile.features.includes("KEY")) { 
-            keys++; 
-            // console.log("Found key!");
+        if (currentTile === goal) { 
+            console.log("path has been solved!");
+            return [moves, "SUCCESS"]; 
         }
+        if (currentTile.features.includes("KEY")) { keys++; }
         let neighbors = getNeighbors(currentTile, map, cardinalFlag);
         for (let i = 0; i < neighbors.length; i++) {
             let neighbor = neighbors[i];

@@ -77,7 +77,7 @@ let heatmaps = null;
 let features = null; 
 let loops = 0;
 let totalTestLoops = 0;
-let partialCoverage = 0.0;
+let partialCoverage = 0.1;
 let [tempPartPercent, highestPartPercent, lowestPartPercent] = [0, 0, 999];
 let [keyFail, genFail] = [0, 0];
 let [solvableCount, unsolvableCount] = [0, 0];
@@ -104,7 +104,7 @@ while ((wfcOutput === null ||paths === false)) {
         Number of loops:`, loops);
     if (partialFlag) { 
         [partial, tempPartPercent] = generatePartial(
-            partials, width, height, partialCoverage); 
+            partials, mapData.w, mapData.h, partialCoverage); 
         if (tempPartPercent > highestPartPercent) { 
             highestPartPercent = tempPartPercent;
         }
@@ -126,10 +126,10 @@ while ((wfcOutput === null ||paths === false)) {
         wfcOutput = null;
     }
     //TODO: can't we just do a deep copy of the arrays here? Eh, maybe
-    let lowLevelFeatureMap = Array.from(Array(width), () => new Array(height));
-    let tilemapToSave = Array.from(Array(width), () => new Array(height));
-    for (let i = 0; i < width; i++) {
-        for (let j = 0; j < height; j++) {
+    let lowLevelFeatureMap = Array.from(Array(mapData.w), () => new Array(height));
+    let tilemapToSave = Array.from(Array(mapData.w), () => new Array(height));
+    for (let i = 0; i < mapData.w; i++) {
+        for (let j = 0; j < mapData.h; j++) {
             let tile = wfcOutput[i][j];
             tilemapToSave[i][j] = parseInt(wfcOutput[i][j].name);
             // Doing a deep copy right here.
@@ -137,18 +137,18 @@ while ((wfcOutput === null ||paths === false)) {
             if (tile.item) { lowLevelFeatureMap[i][j].push(tile.item); }
         }
     }
-    features = detectFeatures(lowLevelFeatureMap, width, height);
+    features = detectFeatures(lowLevelFeatureMap, mapData.w, mapData.h);
     let combinedFeatureMap = combineFeatures(features);
     // heatmaps = generateHeatmaps(combinedFeatureMap, width, height);
-    let tilemapEval = evaluateHorrorPotential(combinedFeatureMap, width, height, 
-        "slasher");
+    // let tilemapEval = evaluateHorrorPotential(combinedFeatureMap, width, height, 
+    //     "slasher");
     let start = {
         x : 0,
         y : 0
     };
     let goal = {
-        x : width - 1,
-        y : height -1
+        x : mapData.w - 1,
+        y : mapData.h - 1
     };
     let keys = [];
     let doors = [];
@@ -248,10 +248,9 @@ while ((wfcOutput === null ||paths === false)) {
     if (loops < totalTestLoops) { paths = false; }
     else {
         if (partialCoverage < 0.95) { 
-            totalTestLoops+=200;
+            totalTestLoops+=10;
             partialCoverage += 0.1;
             paths = false;
-            console.log(partialCoverage);
             //TODO: do the file writing right here
         } else if (mapData.w < 40) {
             if (isNode() && save) { writeResults(resultData, `${mapData.w}x${mapData.h}`,fs, path); } 
@@ -273,25 +272,25 @@ while ((wfcOutput === null ||paths === false)) {
 //TODO: PLEASE FOR THE LOVE OF ALL THAT IS HOLY, DECIDE IF NODE OR BROWSER.
 let isNode=new Function("try {return this===global;}catch(e){return false;}");
 if (isNode() && save) { writeResults(resultData, `${mapData.w}x${mapData.h}`,fs, path); } 
-// console.log(`Highest Partial Percent per runs: %c${
-//     highestPartPercent.toFixed(2) * 100}%`, "color:Chartreuse");
-// console.log(`Lowest Partial Percent per runs: %c${
-//     lowestPartPercent.toFixed(2) * 100}%`, "color:Chartreuse");
+console.log(`Highest Partial Percent per runs: %c${
+    highestPartPercent.toFixed(2) * 100}%`, "color:Chartreuse");
+console.log(`Lowest Partial Percent per runs: %c${
+    lowestPartPercent.toFixed(2) * 100}%`, "color:Chartreuse");
 
-// console.log(`Success rate was %c${(
-//     solvableCount/loops).toFixed(2)*100}%`, "color:Chartreuse");
+console.log(`Success rate was %c${(
+    solvableCount/loops).toFixed(2)*100}%`, "color:Chartreuse");
 
-// console.log(`Failure rate was %c${(
-//     (unsolvableCount+genFail+keyFail)/loops).toFixed(2)*100}%`, "color:red");
+console.log(`Failure rate was %c${(
+    (unsolvableCount+genFail+keyFail)/loops).toFixed(2)*100}%`, "color:red");
 
-// console.log(`No path from start to exit percent: %c${(
-//     unsolvableCount/loops).toFixed(2)*100}%`, "color:red");
+console.log(`No path from start to exit percent: %c${(
+    unsolvableCount/loops).toFixed(2)*100}%`, "color:red");
 
-// console.log(`No key percent: %c${(
-//     keyFail/loops).toFixed(2)*100}%`, "color:red");
+console.log(`No key percent: %c${(
+    keyFail/loops).toFixed(2)*100}%`, "color:red");
 
-// console.log(`Failed to generate map percent %c${(
-//     genFail/loops).toFixed(2)*100}%`, "color:red");
+console.log(`Failed to generate map percent %c${(
+    genFail/loops).toFixed(2)*100}%`, "color:red");
 function combineFeatures(features) {
     let horrorFeatures = [];
     for (let i = 0; i < features.iso.length; i++) {

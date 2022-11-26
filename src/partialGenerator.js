@@ -17,7 +17,7 @@ export function generatePartial(partials, w, h, coverage) {
     // creates a full partial with the percentage you are looking for...
     while (partialPercent < coverage ) {
         if (partialPercent === temp) { loops++ }
-        if (loops > 1000) {
+        if (loops > 100) {
             console.log("%c%s", "color:red",
                 "Failed to reach partial percent threshold.");
             break; 
@@ -25,6 +25,13 @@ export function generatePartial(partials, w, h, coverage) {
         temp = partialPercent
         partialPercent = partialTiles/(w*h);
         for (let p = 0; p < partials.length; p++) {
+            
+            partialPercent = partialTiles/(w*h);
+            let shouldContinue = false;
+            if (partialPercent > coverage) { 
+                shouldContinue = true; 
+                continue; 
+            }
             let partial = partials[p];
             if (Math.random() > 0.5) { continue; }
             let longestPartialArr = 0;
@@ -36,7 +43,6 @@ export function generatePartial(partials, w, h, coverage) {
                 }
             }
             randJ = Math.floor(Math.random() * (h - longestPartialArr));
-            let shouldContinue = false;
             let shouldPlace = false;
             if (partial.length >= w) { continue; }
             if (partial.length + randI >= w) { continue; }
