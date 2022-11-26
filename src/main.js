@@ -36,6 +36,7 @@ let banList = [19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37];
 let resultData = {
     "results" : []
 }
+let totalData = {};
 let tileRules = {}
 let itemRules = {}
 let mapData = {
@@ -75,7 +76,7 @@ let paths = true;
 let heatmaps = null;
 let features = null; 
 let loops = 0;
-let totalTestLoops = 1;
+let totalTestLoops = 100;
 let partialCoverage = 0.0;
 let [tempPartPercent, highestPartPercent, lowestPartPercent] = [0, 0, 999];
 let [keyFail, genFail] = [0, 0];
@@ -247,20 +248,22 @@ while ((wfcOutput === null ||paths === false)) {
     if (loops < totalTestLoops) { paths = false; }
     else {
         if (partialCoverage < 0.95) { 
-            totalTestLoops+=1;
+            totalTestLoops+=2;
             partialCoverage += 0.1;
             paths = false;
             console.log(partialCoverage);
-            if (isNode() && save) { writeResults(resultData, fs, path); } 
-            
             //TODO: do the file writing right here
         } else if (mapData.w < 40) {
-            totalTestLoops+=1;
+            if (isNode() && save) { writeResults(resultData, `${mapData.w}x${mapData.h}`,fs, path); } 
+            totalData += structuredClone(resultData);
+            resultData = {
+                results : []
+            };
+            totalTestLoops+=2;
             mapData.w += 10;
             mapData.h += 10;
             partialCoverage = 0;
             console.log(mapData.w, mapData.h);
-            if (isNode() && save) { writeResults(resultData, fs, path); } 
         }  
         else if (loops >= totalTestLoops) { 
             console.log(mapData.w, mapData.h, partialCoverage);
@@ -268,6 +271,12 @@ while ((wfcOutput === null ||paths === false)) {
         }
     }
 }
+//Things that we need to do. 
+// We have to get the key count as well. Maybe even door count. That way
+// we can get a key to door ratio.
+//TODO: PLEASE FOR THE LOVE OF ALL THAT IS HOLY, DECIDE IF NODE OR BROWSER.
+let isNode=new Function("try {return this===global;}catch(e){return false;}");
+if (isNode() && save) { writeResults(resultData, `${mapData.w}x${mapData.h}`,fs, path); } 
 // console.log(`Highest Partial Percent per runs: %c${
 //     highestPartPercent.toFixed(2) * 100}%`, "color:Chartreuse");
 // console.log(`Lowest Partial Percent per runs: %c${
@@ -302,36 +311,30 @@ function combineFeatures(features) {
     return horrorFeatures
 }
 
-//Things that we need to do. 
-// We have to get the key count as well. Maybe even door count. That way
-// we can get a key to door ratio.
-//TODO: PLEASE FOR THE LOVE OF ALL THAT IS HOLY, DECIDE IF NODE OR BROWSER.
-let isNode=new Function("try {return this===global;}catch(e){return false;}");
-if (isNode() && save) { writeResults(resultData, fs, path); } 
 // This is the drawing code... We need to figure out where to put this.
-else {
-    // Also, got this from this helpful link https://medium.com/geekculture/make-your-own-tile-map-with-vanilla-javascript-a627de67b7d9 
-    const tileSet = new Image();
-    tileSet.src = './assets/tilesets/graveyard.png';
-    tileSet.onload = drawAll; // there is a function below defined as drawAll; this function draws the tile map.
-    let tileSize = 16;
-    let rescale = 2; // can set to 1 for 32px or higher
+// else {
+//     // Also, got this from this helpful link https://medium.com/geekculture/make-your-own-tile-map-with-vanilla-javascript-a627de67b7d9 
+//     const tileSet = new Image();
+//     tileSet.src = './assets/tilesets/graveyard.png';
+//     tileSet.onload = drawAll; // there is a function below defined as drawAll; this function draws the tile map.
+//     let tileSize = 16;
+//     let rescale = 2; // can set to 1 for 32px or higher
     
-    let atlasCol = 9;
-    let mapCols = width+1;
-    let mapRows = height+1;
-    let mapHeight = mapRows * tileSize;
-    let mapWidth = mapCols * tileSize
-    function drawAll() {
-        let canvasWidth = mapWidth * rescale;
-        let canvasHeight = mapHeight * rescale;
-        Draw(heatmaps, canvasWidth, canvasHeight, tileSize, rescale, tileSet, 
-            atlasCol, wfcOutput, paths);
-    }
+//     let atlasCol = 9;
+//     let mapCols = width+1;
+//     let mapRows = height+1;
+//     let mapHeight = mapRows * tileSize;
+//     let mapWidth = mapCols * tileSize
+//     function drawAll() {
+//         let canvasWidth = mapWidth * rescale;
+//         let canvasHeight = mapHeight * rescale;
+//         Draw(heatmaps, canvasWidth, canvasHeight, tileSize, rescale, tileSet, 
+//             atlasCol, wfcOutput, paths);
+//     }
 
-}
-function writeResults(results, fs, path) {
-    let fileName = "results.json";
+// }
+function writeResults(results, name, fs, path) {
+    let fileName = `results-${name}.json`;
     let writeableResults = JSON.stringify(results);
     fs.writeFile(`./${fileName}`, writeableResults, function(err) {
         if (err) { 
